@@ -1,83 +1,40 @@
 # Casebook Method
 
-This document explains how curated casebook entries should be selected and written.
+案例集是项目的展示层。它的作用是让 taxonomy 里的概念变成看得见的东西——不是所有失败都适合立刻打分，但都可以通过具体场景来展示。
 
-The casebook is the demonstrative layer of CN Failure Atlas. Its purpose is to make failure structures visible and discussable.
+## 案例条目结构
 
-## Why a Casebook Layer Exists
+每个案例集条目应包含：
 
-Not every important fictional-dialogue failure is immediately benchmark-stable. Some are easier to show than to score. The casebook exists for those cases.
+1. **场景设定** — 让场景可读的最小上下文
+2. **场景真正在说什么** — 情绪和关系压力点，这个场景难在哪
+3. **常见坏版本** — 代表性的失败模式（不必是某个具体模型的单次输出）
+4. **为什么它坏** — 对应的失败标签，结构性问题的解释
+5. **Reader drop point** — 敏感读者在哪一刻开始觉得 scene 变假了
+6. **更好的版本** — 一个更强的续写或理解
+7. **为什么更好版本更好** — 它保住了什么、拒绝抹掉什么
+8. **关联的失败家族** — 链接回 taxonomy
 
-It allows the project to demonstrate:
+## 选例原则
 
-- what a failure looks like in context
-- why readers react strongly to it
-- why a more polished output is not always a truer one
-- how different failures overlap or diverge
+选入案例集的条目应满足以下至少一条：
+- 暴露一个常见的用户痛点
+- 清楚地区分两个容易混淆的失败
+- 展示一段打磨过的输出为什么仍然是假的
+- 呈现一种难以量化但容易感知的失败
+- 揭示强模型和弱模型的失败方式有什么不同
 
-## Casebook Entry Template
+## Reader Drop Point
 
-Each casebook entry should include:
+每个条目应明确标出读者可能从投入变成不信的转折点。例如：
 
-1. **Scene setup**
-   - the minimum amount of context required to make the scene legible
+- 第三段开始暴露出一个反复出现的叙事 cadence
+- 回复变得太平衡了而关系本该是倾斜的
+- 脆弱暴露时缺少自我保护的摩擦
+- 重话之后的余波被太快接走
 
-2. **What the scene is really about**
-   - emotional and relational pressure points
-   - why this scene is hard
+这个标注往往和失败标签本身一样有价值。
 
-3. **Common bad version**
-   - a representative failure pattern, not necessarily one exact model sample
+## 与 Pilot 子集的关系
 
-4. **Why it fails**
-   - named failure tags
-   - explanation of the structural problem
-
-5. **Reader drop point**
-   - where a sensitive reader starts to feel the scene turn false
-
-6. **Better version**
-   - a stronger continuation or reading
-
-7. **Why the better version works**
-   - what it preserves
-   - what it refuses to smooth away
-
-8. **Linked failure families**
-   - so entries can connect back to the atlas
-
-## Selection Principles
-
-Casebook entries should be selected for one or more of the following reasons:
-
-- they expose a common user pain point
-- they distinguish two similar failures cleanly
-- they show how a polished output can still be false
-- they illustrate a failure that is hard to quantify but easy to feel
-- they reveal how advanced models fail differently from weaker models
-
-## What a Good Casebook Entry Should Not Do
-
-- It should not become a fandom essay detached from structure.
-- It should not rely on private background the reader cannot infer.
-- It should not confuse personal preference with identifiable failure mechanics.
-- It should not pretend that one rewritten version is the only valid answer.
-
-## Reader Drop Notes
-
-Casebook entries should explicitly include the point at which a reader might go from engaged to unconvinced.
-
-Examples:
-
-- the third paragraph begins to reveal a recurring narrative cadence
-- the response becomes too balanced after a relationship should remain uneven
-- a vulnerable admission appears without self-protective friction
-- the aftermath of a harsh line is cushioned too quickly
-
-This note is often as valuable as the tag itself.
-
-## Relation to the Pilot Subset
-
-A casebook entry may be linked to a structured pilot case, but it does not have to be. The pilot subset serves evaluation compatibility. The casebook serves demonstration, pedagogy, and analytic force.
-
-The two layers should help each other, not constrain each other.
+案例集条目可以链接到结构化 pilot case，但不必须。Pilot 子集服务于评测兼容性，案例集服务于展示和分析。两层互相帮助但不互相限制。

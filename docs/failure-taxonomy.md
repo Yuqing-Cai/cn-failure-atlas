@@ -1,297 +1,191 @@
-# Failure Taxonomy
+# 失败分类 / Failure Taxonomy
 
-This document defines the main failure modes the benchmark is designed to expose.
+本文档是项目的完整失败分类参考。所有失败模式按五个家族组织，每个家族对应一种不同层级的"假感"来源。
 
-The goal is not to collapse all errors into one generic "bad response" label. Fictional dialogue failure is multi-dimensional. A model can be fluent, kind, and even lore-aware while still failing the scene.
-
-The taxonomy is divided into two layers:
-
-- interpretation failures (mainly Task A)
-- response failures (mainly Task B)
+分类的目的不是形式上整齐，而是把不同性质的失败分开：有的是没读懂，有的是把关系偷偷改写了，有的是把人写得太整齐，有的是叙事方式本身出了问题，还有的是不肯让重的东西继续重下去。
 
 ---
 
-## I. Interpretation Failures
+## I. 场景理解失败 / Scene Reading Failures
 
-These failures occur when the model misunderstands what the scene means.
+模型没有正确读懂场景本身在说什么。
 
-### 1. emotion_misread
+### `emotion_misread`
 
-The model gets the speaker's actual feeling wrong.
+模型把角色真正的情绪方向读错了。委屈被读成平静接受，嫉妒只被读到烦躁那一层，羞耻被当成普通愤怒。这是最基础的失败——连感情都读反了，后面不可能对。
 
-Typical examples:
+### `subtext_blindness`
 
-- reading hurt as calm acceptance
-- reading defensive coldness as genuine indifference
-- reading shame as anger only
-- reading jealousy as simple irritation
+模型只读到字面意思。"没关系"被当成真的没关系，试探被当成提问，礼貌被当成真正的平和。间接表达在中文虚构对话里极其常见，字面和实际之间的张力往往就是整个 scene 的重心，读不到这一层等于什么都没读到。
 
-Why it matters:
+### `motivation_misread`
 
-If the emotion is wrong, the response will often be wrong even if it sounds smooth.
+模型感知到了某种情绪，但不明白角色此刻到底想干什么。求确认被读成求建议，退缩被读成释怀，刺人被当成随口抱怨。情绪方向可能读对了，但行动意图完全错位。
 
----
+### `relationship_logic_error`
 
-### 2. subtext_blindness
+模型没有把这句话放回赋予它意义的关系结构里理解。同样的"你去吧"，在依赖关系里是受伤的撤退，在敌对关系里是冷漠的放手，在上下位关系里可能是隐忍的服从。忽略关系逻辑就是把场景当成无差别对话在处理。
 
-The model captures only the literal meaning and misses what is implied.
+### `worldview_constraint_error`
 
-Typical examples:
+模型用不属于这个世界的默认假设去解释场景。典型的是在古代 / 架空 / 非现代语境中硬塞现代沟通观——"你要学会表达自己的感受"出现在一个连直呼其名都不被允许的社会秩序里。
 
-- taking "你去吧" as simple permission instead of hurt withdrawal
-- missing that a question is actually a test
-- missing that politeness is functioning as distance or punishment
+### `ambiguity_collapse`
 
-Why it matters:
-
-Many RP scenes are driven by implied meaning, not explicit wording.
+场景本来就是悬着的、混着的、双层的，模型非要给出一个整齐的答案。混合动机被压成单一动机，不稳定的情绪被提前定性，有意保持的歧义被消解成干净的解释。好的虚构对话经常需要留白，不允许留白本身就是一种失败。
 
 ---
 
-### 3. motivation_misread
+## II. 关系失真 / Relational Distortion Failures
 
-The model misunderstands what the speaker is trying to do.
+这一层的问题不是完全没看懂关系，而是模型把关系改写成了一个更顺、更平、更好消费的版本。
 
-Typical examples:
+### `relationship_flattening`
 
-- treating a request for reassurance as a request for advice
-- treating a defensive retreat as genuine closure
-- treating provocation as casual conversation
+模型抹掉了关系里真正特殊、倾斜、紧张的部分。上下位互动被写成平等朋友，危险的亲密被写成泛泛温柔，深度依赖被写成普通的互相关心。这是关系失真里最常见、最容易发现的一种。
 
-Why it matters:
+### `symmetry_bias`
 
-A line can be emotionally legible but still be misread functionally.
+比 flattening 更隐蔽。模型不是把关系写平，而是本能地把不均衡的交换修成更对称的结构——一边倒的爱被软化成互相投入，不对等的风险被补成更舒服的公平，长期关系里的斜度被无声地磨掉。读者往往要比较原文和续写才能发现差距。
 
----
+### `supportive_but_wrong`
 
-### 4. relationship_logic_error
+模型给出了一个表面上很会安抚人的回复，但这个回复对这个角色、这段关系、这个场景来说是错的。说得很对却毁了角色，听起来很健康却把倾斜关系写平了，回复很善解人意却和真正的戏剧结构对着干。这种失败特别值得注意，因为它经常被当成好回复。
 
-The model ignores or misreads the interpersonal structure shaping the utterance.
+### `reader_comfort_alignment`
 
-Typical examples:
+模型在照顾读者的可消费性，而不是忠于关系逻辑。太脏的关系被洗得更可接受，太难受的场景被提前通风，本该让人不舒服的关系被悄悄做了减震。
 
-- ignoring hierarchy or power asymmetry
-- treating betrayal scenes like ordinary disagreement
-- ignoring taboo, dependency, resentment, or long history
+### `specialness_dilution`
 
-Why it matters:
+模型削弱了一段关系的不可替代性。"你对我不是别人"被写成"你对我也很重要"，独特的占有感被翻成广义在乎，特殊性危机被冲淡成普通的 reassurance。
 
-The same sentence means different things in different relationships.
+### `ooc_modernization`
 
----
+模型用明显不属于该时代或身份的现代语气写角色回复。历史 / 架空语境中突然出现心理咨询腔，角色说出不属于其 worldview 的价值判断，或者整段回复读起来像"互联网高情商人"。
 
-### 5. worldview_constraint_error
+### `therapist_mode_intrusion`
 
-The model interprets the scene using assumptions that do not fit the fictional setting.
-
-Typical examples:
-
-- assuming modern communication norms in a historical or fantasy world
-- ignoring formal etiquette or role obligations
-- reading emotional directness as available when the setting discourages it
-
-Why it matters:
-
-Meaning is shaped by world constraints, not just by sentence content.
+模型在角色对话中突然进入泛化的心理支持脚本。"你的感受是被允许的""先照顾好自己"——这类默认助人话术覆盖了人物本身的表达逻辑，把戏剧互动改写成安全安抚模板。
 
 ---
 
-### 6. ambiguity_collapse
+## III. 角色心理失真 / Character Psychology Failures
 
-The model acts too certain when the scene remains intentionally layered.
+模型不是不会写情绪，而是太会把人重新整理好。角色被写成了比真人更透明、更自洽、更好管理的心理客体。
 
-Typical examples:
+### `overcoherent_characterization`
 
-- asserting one neat emotional explanation when several remain plausible
-- overcommitting to a single motive where the case is underdetermined
+角色过于稳定地服从既有设定。没有局部自打脸，没有短路和失手，没有在关键时刻超过自己平时组织能力的反应。角色读起来像一个 specification，而不像一个会偏航的人。这条和其他心理失真不同的地方在于：它不是某一刻的写法问题，而是角色在整段互动中的稳定性本身太高了。
 
-Why it matters:
+### `desire_overlegibility`
 
-A strong evaluator should reward calibrated interpretation, not fake certainty.
+欲望被讲得太清楚、太早。潜在的 want 被过早翻译成明文 longing，替代性表达太快被还原成直接欲望，本来应该混乱的渴求被写成整齐信号。好的虚构对话里，欲望经常是通过不该出现的注视、过度的否认、不合比例的反应来暗示的，而不是被直接陈述的。
 
----
+### `premature_affective_closure`
 
-## II. Response Failures
+还没到该定性的时刻，模型就帮场景完成了情绪收束。混合情绪被提前归类，不稳定的 attachment 被翻成一个清晰结论，情感矛盾过早被解释干净。
 
-These failures occur when the model generates a reply that breaks character, logic, or scene quality.
+### `self_protective_friction_loss`
 
-### 1. ooc_modernization
+角色暴露脆弱时太顺滑。Confession 前没有犹豫，need 没有经过转移、否认、攻击、玩笑就直接落地，脆弱暴露得像角色乐于被看见一样。真实的脆弱暴露几乎总是伴随阻力的——那个阻力本身就是可信度的来源。
 
-The reply sounds like a modern internet-savvy or therapy-literate person rather than the target character.
+### `impulse_recontainment`
 
-Typical examples:
+本来应该失控的一拍，很快又被整理回自知和克制。爆发之后立刻有完整心理总结，慌乱很快被写成条理分明的情绪认知，鲁莽举动后面跟着过于整齐的自我解释。模型似乎不允许混乱真正持续。
 
-- importing contemporary self-help or communication norms into a non-modern setting
-- making the character sound unusually emotionally processed or socially sanitized
+### `affect_manageability_bias`
 
-Why it matters:
-
-This is one of the most common and immersion-breaking RP failures.
+模型把难承受、难命名的情感改写成更可读的版本。病态依赖被软化成普通的 reassurance-seeking，腐蚀性嫉妒被写甜了，很丑的 attachment dynamics 被整理得更卫生。
 
 ---
 
-### 2. therapist_mode_intrusion
+## IV. 叙事 / 时间感失真 / Narrative & Temporal Distortion Failures
 
-The reply shifts into generic emotional support or counseling language that does not fit the character or scene.
+这一层的问题不在于"没读懂场景"，而在于"场景被用错误的方式写出来了"。文本可能读对了情绪、保住了关系，但叙事手法本身暴露了模型的写作模板。
 
-Typical examples:
+### `narrative_template_intrusion`
 
-- "你的感受是被允许的"
-- "先照顾好自己"
-- reflective therapy-style summaries in situations where the character would never speak that way
+模型不是在接这个场景，而是在套一个熟悉的叙事骨架。不同场景里反复出现相似结构——先铺环境，再写微反应，再来一段内心，最后回扣前文。识别这种失败需要跨场景对比：单独看一段可能没问题，看三段就能摸到模板。
 
-Why it matters:
+### `predictable_rhythm_exposure`
 
-A response can sound emotionally competent while being catastrophically OOC.
+段落节奏太容易被预测。情绪拍点总在差不多的位置落下，句群推进方式重复，段落骨架先于内容被识别出来。熟读者会说"又是这个 cadence"。
 
----
+### `cinematic_time_dilation`
 
-### 3. relationship_flattening
+一拍的事被写成慢镜头。一个瞬间被微小细节和人工 pause 撑开，scene 像被摆拍而不像正在发生。偶尔的慢镜头是合理的修辞手段，但当它成为默认写法时就是失败。
 
-The reply erases what is distinctive about the relationship.
+### `scene_pacing_distortion`
 
-Typical examples:
+场景推进速度和它承受的压力不匹配。余波被跑太快，冲突被写得太花而不够利落，安静场景被硬写出人工 suspense。
 
-- treating a superior-subordinate dynamic like equal friendship
-- erasing resentment or mistrust too quickly
-- ignoring dependency, taboo, history, or specialness
+### `rhythm_homogenization`
 
-Why it matters:
+不同类型的场景被写成差不多的密度和速度。等待、对峙、aftermath 用的是同一个内部时钟，场景之间缺乏节奏压差。
 
-This failure often makes scenes feel generic and false even when the wording is smooth.
+### `descriptive_substitution_for_experience`
 
----
+文本在旁边描写体验，而不是让读者待在里面。"他感到那些话的重量压下来"——观察替代了沉浸，scene 变成被看见的东西而不是被经历的东西。
 
-### 4. voice_fidelity_failure
+### `microreaction_oversegmentation`
 
-The reply does not sound like something the target character would actually say.
+一个小反应被拆成太多段零件。眼神、呼吸、手指、沉默连续被切开单独写，模型像拿显微镜在拆 reaction 而不是让它自然流过去。
 
-Typical examples:
+### `over_stylized_line_breaking`
 
-- wrong level of formality
-- wrong pacing or emotional explicitness
-- language too generic to carry character identity
+换行被过度用来制造气氛。每个小拍子都单独占行，typography 代替了场景压力。
 
-Why it matters:
+### `aesthetic_obedience_bias`
 
-Character consistency is a core part of RP quality.
+模型为了文本好看牺牲了场景真实。丑场景被写雅了，笨拙场景被写顺了，角色说出了比他本该说的更好看的话。
 
----
+### `texture_substituting_for_substance`
 
-### 5. motivation_break
+质感替代了推进。Atmosphere 很满，关系和情绪却没真动；verbal surface 很好，结构里其实是空的。
 
-The response does not follow from the responder's own motives, values, fears, or role obligations.
+### `dialogue_overfunctionalization`
 
-Typical examples:
+每一句台词都太有用了。每句都在推信息、推关系、推冲突，没有废料、错位、答非所问的存在。对话像被写来服务场景的，而不像人物真的在里面说话。
 
-- sudden emotional honesty from a highly avoidant character
-- immediate reassurance from a character who would normally deflect
-- overhelpful guidance from a character who would preserve distance
+### `pov_buoyancy`
 
-Why it matters:
-
-The response may fit the scene abstractly while still not fitting the responder.
+视角压力站不稳，文本在 inside / outside 之间漂。内在的 immediacy 被外部评论打断，POV 不稳，读者的 scene presence 被削弱。
 
 ---
 
-### 6. lore_violation
+## V. 重量 / 后果失真 / Weight & Consequence Failures
 
-The reply contradicts world facts, role knowledge, character knowledge boundaries, or setting rules.
+模型不肯让重的东西继续重着。
 
-Typical examples:
+### `consequence_avoidance`
 
-- using knowledge the character should not have
-- violating established world logic
-- implying attitudes or facts inconsistent with the setting
+一句重话、一个重动作本来应该继续留在场景里发压，模型却太快把它转移或冲淡。Aftermath 过早通风，刺痛后下一拍就被缓冲，应该留下 residue 的东西被快速吸收。
 
-Why it matters:
+### `defensive_positive_drift`
 
-Lore adherence is not the whole benchmark, but breaking it can strongly damage credibility.
+场景明明应该继续冷、继续沉、继续没有出口，模型却悄悄塞进一点暖意或连接感。多出来一句小软化，本该继续疏离的场景里出现多余的连接动作。场景自己还没喘，模型先替它通了气。
 
----
+### `tension_premature_resolution`
 
-### 7. meta_or_exposition_leak
+张力还没活够就开始收了。很快进入互相理解，冲突被过早管理化，悬着的压力被提前转进一个较可控的交换结构。
 
-The model stops sounding like a character and starts sounding like an analyst, narrator, or system.
+### `impact_soft_landing`
 
-Typical examples:
+重事件不是被否认，而是被过快接住。重拍点后面立刻跟减震层，后果有了但落地太软。
 
-- explaining the scene instead of replying in-world
-- inserting summary-style exposition
-- using meta language such as "as this character"
+### `darkness_intolerance`
 
-Why it matters:
-
-This breaks immersion and often hides weak scene modeling behind explanatory wording.
+文本不愿意在冷、脏、难受、没出口的状态里待太久。气氛总被提前通风，困难的 tone 被改得更好入口，压力无法充分积累。
 
 ---
 
-### 8. tension_premature_resolution
+## 关于 benchmark 兼容性的说明
 
-The reply resolves conflict, pain, or ambiguity too quickly.
+上述失败模式并不全部处于同等的 benchmark 可操作性上：
 
-Typical examples:
+- **I 和 V 中的多数条目**（emotion_misread, subtext_blindness, consequence_avoidance 等）相对容易设计成可打分的评测维度。
+- **II 和 III 中的条目**（symmetry_bias, desire_overlegibility, self_protective_friction_loss 等）在 casebook 展示和比较分析中效果最好，强行数值化容易丢失重点。
+- **IV 中的条目**（narrative_template_intrusion, rhythm_homogenization 等）往往需要跨场景对比才能识别，单 case 打分的意义有限。
 
-- turning a loaded scene into clean mutual understanding immediately
-- healing a fracture that should remain unresolved
-- collapsing romantic or hostile tension into generic safety
-
-Why it matters:
-
-Good RP often depends on preserving tension, not removing it.
-
----
-
-### 9. overexplicit_emotion_naming
-
-The reply says the quiet part out loud when the character or scene requires restraint.
-
-Typical examples:
-
-- directly labeling hidden hurt that should remain partially unspoken
-- making the responder psychologically over-articulate in a way that breaks character
-
-Why it matters:
-
-Not every emotionally accurate response should be emotionally explicit.
-
----
-
-### 10. supportive_but_wrong
-
-The response is warm, kind, or emotionally competent on the surface but fundamentally incorrect for the character, relationship, or scene.
-
-Typical examples:
-
-- perfect emotional support language that destroys characterization
-- comforting the speaker in a way that ignores the role dynamic
-- making the response healthier than the world and people would allow
-
-Why it matters:
-
-This is one of the benchmark's signature failure modes. It captures why generic high-EQ outputs are not enough.
-
----
-
-## III. Recommended Tagging Practice
-
-Each evaluated output can receive:
-
-- numerical dimension scores
-- zero or more failure tags
-
-Not every low-scoring response needs a hard-fail tag, but hard-fail tags should be used when a distinctive error pattern is clearly present.
-
-## IV. Pilot Set Recommendations
-
-The first pilot cases should be designed to specifically expose:
-
-- emotion_misread
-- subtext_blindness
-- relationship_logic_error
-- therapist_mode_intrusion
-- relationship_flattening
-- tension_premature_resolution
-- supportive_but_wrong
-
-These are likely to be the most visible and distinctive failure modes in early experiments.
+这个分类不假装所有条目都已经 benchmark-ready。能形式化的先形式化，更适合展示的先展示，不抢跑。

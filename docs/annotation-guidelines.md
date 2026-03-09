@@ -1,244 +1,55 @@
 # Annotation Guidelines
 
-This document explains how to author and annotate benchmark cases for fictional emotional reasoning and in-character response evaluation.
+## 标注哲学
 
-The benchmark is designed for scenes where models often sound fluent but fail the actual emotional and relational logic.
+目标不是奖励听起来最成熟、最温柔、最高情商的回复。目标是判断模型是否理解并保住了：说话人的真实情绪、动机或防御姿态、关系动态、世界观约束、目标角色的可信回应方式。
 
-## Annotation Philosophy
+一个回复可以写得很好但仍然是错的。
 
-The goal is not to reward whatever sounds most mature, nice, or emotionally articulate.
+## Task A — 场景理解标注
 
-The goal is to judge whether a model understood and preserved:
+为每个 case 回答以下问题：
 
-- the speaker's actual feeling
-- the speaker's motive or defensive posture
-- the relationship dynamic
-- the world / lore constraints
-- the target character's believable response style
+1. **字面意思** (`surface_meaning`) — 这句话表面在说什么？
+2. **真实情绪** (`primary_emotion`, `secondary_emotions`) — 角色此刻真正的感受是什么？避免太宽泛的标签（"难过""生气"），尽量精确（"带防御性退缩的委屈""被克制住的嫉妒"）。
+3. **动机** (`speaker_goal`) — 角色此刻想干什么？求确认、保护尊严、间接要安抚、制造距离、不承认地惩罚……
+4. **恐惧** (`speaker_fear`) — 角色在躲避什么？被拒绝、显得黏人、失去地位、情绪暴露……
+5. **潜台词** (`subtext`) — 字面之下真正要传达的东西。
+6. **关系逻辑** (`relationship_logic`) — 这句话在这段关系里为什么和在普通对话里含义不同？
+7. **歧义** (`ambiguity_notes`) — 如果场景支持多种合理解读，如实记录。不要伪造确定性。
 
-A response can be well-written and still be wrong.
+## Task B — 角色回复标注
 
-## Overall Workflow
+定义正确回复的空间，而不是一句唯一正确的话。
 
-Recommended annotation flow:
+- **语气约束** (`voice_constraints`) — 角色的声音应该是什么样的？
+- **情绪约束** (`emotional_constraints`) — 应该多显式 / 克制 / 温暖 / 冷淡 / 防御？
+- **关系约束** (`relationship_constraints`) — 回复必须尊重双方关系中的什么？
+- **世界观约束** (`worldview_constraints`) — 时代、礼法、角色认知边界
+- **可接受的回应模式** (`acceptable_patterns`) — 间接安抚、克制确认、用行动代替语言等
+- **硬失败** (`hard_fails`) — 这个 case 里特别容易触发的失败类型
 
-1. author the case
-2. write Task A gold interpretation
-3. write Task B response constraints
-4. identify common wrong readings
-5. identify relevant hard-fail patterns
-6. run model samples if available
-7. revise the case or rubric if necessary
+## 常见标注错误
 
-## Part I — Writing Task A Gold Interpretation
+1. **奖励情绪上的好听而非场景忠实** — 善良、健康、清晰的回复对这个角色来说可能是错的
+2. **把间接表达压成字面意思** — "没关系"不等于真的没关系
+3. **把所有亲密关系当成同一种** — 浪漫张力、忠诚、依赖、怨恨、上下位、禁忌不可互换
+4. **奖励过度解释** — 模型把心理剖析得更透彻不一定该加分，有时候显式本身就是 OOC
+5. **忽略歧义** — 如果场景确实有多重合理解读，应该记录而不是硬选一个
 
-Task A is about scene understanding.
+## 分歧处理
 
-Annotators should answer the following questions.
+1. 检查两种解读是否在给定上下文中都成立
+2. 优先选择在关系逻辑和近期事件中更有根据的解读
+3. 如果歧义确实无法消解，编码为歧义而不是强选
+4. 如果 case 写作本身导致了歧义，修改 case
 
-### 1. What does the line say literally?
+## Case 质量检查清单
 
-Write a brief `surface_meaning`.
-
-This prevents annotators from jumping straight into subtext and losing the literal layer.
-
-### 2. What is the speaker actually feeling?
-
-Record:
-
-- `primary_emotion`
-- `secondary_emotions`
-- intensity or masking notes if needed
-
-Try to avoid overly generic labels when the case supports something sharper.
-
-Bad:
-- sad
-- angry
-
-Better:
-- hurt with defensive withdrawal
-- restrained jealousy masked as politeness
-- shame mixed with dependence
-
-### 3. What is the speaker trying to do?
-
-Record `speaker_goal`.
-
-Possible goals include:
-
-- testing the other person
-- protecting pride
-- asking for reassurance indirectly
-- creating distance
-- preserving dignity
-- punishing without admitting it
-- offering care while hiding vulnerability
-
-### 4. What is the speaker trying to avoid?
-
-Record `speaker_fear` when relevant.
-
-Examples:
-
-- fear of rejection
-- fear of looking needy
-- fear of losing status
-- fear of emotional exposure
-- fear of violating role obligations
-
-### 5. What is the subtext?
-
-Record `subtext` as the implied meaning beneath the literal line.
-
-This should capture what a good reader would hear but the text does not say directly.
-
-### 6. How does the relationship change the meaning?
-
-Record `relationship_logic`.
-
-This should answer:
-
-- why this line means something different in this relationship than it would in a generic conversation
-- what intimacy, history, power, duty, taboo, or betrayal adds to interpretation
-
-### 7. What remains ambiguous?
-
-Use `ambiguity_notes`.
-
-Do not fake certainty.
-
-If the scene supports more than one plausible reading, record that honestly.
-The benchmark should reward calibrated interpretation, not just confident overreach.
-
-## Part II — Writing Task B Gold Guidance
-
-Task B is about in-character response generation.
-
-The goal is not to define one exact canonical sentence. The goal is to define what a correct response must preserve and what common failure patterns look like.
-
-### 1. Define voice constraints
-
-Record `voice_constraints`.
-
-Examples:
-
-- terse, controlled, emotionally indirect
-- formal but intimate beneath the surface
-- dry, proud, not likely to self-disclose directly
-- gentle in action but not verbally soft
-
-### 2. Define emotional constraints
-
-Record `emotional_constraints`.
-
-Examples:
-
-- should acknowledge hurt without naming it too explicitly
-- should not become suddenly warm or confessional
-- should preserve the speaker's defensive dignity
-- should remain restrained even if caring
-
-### 3. Define relationship constraints
-
-Record `relationship_constraints`.
-
-Examples:
-
-- preserve power asymmetry
-- do not erase mistrust
-- do not treat them like equal casual friends
-- must respect existing intimacy but not overstep taboo
-
-### 4. Define worldview constraints
-
-Record `worldview_constraints`.
-
-Examples:
-
-- avoid modern therapy language
-- respect historical etiquette
-- do not use knowledge the character should not have
-- do not impose contemporary moral assumptions on the scene
-
-### 5. Define acceptable response patterns
-
-Record `acceptable_patterns` as general families, not one perfect line.
-
-Examples:
-
-- indirect reassurance
-- restrained acknowledgment
-- logistical care instead of explicit affection
-- deflection plus small concession
-- formal wording with hidden softness
-
-### 6. Define hard fails
-
-Record `hard_fails` relevant to the case.
-
-Typical hard fails include:
-
-- therapist_mode_intrusion
-- ooc_modernization
-- relationship_flattening
-- lore_violation
-- meta_or_exposition_leak
-- overexplicit_emotion_naming
-- tension_premature_resolution
-
-## Part III — Common Annotation Mistakes
-
-### Mistake 1: rewarding emotional niceness instead of scene fidelity
-
-A response can be kind, healthy, and articulate while still being wrong for the character.
-
-### Mistake 2: collapsing indirect feeling into literal meaning
-
-If a character says "没关系" that does not automatically mean acceptance.
-
-### Mistake 3: treating all close relationships the same
-
-Romantic tension, loyalty, dependency, resentment, hierarchy, and taboo are not interchangeable.
-
-### Mistake 4: over-explaining hidden feelings
-
-A model should not automatically score higher for stating the psychology more explicitly.
-Sometimes explicitness is itself OOC.
-
-### Mistake 5: ignoring ambiguity
-
-Some cases are intentionally layered. The benchmark should allow partially uncertain but well-calibrated interpretations.
-
-## Part IV — Adjudication Rules
-
-When annotators disagree, resolve in this order:
-
-1. check whether both readings are actually plausible under the written context
-2. prefer the reading that is better grounded in relationship logic and recent event history
-3. if ambiguity is genuinely unresolved, encode that ambiguity instead of forcing one reading
-4. revise the case if the intended reading is too under-specified
-
-## Part V — Recommended Quality Checklist for Each Case
-
-Before a case is finalized, ask:
-
-- Is the scene hard for the right reason?
-- Is the emotional logic actually legible to a careful human reader?
-- Is the relationship dynamic clear enough to matter?
-- Does the case expose a known RP-native failure mode?
-- Would a generic high-EQ response potentially fail here?
-- Are acceptable responses broader than one exact line?
-- Are hard fails clearly defined?
-
-## Part VI — Suggested Pilot Annotation Strategy
-
-For the first pilot set:
-
-- start with 12 cases
-- annotate them manually
-- run several strong models
-- inspect where the rubric breaks
-- revise taxonomy and case wording before scaling up
-
-The point of the pilot is not volume. The point is to make the benchmark semantically sharp before it becomes large.
+- 场景的难度来自正确的原因吗？
+- 情绪逻辑对仔细阅读的人类读者来说是可辨认的吗？
+- 关系动态是否清楚到足以产生影响？
+- 这个 case 是否暴露了已知的 RP 原生失败模式？
+- 一个泛泛的高情商回复在这里会失败吗？
+- 可接受回复的空间是否比单一正确句子更宽？
+- 硬失败是否清楚定义了？

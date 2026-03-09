@@ -1,55 +1,33 @@
 # Manifesto
 
-CN Failure Atlas is built on a simple observation:
+大语言模型写虚构对话的失败，不只是把情绪读反、人设崩塌、或者犯常识错误。
 
-Language models do not only fail fictional dialogue by getting facts wrong, missing emotions, or going obviously out of character. They also fail by becoming too smooth, too balanced, too readable, too aesthetically obedient, and too eager to turn difficult scenes into consumable ones.
+更常见、也更难抓的是另一类：文本局部看都还行，但整体越来越假。模型在用一套隐含的优化目标重写场景——用平衡替代倾斜，用清晰替代模糊，用一致性替代矛盾，用打磨替代发生，用修复替代后果，用可读性替代摩擦。
 
-That is why this project is not only a benchmark-compatible repo. It is a failure atlas.
+这些替代不是在所有情况下都错。它们变成问题，是在被无差别地施加到那些恰好依赖相反品质的场景上的时候。
 
-## What This Project Tries To Name
+## 这个项目想做的事
 
-Experienced roleplay and fictional-dialogue users often recognize a scene turning false before they can easily explain why. A reply may be fluent, coherent, emotionally literate, and superficially aligned with the character, yet still feel wrong.
+有经验的虚构对话读者经常能在场景开始变假的时候立刻感觉到，但不一定能马上说清楚到底假在哪。这个项目假设那些反应不是随意的审美偏好——它们指向的是可以被描述、被区分、被展示的结构性失真。
 
-This project assumes those reactions are not arbitrary. Many of them point to recurring structural distortions that can be described, compared, and illustrated.
+项目的工作是：
 
-Examples include:
+- 给这些失败命名，让"感觉不对"变成可以讨论的对象
+- 把不同层级的假感分开——没读懂、关系被改写、人被写太整齐、叙事出了问题、重量被处理掉了
+- 用具体场景展示这些失败长什么样、坏在哪、好版本为什么好
+- 在可以形式化的地方保留 benchmark 兼容性，在不适合打分的地方用展示和比较代替
 
-- asymmetry being quietly rewritten as balance
-- desire being made too legible too early
-- vulnerability appearing without the friction of self-protection
-- consequences being softened before they have weight
-- dialogue becoming too functional to feel lived-in
-- scene time being stretched into cinematic display instead of lived occurrence
+## 这个项目不想做的事
 
-## What This Project Is Not Trying To Do
+不是把每一种微妙的读者反应都压成一个分数。不是造一个包罗万象的 roleplay 总评测。不是纯理论讨论而没有例子。
 
-This project is not trying to reduce every subtle reader reaction to a perfect score.
+## 底线标准
 
-Some failures are straightforward to evaluate. Others are better introduced first through taxonomy, examples, and reader-sensitive description before they are forced into benchmark form.
+一个有用的虚构对话系统不只是要输出可读的文本。它应该保住：
 
-The project therefore accepts a layered structure:
-
-- some parts are benchmark-compatible now
-- some parts are descriptive and comparative first
-- some parts may become more formal later
-
-## Why This Matters
-
-If public evaluation only captures coarse errors, then advanced model failures will remain under-described. And if they remain under-described, they will keep being dismissed as vague matters of taste.
-
-This project takes the opposite view:
-
-Many of the things users call "fake," "flat," "too neat," or "suddenly off" are real failure modes. They deserve names, distinctions, examples, and eventually better evaluation tools.
-
-## Working Principle
-
-A useful fictional-dialogue system should not only produce readable text. It should preserve:
-
-- scene truth
-- relational asymmetry when asymmetry belongs
-- opacity when opacity belongs
-- friction when friction belongs
-- consequence when consequence belongs
-- lived occurrence instead of polished simulation
-
-That is the standard this project keeps returning to.
+- 场景真实（scene truth）
+- 该倾斜的关系不被写平
+- 该模糊的东西不被提前讲清楚
+- 该有摩擦的地方不被润滑掉
+- 该留下后果的地方不被软化
+- 让场景是发生的（occurrence），而不是被生产的（simulation）

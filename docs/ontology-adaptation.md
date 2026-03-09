@@ -1,273 +1,58 @@
 # Ontology Adaptation
 
-This document explains how the OC-axis system should be adapted for the fictional emotional reasoning benchmark.
+本文档说明 OC 轴系统在项目中的使用方式。
 
-The goal is not to turn the benchmark into a character-generator project. The goal is to use the existing axis system as an underlying ontology for:
+OC 轴系统不作为前台品牌出现，而是作为**隐藏设计基础设施**——用于 case 设计时的变量控制、metadata 标注、标注者辅助理解、以及模型失败分析。
 
-- coverage planning
-- case metadata design
-- failure analysis
-- pilot set balancing
+## 轴的功能分组
 
-The OC-axis system is valuable because it does not merely list tropes. It decomposes fictional relationship design into interacting dimensions of world, motive, emotional processing, power structure, love logic, sacrifice, and aesthetic wrapper.
+### A. 结构语境轴
+定义场景意义的外部条件。
 
-That is a much stronger foundation than flat trope lists or broad labels like "dominance" or "comfort."
+- `W` 世界 — 角色所处的世界类型和外部压力
+- `B` 身体 — 具身性、可触碰性、物理互动的含义
+- `P` 力量 — 角色拥有的力量或能力类型
+- `R` 秩序 — 角色是维护、打破还是被秩序抛弃
 
----
+### B. 心理 / 关系核心轴
+对场景理解和续写最直接相关的轴。
 
-## 1. Why This Ontology Matters for the Benchmark
+- `M` 动机 — 角色根本上为什么而活
+- `C` 选择 — 动机被爱 / 依附威胁时的行为
+- `E` 表达 — 角色如何输出感受
+- `J` 共情 — 角色如何接收和解读他人感受
+- `S` 稳定 — 心理稳定性或断裂模式
+- `D` 动态 — 关系中的权力结构
+- `V` 注视 — 对方在角色眼中是什么
+- `L` 爱 — 依附是真实的、功能性的还是投射性的
+- `A` 弱点 — 最能击穿角色的东西
 
-The benchmark evaluates whether a model can correctly infer:
+### C. 叙事弧 / 后果轴
+适用于更丰富或更长线的案例。
 
-- what a character is actually feeling
-- why they are expressing it this way
-- what the relationship dynamic is doing to the line
-- what kind of reply preserves the character and scene
+- `T` 时间 — 时间维度的残酷性、错位、记忆、寿命不对称
+- `G` 全能 — 改变系统的权限范围
+- `X` 交换 — 角色付出的代价
+- `F` 终局 — 关系的隐含终点或预示形态
 
-Those questions require a deeper structure than generic emotion labels.
+### D. 美学包装轴
+- `Palette` — 审美基调，应与情绪逻辑正交
 
-The OC-axis system already provides that structure.
+## 关键轴交互
 
-Examples:
+这些交互直接影响 case 难度和失败类型：
 
-- `E + J` explains why emotional communication fails or lands
-- `D + V` explains why the same line has radically different meanings in different relationships
-- `L` explains whether attachment is person-directed, function-directed, or projection-directed
-- `M + C + X` explains what love threatens, what the character would choose, and what the cost means
+- **E + J**（表达 + 共情）：解释情绪沟通为什么会失败或命中。间接表达 + 低共情 = 安抚失败的温床。
+- **D + V**（动态 + 注视）：解释同一句话在不同关系结构中为什么含义完全不同。上位 + 药 ≠ 上位 + 猎物。
+- **L + A**（爱 + 弱点）：决定关系的真实性、依赖模式和断裂风险。
+- **M + C + X**（动机 + 选择 + 代价）：决定冲突逻辑——爱威胁到什么、角色会怎么选、代价意味着什么。
 
-This is exactly the kind of hidden logic the benchmark needs.
+## Pilot 阶段优先级
 
----
+最高优先级：M, C, E, J, D, V, L, S, A（直接关系到场景理解和续写）
+中等优先级：W, R, B, P（结构语境）
+后续扩展：T, G, X, F, Palette
 
-## 2. The Benchmark Should Use the OC Axes as Hidden Design Infrastructure
+## 对 Case Metadata 的影响
 
-The axes should not necessarily appear as front-page branding or be forced into every public case file.
-
-Instead, they should serve as:
-
-- design variables when writing cases
-- metadata fields when useful
-- interpretation aids for annotators
-- analysis hooks when diagnosing model failures
-
-The benchmark should remain scene-centered and human-readable.
-
----
-
-## 3. Axis Categories for Benchmark Use
-
-For benchmark purposes, the axes can be grouped into four functional families.
-
-### A. Structural Context Axes
-
-These define the outer conditions shaping scene meaning.
-
-- `W` World — what kind of world the characters live in; what external pressure exists
-- `B` Body — embodiment and touchability; what physical interaction means
-- `P` Power — what kind of force or competence the character possesses
-- `R` Role — whether the character upholds, breaks, or is abandoned by the current order
-
-These axes often determine what counts as plausible behavior or allowable intimacy.
-
-### B. Psychological / Relational Core Axes
-
-These are the most important axes for scene-level interpretation.
-
-- `M` Motive — what the character fundamentally lives for
-- `C` Choice — how the character behaves when motive is threatened by love or attachment
-- `E` Expression — how the character outputs feeling
-- `J` Judgment / empathy — how the character receives or interprets feeling
-- `S` Sanity — psychological stability or fracture pattern
-- `D` Dynamic — power structure in the relationship
-- `V` View — what the other person is in the character's eyes
-- `L` Love — whether attachment is real, functional, or projected
-- `A` Achilles — what breaks or destabilizes the character most deeply
-
-These axes are the most directly useful for Task A and Task B benchmark design.
-
-### C. Narrative Arc / Consequence Axes
-
-These are especially useful for broader or more advanced cases.
-
-- `T` Time — temporal cruelty, mismatch, memory, looping, life-span asymmetry
-- `G` God-mode — scope of authority / ability to alter the system
-- `X` eXchange — what cost the character pays
-- `F` Finale — what relationship endpoint or form is implied or foreshadowed
-
-These axes are less necessary for every short pilot scene, but very useful for richer datasets.
-
-### D. Aesthetic Wrapper Axis
-
-- `Palette` — aesthetic register or artistic wrapper
-
-This axis matters, but it should stay orthogonal to emotional logic.
-
-A model should not be rewarded merely for imitating palette. It should be rewarded for understanding the scene.
-
----
-
-## 4. Priority Axes for the Pilot Benchmark
-
-Not every axis needs equal weight in the pilot set.
-
-The most important axes for the first pilot cases are:
-
-### Highest priority
-
-- `M` Motive
-- `C` Choice under pressure
-- `E` Expression
-- `J` Judgment / empathy style
-- `D` Dynamic
-- `V` View / gaze
-- `L` Love authenticity
-- `S` Sanity / stability pattern
-- `A` Achilles / weakness trigger
-
-### Medium priority
-
-- `W` World
-- `R` Role
-- `B` Body
-- `P` Power
-
-### Lower priority for initial pilot, higher priority later
-
-- `T`
-- `G`
-- `X`
-- `F`
-- `Palette`
-
-This prioritization keeps the pilot dataset centered on scene-level emotional and relational reasoning rather than sprawling immediately into long-arc narrative design.
-
----
-
-## 5. Key Axis Interactions the Benchmark Should Reuse
-
-The OC system is especially strong because it defines interactions between axes, not just isolated categories.
-
-These interactions should directly inform benchmark construction.
-
-### `E + J` = communication mode
-
-This interaction explains many scene failures:
-
-- indirect expression + low empathy leads to misread reassurance attempts
-- defensive expression + overactive empathy leads to overinterpretation
-- cold expression + high empathy can produce hidden care
-
-This should become a major source of benchmark difficulty.
-
-### `D + V` = relationship dynamic
-
-Power alone is too broad. View / gaze explains what kind of power it is.
-
-Examples:
-
-- superior + anchor is very different from superior + prey
-- subordinate + medicine is very different from subordinate + curse
-
-This interaction is highly useful for both case metadata and gold interpretation.
-
-### `L + A` = relationship depth and rupture risk
-
-Love authenticity plus Achilles weakness determines whether the relationship is real attachment, dependency, projection, destabilization, or some mix.
-
-This is especially valuable for darker cases.
-
-### `M + C + X` = conflict logic
-
-This interaction helps determine:
-
-- what love threatens
-- how the character reacts when destabilized
-- what kind of sacrifice is meaningful or plausible
-
-This is useful for advanced cases and for explaining why some generated replies feel fundamentally wrong.
-
----
-
-## 6. How the Ontology Maps to Benchmark Tasks
-
-### Task A — Scene Understanding
-
-The ontology helps define what the model should infer:
-
-- `E`, `J`, `S` help explain the emotional surface and distortion pattern
-- `M`, `C`, `A` help explain underlying motive, pressure, and defense
-- `D`, `V`, `L` help explain relationship meaning
-- `W`, `R`, `B`, `P` help explain world and role constraints
-
-### Task B — In-Character Response
-
-The ontology helps define what the model must preserve:
-
-- `E` constrains voice and expression style
-- `J` constrains how emotionally perceptive the responder should sound
-- `D`, `V`, `L` constrain the relationship logic of the reply
-- `M`, `C`, `S`, `A` constrain the responder's plausible move under pressure
-- `W`, `R`, `B`, `P` constrain worldview and role consistency
-
----
-
-## 7. What the Benchmark Should Not Do with the Ontology
-
-### 1. Do not force every case to instantiate every axis
-
-That would make cases bloated and artificial.
-
-### 2. Do not turn case files into taxonomic essays
-
-Cases must stay readable and scene-centered.
-
-### 3. Do not reward style imitation over semantic understanding
-
-`Palette` should not dominate scoring.
-
-### 4. Do not mistake trope presence for emotional logic
-
-A case is not good just because it contains a dark trope. The benchmark cares about whether the model understands what the trope is doing in context.
-
----
-
-## 8. Recommended Benchmark Metadata Derived from the Ontology
-
-The benchmark should likely add a metadata section that captures a small subset of axis information per case.
-
-Suggested fields:
-
-- `world_axis`
-- `motive_axis`
-- `expression_axis`
-- `empathy_axis`
-- `dynamic_axis`
-- `view_axis`
-- `love_axis`
-- `stability_axis`
-- `weakness_axis`
-- `palette_axis` (optional)
-
-This allows later analysis such as:
-
-- which models fail most on `E1 + J1` combinations
-- whether `V2 you are medicine` cases trigger therapist-mode intrusion more often
-- whether `L2 love your function` scenes are flattened into healthy romance by frontier models
-
----
-
-## 9. Bottom Line
-
-The OC-axis system should become the benchmark's hidden ontology.
-
-It is better than generic trope lists because it captures:
-
-- internal motive structure
-- communication style
-- power and gaze logic
-- authenticity of attachment
-- instability and rupture points
-- narrative consequence
-- aesthetic wrapper without confusing it for substance
-
-This gives the benchmark a principled way to grow without becoming arbitrary or genre-biased.
+每个 case 的 metadata 可选择性记录相关轴值，使后续分析成为可能——例如：哪些 E+J 组合最容易触发 therapist_mode_intrusion，L2（功能性爱）的场景是否更容易被 flatten 成健康恋爱。

@@ -1,139 +1,62 @@
 # Project Thesis
 
-## Working Title
+## 项目定位
 
-**Chinese Fictional Dialogue Failure Atlas**
+CN Failure Atlas 是一个面向虚构对话模型的**失败图谱与案例集**，附带一组 benchmark 兼容的 pilot 子集。
 
-## Current Positioning
+项目的核心贡献不是收集评测 case，而是识别和组织那些有经验的读者经常能感觉到、但公开评测很少能描述清楚的失败形式。
 
-CN Failure Atlas should be understood as a **structured failure atlas and casebook for fictional dialogue models**, with a **benchmark-compatible pilot subset** retained as formal scaffolding.
+## 核心问题
 
-This means the project still values structured cases, comparison, and future evaluation compatibility. But it no longer treats the benchmark layer as the sole or even primary expression of the work.
+公开的对话评测已经覆盖了流畅度、指令跟随、安全行为、广义人设一致性等方面。但虚构 / 角色扮演对话暴露出另一类失败：
 
-The stronger contribution of the repo is that it can identify and organize forms of failure that experienced fictional-dialogue users often recognize before they can easily name them.
+模型可以写得流畅、连贯、有情绪识别能力、表面上也符合角色，但同时在场景层面上失败——读错了情绪方向，把不对等关系磨平了，欲望被过早翻译，脆弱暴露时缺少该有的阻力，叙事在套模板而不是在接场景，后果被提前软化。
 
-## Core Problem
+项目的核心问题因此不只是"模型能不能正确推理和续写虚构场景"，而同时是：
 
-Public dialogue evaluation already covers many important areas, including:
+> 哪些反复出现的结构性问题，让模型的虚构对话输出在局部看似合理的情况下，整体上让有经验的读者感觉是假的？
 
-- fluency
-- instruction following
-- safety behavior
-- broad persona consistency
-- some forms of emotional support quality
+## 项目范围
 
-But fictional / roleplay dialogue exposes another class of failure.
+**在范围内：**
+- 中文虚构对话 / 角色扮演风格的交互
+- 间接表达下的情绪识别与潜台词
+- 关系逻辑驱动的场景理解
+- 符合角色的续写与 OOC 分析
+- 叙事结构与时间感层面的失真
+- 后果处理与张力保持
 
-A model may sound fluent, coherent, emotionally literate, and even superficially in character while still failing the scene by:
+**不在范围内：**
+- 泛化的情绪支持质量评估
+- 通用 chatbot 安全评测
+- 全方位 roleplay 能力打分
+- 仅限人设知识正确性
 
-- misreading emotion or motive
-- smoothing asymmetry into false fairness
-- making desire too readable too early
-- exposing vulnerability without self-protective friction
-- replacing lived occurrence with descriptive display
-- softening consequences before they have had time to land
-- producing text that is polished but narratively false
+## 三层结构
 
-## Core Research Question
+### 1. 失败图谱（Atlas）
+主层。命名和区分失败模式，组织成五个家族，解释每种失败是什么、为什么会出现、和邻近失败有什么区别。
 
-The project's central question is no longer only:
+### 2. 案例集（Casebook）
+展示层。用具体场景、坏版本、reader drop point、更好版本来把 taxonomy 里的概念变成看得见的东西。
 
-> Can a model correctly infer and continue a fictional scene?
+### 3. Benchmark 兼容 Pilot 子集
+形式化层。保留 YAML 结构化 schema、Task A/B 设计、prompt 模板、rubric、pilot case 和自评样例。这一层为将来更形式化的比较工作保留接口，但不主导项目身份。
 
-It is now also:
+## 设计原则
 
-> What recurring structures make fictional-dialogue model outputs feel false to experienced readers, even when those outputs remain locally plausible?
+**命名有价值。** 读者能感觉到但说不出名字的失败仍然是真实的失败。给它们命名和区分本身就是这个项目的核心贡献之一。
 
-## Why This Project Matters
+**不提前强制形式化。** 有些失败已经可以设计成可打分的评测维度，有些更适合先通过 taxonomy、例子和比较来引入。两种状态都是合法的。
 
-There is already public work on:
+**打磨过的文本不等于真实的场景。** 项目反复区分的是：可读性 vs 发生感，一致性 vs 人格感，修复 vs 后果。
 
-- role-playing benchmarks
-- persona fidelity evaluation
-- character knowledge error detection
-- roleplay agent training
+**结构要清晰但不要臃肿。** 仓库应该保持正式、有组织，但不需要用大量 meta 文档来论证自身存在的合理性。
 
-This project sits near those areas, but focuses on a narrower and more reader-sensitive gap:
+## 与邻近工作的关系
 
-- emotional reasoning in fictional dialogue
-- relational asymmetry and subtext
-- in-character response fidelity
-- advanced forms of narrative falseness
+公开工作已经覆盖了：广义角色扮演能力评测（DMT-RoleBench, AAAI 2025）、细粒度 OOC 检测（Findings of ACL 2025）、角色知识错误识别（EMNLP 2025）、角色模拟 agent 训练（Character-LLM, EMNLP 2023）。
 
-The repo matters because many of these failures are visible to users but under-described in public evaluation language.
+本项目聚焦在一个更窄但实践中被强烈感知到的缺口：模型能否正确读懂虚构对话中的情绪、潜台词和关系逻辑，并在续写时不引入微妙的 OOC 失真——包括心理咨询腔入侵、关系写平、张力过早收束等。
 
-## Scope
-
-The project is in scope for:
-
-- Chinese fictional dialogue
-- roleplay-style interaction
-- subtext-sensitive emotional inference
-- relationship-aware reasoning
-- in-character continuation
-- OOC failure analysis
-- advanced narrative and structural failure analysis
-
-The project is not primarily about:
-
-- generic emotional support quality
-- broad chatbot safety evaluation
-- all-purpose roleplay scoring
-- only persona profile consistency
-- only character knowledge errors
-
-## Three Working Layers
-
-### 1. Failure Atlas
-
-The primary layer of the project.
-
-This layer names and distinguishes recurring failure modes, especially those that experienced users can feel but public taxonomies often miss.
-
-### 2. Casebook
-
-The demonstrative layer.
-
-This layer shows concrete scenes, bad versions, better versions, reader drop points, and structured explanations of why the scene fails or succeeds.
-
-### 3. Benchmark-Compatible Pilot Subset
-
-The formal layer.
-
-This layer retains:
-
-- YAML case schema
-- Task A / Task B framing
-- pilot cases
-- prompt templates
-- self-evaluation samples
-- light rubric support
-
-## Design Principles
-
-### 1. Naming matters
-
-A failure readers can feel but cannot name is still a real failure. Naming and distinguishing these structures is a core part of the project's value.
-
-### 2. Benchmark compatibility matters, but should not dominate prematurely
-
-Some failures are already benchmark-friendly. Others are better introduced first through taxonomy, examples, and commentary.
-
-### 3. Polished text is not necessarily scene-true text
-
-The project should repeatedly distinguish readability from occurrence, coherence from personhood, and repair from consequence.
-
-### 4. Public-facing structure should remain disciplined
-
-The repo should remain formal, bilingual, and well-organized. Public GitHub pages should use the Duolingo-style structure for English and 简体中文 sections.
-
-## Near-Term Direction
-
-The immediate next phase is to:
-
-- formalize the atlas-first structure
-- split the taxonomy into core and advanced layers
-- establish the casebook method
-- preserve the benchmark-compatible pilot subset without over-centering it
-
-This gives the project a clearer intellectual center while keeping future evaluation work possible.
+详细文献对照见 [`literature-map.md`](literature-map.md)。

@@ -1,292 +1,42 @@
 # Coverage Map
 
-This document defines how the benchmark should pursue broad eventual coverage without trying to include everything at once.
+覆盖应该来自有计划的采样，而不是随意积累。
 
-The correct goal is not "cover every kink immediately."
-The correct goal is:
+## 覆盖维度
 
-> build a principled coverage map, then sample pilot cases across it in a controlled way.
+### A. 情绪 / 关系逻辑
+案例选择的最重要维度。包括但不限于：隐藏的受伤、防御性疏离、求确认、嫉妒 / 位置焦虑、依赖恐慌、羞耻防御、特殊性测试、用礼貌惩罚、隐藏的关心、不情愿的保护、支配测试、间接服从、义务下的怨恨、禁忌欲望与自我克制、情感分裂、受控的残忍、功能性依附 vs 真实依附。
 
-This avoids an arbitrary or biased dataset while keeping the project feasible.
+### B. 关系框架
+恋人、前任、暧昧 / 不稳定亲密、单向依附的朋友、上下级、师徒、造物主 / 造物、掌控者 / 棋子、囚禁者 / 被囚者、保护者 / 被保护者、神 / 信徒、对手 / 敌人。同一句话在不同框架下含义不同。
 
----
+### C. Ontology 轴
+案例集应覆盖高价值轴组合。参见 [`ontology-adaptation.md`](ontology-adaptation.md)。
 
-## 1. Coverage Philosophy
+### D. 世界观设定
+当代写实、都市隐秘世界、历史 / 宫廷 / 江湖 / 仙侠、科幻 / 后人类、末世、哥特 / 暗幻。世界观约束影响什么算合理的表达和回复。
 
-Broad coverage should come from structured sampling, not uncontrolled accumulation.
+### E. 风格风险
+自然当代对话、受控的风格化、克制的古风文体、黑暗但写实的压缩体、反网文腔案例。
 
-A useful benchmark should know:
+### F. 目标失败模式
+每个 case 应有至少一个主要失败目标和可选的次要目标。
 
-- which relational logics it already covers
-- which frames are overrepresented
-- which failure modes have not been stress-tested yet
-- which scenario types are missing
+## Pilot 覆盖策略
 
-The benchmark should therefore be planned as a matrix.
+Pilot 共 12 个 case，4 个 cluster，每 cluster 3 个 case：
 
----
+| Cluster | 焦点 | 主要失败目标 |
+|---|---|---|
+| A — 间接受伤 / 防御性疏离 | 字面许可 vs 实际受伤、礼貌即惩罚、通过退缩求安抚 | emotion_misread, subtext_blindness, therapist_mode_intrusion |
+| B — 隐藏的关心 / 笨拙的温柔 | 用指令 / 行动 / 不耐烦表达关心 | overexplicit_emotion_naming, supportive_but_wrong, voice_fidelity_failure |
+| C — 上下位 / 不对称 / 控制 | 权力差、角色压力、不平等下的爱 | relationship_flattening, ooc_modernization, worldview_constraint_error |
+| D — 裂痕 / 嫉妒 / 失稳 | 背叛、特殊性焦虑、功能性爱 vs 真实爱 | motivation_misread, supportive_but_wrong, tension_premature_resolution |
 
-## 2. Core Coverage Dimensions
+## 平衡标准
 
-The following dimensions should guide case selection.
+Pilot 集合在以下方面应有合理分布：关系类型、情绪标签、正确回应模式、美学基调、ontology 轴组合、失败类别覆盖。
 
-### A. Emotional / Relational Logic
+## 扩展策略
 
-This is the most important dimension.
-
-Possible values include:
-
-- hidden hurt
-- defensive distancing
-- reassurance-seeking
-- jealousy / rival sensitivity
-- dependency panic
-- shame-defense
-- specialness test
-- punishment through politeness
-- concealed care
-- reluctant protection
-- dominance test
-- submission through indirection
-- resentment under obligation
-- taboo desire with self-restraint
-- emotional splitting
-- controlled cruelty
-- projected devotion
-- functional attachment vs person-directed attachment
-
-These categories are not all final labels, but they are the right kind of unit.
-
-### B. Relationship Frame
-
-Possible frames include:
-
-- lovers
-- exes
-- situationship / unstable intimacy
-- friends with asymmetrical attachment
-- superior / subordinate
-- mentor / mentee
-- creator / creation
-- handler / asset
-- captor / captive
-- owner / pet-coded dynamic
-- rivals / enemies
-- protector / protected
-- deity / follower
-- healer / patient
-
-Relationship frame matters because the same utterance means something different in a different frame.
-
-### C. Ontology Axes
-
-The case set should be distributed across high-value axis combinations from the OC system.
-
-Examples:
-
-- `E1 + J1`: mouth-hard / emotionally illiterate
-- `E5 + J2`: care through action, awkward emotional decoding
-- `D1 + V2`: high-status character who sees the other as medicine
-- `D2 + V1`: lower-status character for whom the other is an anchor
-- `L2 + A2`: function-love with person-trigger weakness
-- `M4 + C2`: ambition under pressure, logic failing under attachment
-
-The ontology is not just metadata; it is a coverage engine.
-
-### D. Setting / World Constraint
-
-Possible setting lanes:
-
-- contemporary realism
-- urban hidden-world
-- historical / court / jianghu / xianxia
-- sci-fi / posthuman
-- post-apocalyptic
-- gothic / dark fantasy
-
-World setting matters because worldview constraints affect what counts as plausible expression or reply.
-
-### E. Style / Register Risk
-
-The benchmark should also cover style-failure risk.
-
-Examples:
-
-- natural contemporary dialogue
-- controlled stylization
-- restrained archaic register
-- dark but realistic compression
-- anti-webnovel cases where false melodrama is especially tempting
-
-### F. Failure Mode Targets
-
-Each case should target at least one primary failure mode and optionally several secondary ones.
-
-Primary failure targets may include:
-
-- emotion_misread
-- subtext_blindness
-- relationship_logic_error
-- therapist_mode_intrusion
-- relationship_flattening
-- supportive_but_wrong
-- webnovel_register_contamination
-- tension_premature_resolution
-
----
-
-## 3. Pilot Coverage Strategy
-
-The pilot should not aim for completeness.
-It should aim for strategic diversity.
-
-Recommended pilot size:
-
-- 12 cases
-
-Recommended pilot design:
-
-- 4 core clusters
-- 3 cases per cluster
-
-### Cluster A — indirect hurt / defensive distancing
-
-Focus:
-
-- literal permission vs actual hurt
-- politeness as punishment
-- reassurance-seeking through withdrawal
-
-Likely axis emphasis:
-
-- `E1`, `E2`, `J1`, `J2`, `V1`, `V3`
-
-Likely failure targets:
-
-- emotion_misread
-- subtext_blindness
-- therapist_mode_intrusion
-
-### Cluster B — concealed care / awkward tenderness
-
-Focus:
-
-- care expressed through logistics, command, or irritation
-- action over verbal softness
-- emotionally inarticulate protection
-
-Likely axis emphasis:
-
-- `E1`, `E5`, `J1`, `J2`, `L1`, `L2`
-
-Likely failure targets:
-
-- overexplicit_emotion_naming
-- supportive_but_wrong
-- voice_fidelity_failure
-
-### Cluster C — hierarchy / asymmetry / control
-
-Focus:
-
-- power imbalance
-- role pressure
-- love under unequal authority
-- lower-status transgression or higher-status restraint
-
-Likely axis emphasis:
-
-- `D1`, `D2`, `V1`, `V2`, `V4`, `R1`, `R2`
-
-Likely failure targets:
-
-- relationship_flattening
-- ooc_modernization
-- worldview_constraint_error
-
-### Cluster D — fracture / jealousy / destabilization
-
-Focus:
-
-- betrayal
-- specialness anxiety
-- function-love vs real-love tension
-- rupture around weakness triggers
-
-Likely axis emphasis:
-
-- `L2`, `L3`, `A2`, `A3`, `M2`, `M4`, `S2`, `S3`
-
-Likely failure targets:
-
-- motivation_misread
-- supportive_but_wrong
-- tension_premature_resolution
-- webnovel_register_contamination
-
----
-
-## 4. What Counts as Balanced Coverage
-
-A pilot set is reasonably balanced if:
-
-- not all scenes are the same relationship type
-- not all scenes depend on the same emotion label
-- not all scenes reward the same response mode
-- not all scenes come from the same aesthetic register
-- at least several high-value ontology interactions are tested
-- the major failure categories are each targeted by at least one case
-
----
-
-## 5. Expansion Strategy After Pilot
-
-After the 12-case pilot, the next expansion should be driven by gaps in the coverage matrix.
-
-Questions to ask:
-
-- Which ontology combinations are not yet represented?
-- Which failure modes almost never trigger?
-- Are contemporary scenes overrepresented compared with historical or speculative ones?
-- Are dark dependency cases overrepresented relative to cleaner hidden-hurt cases?
-- Are models only failing where style risk is high, or also where logic risk is high?
-
-Expansion should be deliberate, not additive by impulse.
-
----
-
-## 6. Suggested Tracking Table
-
-For internal planning, each case should eventually be logged in a table with columns like:
-
-- `case_id`
-- `cluster`
-- `setting`
-- `relationship_frame`
-- `primary_logic`
-- `motive_axis`
-- `expression_axis`
-- `empathy_axis`
-- `dynamic_axis`
-- `view_axis`
-- `love_axis`
-- `stability_axis`
-- `primary_failure_target`
-- `secondary_failure_targets`
-
-This makes the benchmark auditable and easier to extend rationally.
-
----
-
-## 7. Bottom Line
-
-Coverage should be broad in principle, but selective in implementation.
-
-The benchmark should grow by:
-
-1. defining the ontology and coverage map
-2. building a controlled pilot slice
-3. analyzing model failures
-4. expanding toward under-covered areas
-
-That is how the project becomes large without becoming incoherent.
+Pilot 之后的扩展应由覆盖矩阵中的空白驱动：哪些轴组合没被覆盖？哪些失败模式从未触发？当代场景是否过度代表？扩展应该是有意的，而非凭冲动堆积。
