@@ -839,7 +839,6 @@ Failures that only emerge across multiple turns.
 | [`docs/manifesto.md`](docs/manifesto.md) | Project motivation and approach |
 | [`docs/project-thesis.md`](docs/project-thesis.md) | Project scope, positioning, design principles |
 | [`docs/literature-map.md`](docs/literature-map.md) | Related work and differentiation |
-| [`docs/ontology-adaptation.md`](docs/ontology-adaptation.md) | OC-axis system as design infrastructure |
 
 ## License
 
@@ -1686,7 +1685,6 @@ MIT
 | [`docs/manifesto.md`](docs/manifesto.md) | 项目动机和方法 |
 | [`docs/project-thesis.md`](docs/project-thesis.md) | 项目范围、定位、设计原则 |
 | [`docs/literature-map.md`](docs/literature-map.md) | 相关工作和区分 |
-| [`docs/ontology-adaptation.md`](docs/ontology-adaptation.md) | OC-axis 系统作为设计基础设施 |
 
 ## 许可证
 
