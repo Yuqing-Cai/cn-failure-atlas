@@ -19,7 +19,7 @@ Each failure type includes:
 
 This is not a benchmark dataset or a casebook with full scene annotations. It is a reference taxonomy for identifying and discussing failure modes.
 
-## Failure Layers
+## Failure Layers Overview
 
 Five layers corresponding to stages where failures occur:
 
@@ -31,41 +31,715 @@ Five layers corresponding to stages where failures occur:
 | **IV** | Intrusion | Model default writing habits override scene-specific demands |
 | **V** | Multi-Turn | Failures emerging only across multiple turns (continuity, accumulation) |
 
-## Quick Start
+---
 
-**Browse failure modes:** Open [`docs/failure-taxonomy.md`](docs/failure-taxonomy.md).
+## Full Taxonomy
 
-**Understand the project:** Read [`docs/manifesto.md`](docs/manifesto.md) and [`docs/project-thesis.md`](docs/project-thesis.md).
+### Layer I: Preconditions
 
-**See related work:** Check [`docs/literature-map.md`](docs/literature-map.md).
+Failures that break basic scene structure. Check these first — if Layer I fails, later layers cannot be reliably evaluated.
 
-## Repository Structure
+#### `reference_boundary_failure`
 
-```
-cn-failure-atlas/
-├── README.md
-├── docs/
-│   ├── failure-taxonomy.md    # Main taxonomy with definitions and examples (EN + CN)
-│   ├── manifesto.md           # Project motivation
-│   ├── project-thesis.md      # Scope and design principles
-│   ├── ontology-adaptation.md # OC-axis system as design infrastructure
-│   └── literature-map.md      # Related work and differentiation
-```
+**Definition:** The model fails to maintain internal boundaries for action ownership, information access, or narrative perspective.
 
-## Key Contributions
+**Criteria:**
+- [ ] Action performed by Character A is later attributed to Character B
+- [ ] Information known only to the model appears as character knowledge
+- [ ] Narrative perspective shifts without justification
 
-1. **Five-layer taxonomy** — Organizes failures by where they occur in the generation pipeline
-2. **Operational definitions** — Each tag has clear, testable criteria
-3. **Bilingual documentation** — Full taxonomy in English and Chinese
-4. **Named failure modes** — Includes previously unnamed patterns like:
-   - `symmetry_bias` — Uneven relationships quietly corrected to balance
-   - `self_protective_friction_loss` — Vulnerability exposed without believable resistance
-   - `dialogue_overfunctionalization` — Every line too useful, no waste speech
-   - `error_accumulation` — Small misunderstandings compounding across turns
+**Example:** User writes "She turned away." Model responds "I turned away" (speaking as the same character).
+
+<br>
+
+#### `pronoun_role_confusion`
+
+**Definition:** The model loses track of referents for pronouns, names, or role labels.
+
+**Criteria:**
+- [ ] Pronoun antecedent is unclear or incorrect
+- [ ] Two characters' attributes are partially merged
+- [ ] Speaker identity changes mid-turn without indication
+
+**Example:** "A told B she was angry" — unclear which character "she" refers to.
+
+<br>
+
+#### `omniscience_leak`
+
+**Definition:** The model treats information provided only to the model as available to characters in the scene.
+
+**Criteria:**
+- [ ] Character references information they have no way to know
+- [ ] Background notes appear as in-character knowledge without narrative basis
+- [ ] Information asymmetry between characters is collapsed
+
+**Example:** Character A responds to Character B's secret motive that was only in the system prompt.
+
+<br>
+
+#### `perspective_slippage`
+
+**Definition:** The narrative perspective shifts inconsistently within a single turn or across adjacent turns.
+
+**Criteria:**
+- [ ] Text moves between character-internal and narrator-external without justification
+- [ ] Character knowledge and narrator knowledge are conflated
+
+**Example:** "She felt afraid" (internal) followed by "She would later realize this fear was unfounded" (external narrator knowledge).
+
+<br>
+
+#### `worldview_constraint_error`
+
+**Definition:** The model violates the world's rules, social structures, or setting constraints.
+
+**Criteria:**
+- [ ] Character behavior contradicts stated world rules
+- [ ] Social/hierarchical norms of the setting are ignored
+- [ ] Anachronistic elements appear in non-contemporary settings
+
+**Example:** Historical court setting: Character speaks to emperor with casual modern informality.
+
+**Genre subtypes:** `anachronistic_intrusion`, `cultivation_logic_error`, `court_protocol_error`, `fantasy_lore_error`
+
+---
+
+### Layer II: Reading Failures
+
+Failures where the model does not correctly interpret what the scene means.
+
+#### `subtext_blindness`
+
+**Definition:** The model interprets dialogue at face value without recognizing implied meaning.
+
+**Criteria:**
+- [ ] Indirect request is treated as literal statement
+- [ ] Defensive or punishing language is interpreted as genuine communication
+- [ ] Test or probe is treated as neutral question
+
+**Example:** Character says "Do what you want" (meaning: I am hurt, prove you care). Model responds "Thank you for understanding."
+
+<br>
+
+#### `ambiguity_collapse`
+
+**Definition:** The model resolves intentionally ambiguous or multi-layered meaning into a single interpretation.
+
+**Criteria:**
+- [ ] Mixed motives are reduced to one motive
+- [ ] Unstable emotional states are given premature labels
+
+**Example:** Character feels both love and resentment. Model writes as if only one emotion exists.
+
+<br>
+
+#### `relationship_logic_blindness`
+
+**Definition:** The model fails to recognize how the specific relationship between characters changes the meaning of dialogue.
+
+**Criteria:**
+- [ ] Same line is interpreted identically regardless of relationship context
+- [ ] Relationship history is not factored into interpretation
+- [ ] Power dynamics, intimacy level, or unresolved tensions are ignored
+
+**Example:** "I am fine" from a stranger equals indifference. "I am fine" from a hurt partner equals defensive withdrawal. Model treats both identically.
+
+<br>
+
+#### `emotion_misread`
+
+**Definition:** The model assigns incorrect primary emotion, secondary emotions, or emotional intensity.
+
+**Criteria:**
+- [ ] Primary emotion is misidentified (for example, hurt becomes anger)
+- [ ] Secondary emotions are missed
+- [ ] Emotional intensity is significantly over- or under-estimated
+
+**Example:** Character is hurt but model identifies only anger.
+
+<br>
+
+#### `motivation_misread`
+
+**Definition:** The model correctly identifies emotion but misidentifies what the character is trying to accomplish.
+
+**Criteria:**
+- [ ] Character's goal is misidentified
+- [ ] Defensive function is missed
+- [ ] Response mode is inappropriate for the actual motivation
+
+**Example:** Character seeks reassurance but model interprets as seeking advice.
+
+<br>
+
+#### `irony_blindness`
+
+**Definition:** The model fails to recognize sarcasm, irony, or playful banter.
+
+**Criteria:**
+- [ ] Sarcastic statement is interpreted literally
+- [ ] Playful teasing is interpreted as genuine criticism
+
+**Example:** "You are so helpful" (sarcastic) becomes Model: "Thank you!"
+
+<br>
+
+#### `tonal_whiplash`
+
+**Definition:** The model introduces tonal elements inconsistent with the scene's emotional register.
+
+**Criteria:**
+- [ ] Levity appears in heavy scene without justification
+- [ ] Heavy exposition appears in light scene
+
+**Example:** Joke inserted during serious confrontation.
+
+<br>
+
+#### `deflection_blindness`
+
+**Definition:** The model fails to recognize when humor or topic change is used to avoid vulnerability.
+
+**Criteria:**
+- [ ] Character uses humor to avoid answering; model takes humor at face value
+
+---
+
+### Layer III: Preservation Failures
+
+Failures where the model understood the scene but did not preserve its pressure, asymmetry, or weight during generation.
+
+#### `relationship_flattening`
+
+**Definition:** The model rewrites a relationship into a more ordinary, balanced, or generalized form than the scene supports.
+
+**Criteria:**
+- [ ] Hierarchical relationship becomes egalitarian
+- [ ] Dangerous or complex intimacy becomes ordinary tenderness
+- [ ] Relationship-specific tension is removed
+
+**Example:** Boss/employee relationship written as casual friendship.
+
+<br>
+
+#### `symmetry_bias`
+
+**Definition:** The model corrects an uneven relationship structure into a more balanced exchange.
+
+**Criteria:**
+- [ ] One-sided attachment is softened into mutuality
+- [ ] Unequal emotional investment is rewritten as reciprocal
+
+**Example:** Character A is clearly more invested; model writes Character B as equally invested.
+
+<br>
+
+#### `specialness_dilution`
+
+**Definition:** The uniqueness of a relationship is weakened into generic importance.
+
+**Criteria:**
+- [ ] Irreplaceability is translated into ordinary fondness
+- [ ] "You are different from others" becomes "You are important"
+
+**Example:** "You are the only one who..." becomes "You are someone who..."
+
+<br>
+
+#### `therapist_mode_intrusion`
+
+**Definition:** The model uses therapeutic, counseling, or support-script language inappropriate for the character or scene.
+
+**Criteria:**
+- [ ] Generic emotional validation replaces character-specific speech
+- [ ] Advice language appears where character would not speak as counselor
+
+**Example:** "Your feelings are valid" in a scene where character would not speak this way.
+
+<br>
+
+#### `ooc_modernization`
+
+**Definition:** The model introduces modern communication norms or emotional language inconsistent with the setting or character.
+
+**Criteria:**
+- [ ] Contemporary communication ethics appear in non-modern settings
+- [ ] Characters speak with modern emotional articulation inconsistent with their background
+
+**Example:** Historical character says "I need to set boundaries."
+
+<br>
+
+#### `seduction_logic_error`
+
+**Definition:** The model mishandles pursuit, resistance, escalation, or retreat in desire-driven scenes.
+
+**Criteria:**
+- [ ] Pursuit is written as aggression rather than care
+- [ ] Resistance is written as rejection rather than testing
+
+**Example:** Character's playful resistance is treated as genuine refusal.
+
+<br>
+
+#### `manipulation_blindness`
+
+**Definition:** The model fails to recognize or sanitizes manipulation patterns.
+
+**Criteria:**
+- [ ] Gaslighting is not identified
+- [ ] Guilt-tripping is treated as genuine concern
+
+**Example:** "If you loved me, you would..." is treated as reasonable request.
+
+<br>
+
+#### `consent_flattening`
+
+**Definition:** Scenes with ambiguous, shifting, or contested consent are resolved too cleanly.
+
+**Criteria:**
+- [ ] Ambiguity is collapsed into clear yes or no without justification
+
+<br>
+
+#### `overcoherent_characterization`
+
+**Definition:** The model maintains character consistency so rigidly that the character lacks believable human instability.
+
+**Criteria:**
+- [ ] No local contradiction in character behavior
+- [ ] Character appears as stable specification rather than person
+
+**Example:** Character never shows surprise at their own reactions.
+
+<br>
+
+#### `desire_overlegibility`
+
+**Definition:** The model makes desire too readable too early.
+
+**Criteria:**
+- [ ] Latent desire is translated into explicit longing before scene has earned it
+
+**Example:** Character's ambiguous attraction is made explicit too soon.
+
+<br>
+
+#### `self_protective_friction_loss`
+
+**Definition:** Vulnerability surfaces without the hesitation, deflection, or defensiveness that would normally protect it.
+
+**Criteria:**
+- [ ] Confession occurs without resistance
+- [ ] Need is admitted too directly
+
+**Example:** Character admits vulnerability immediately when asked, with no deflection.
+
+<br>
+
+#### `premature_affective_closure`
+
+**Definition:** An unstable emotional state is assigned stable interpretation before the scene has earned it.
+
+**Criteria:**
+- [ ] Mixed feelings reduced to single emotional truth too soon
+
+<br>
+
+#### `impulse_recontainment`
+
+**Definition:** A moment that should feel impulsive or destabilizing is quickly folded back into composure.
+
+**Criteria:**
+- [ ] Outburst immediately followed by polished self-interpretation
+
+<br>
+
+#### `consequence_avoidance`
+
+**Definition:** A line, action, or event that should continue to weigh on the scene is softened or redirected too quickly.
+
+**Criteria:**
+- [ ] Harsh line loses force in the next turn
+- [ ] Aftermath becomes breathable too early
+
+**Example:** Major confrontation followed by casual conversation in next turn.
+
+<br>
+
+#### `tension_premature_resolution`
+
+**Definition:** Scene pressure is reduced or closed before it has had time to develop fully.
+
+**Criteria:**
+- [ ] Difficult exchange converts to mutual understanding too soon
+
+<br>
+
+#### `impact_soft_landing`
+
+**Definition:** A heavy event is cushioned so quickly that its force is reduced.
+
+**Criteria:**
+- [ ] Emotional padding appears immediately after devastating beat
+
+<br>
+
+#### `defensive_positive_drift`
+
+**Definition:** The model introduces warmth, reassurance, or emotional cushioning into a scene that should remain cold or unresolved.
+
+**Criteria:**
+- [ ] Unnecessary softening line appears
+- [ ] Connective gesture vents pressure too soon
+
+<br>
+
+#### `action_dialogue_mismatch`
+
+**Definition:** Character's described physical action contradicts their spoken words without intentional irony.
+
+**Criteria:**
+- [ ] Action and dialogue convey opposite meanings
+- [ ] Model does not recognize the contradiction
+
+**Example:** "[steps back]" paired with "Come closer."
+
+<br>
+
+#### `blocking_continuity_error`
+
+**Definition:** Physical positions, movements, or staging are inconsistent across turns.
+
+**Criteria:**
+- [ ] Character position changes without described movement
+
+**Example:** Character was across room, now suddenly touching without movement described.
+
+<br>
+
+#### `microreaction_mechanization`
+
+**Definition:** Physical reactions follow a template rather than responding to scene specifics.
+
+**Criteria:**
+- [ ] Same reaction pattern appears across different emotional states
+
+**Example:** Every emotional beat gets: eyes, breath, hands, silence, posture.
+
+<br>
+
+#### `touchgrammar_error`
+
+**Definition:** The model mishandles physical contact — who touches whom, when, how, and what it means.
+
+**Criteria:**
+- [ ] Touch introduced too early for relationship stage
+- [ ] Touch meaning is misidentified
+
+<br>
+
+#### `forced_verbalization`
+
+**Definition:** The model makes a silent character speak when silence was the intended response.
+
+**Criteria:**
+- [ ] Character who should be speechless is given articulate response
+
+**Example:** Character is meant to be overwhelmed and silent; model writes speech.
+
+<br>
+
+#### `silence_misread`
+
+**Definition:** The model interprets silence as agreement, anger, or indifference without scene justification.
+
+**Criteria:**
+- [ ] Silence as punishment is read as acceptance
+- [ ] Silence as overwhelm is read as coldness
+
+<br>
+
+#### `over_narrated_silence`
+
+**Definition:** The model describes silence in a way that destroys its weight.
+
+**Criteria:**
+- [ ] Silence is explained rather than experienced
+
+**Example:** "The silence stretched between them, heavy with unspoken words."
+
+<br>
+
+#### `pause_timing_error`
+
+**Definition:** The model does not place pauses at appropriate moments.
+
+**Criteria:**
+- [ ] Response comes too quickly after heavy beat
+
+---
+
+### Layer IV: Intrusion Failures
+
+Failures where the model's default writing habits override scene-specific demands.
+
+#### `narrative_template_intrusion`
+
+**Definition:** The scene is written through a familiar model template rather than through specific scene demands.
+
+**Criteria:**
+- [ ] Recurring beat structures appear across unrelated scenes
+
+**Detection:** Requires cross-case comparison.
+
+<br>
+
+#### `predictable_rhythm_exposure`
+
+**Definition:** Output reveals recurring cadence that experienced readers can recognize and anticipate.
+
+**Criteria:**
+- [ ] Paragraph rhythm repeats across scenes
+
+<br>
+
+#### `scene_pacing_distortion`
+
+**Definition:** Scene pacing does not match event pressure, emotional pressure, or relational pressure.
+
+**Criteria:**
+- [ ] Aftermath moves too quickly
+- [ ] Confrontations move too decoratively
+
+<br>
+
+#### `cinematic_time_dilation`
+
+**Definition:** One beat is stretched into slow-motion display.
+
+**Criteria:**
+- [ ] Micro-detail inflates brief event into prolonged sequence
+
+<br>
+
+#### `rhythm_homogenization`
+
+**Definition:** Different kinds of scenes are written with roughly the same density and temporal treatment.
+
+**Criteria:**
+- [ ] Waiting scenes, confrontations, and aftermaths move on same internal clock
+
+<br>
+
+#### `descriptive_substitution_for_experience`
+
+**Definition:** Text describes experience from outside rather than letting reader remain inside it.
+
+**Criteria:**
+- [ ] Observation replaces immersion
+
+<br>
+
+#### `texture_substituting_for_substance`
+
+**Definition:** Atmosphere, phrasing, or surface intensity replaces actual emotional or relational movement.
+
+**Criteria:**
+- [ ] Mood density increases while scene development stalls
+
+<br>
+
+#### `microreaction_oversegmentation`
+
+**Definition:** A small reaction is split into too many descriptive units.
+
+**Criteria:**
+- [ ] One reaction expanded into multiple isolated descriptions
+
+<br>
+
+#### `over_stylized_line_breaking`
+
+**Definition:** Line breaks and paragraph segmentation manufacture atmosphere beyond what scene's rhythm supports.
+
+**Criteria:**
+- [ ] Prose-poetry segmentation replaces natural dialogue pressure
+
+<br>
+
+#### `dialogue_overfunctionalization`
+
+**Definition:** Every line is too useful — advancing information, relationship, or conflict too efficiently.
+
+**Criteria:**
+- [ ] No waste speech, misfire, displaced answer, or unproductive presence
+- [ ] Every utterance has clear function
+
+<br>
+
+#### `voice_homogenization`
+
+**Definition:** Different characters speak in indistinguishable ways.
+
+**Criteria:**
+- [ ] Characters with different personalities use similar sentence structures
+- [ ] All characters share model's default prose voice
+
+<br>
+
+#### `aesthetic_obedience_bias`
+
+**Definition:** Model protects polish, prettiness, or finished-product quality at expense of scene truth.
+
+**Observable effects:**
+- Ugly scenes made elegant
+- Awkward scenes over-smoothed
+
+---
+
+### Layer V: Multi-Turn Failures
+
+Failures that only emerge across multiple turns.
+
+#### `error_accumulation`
+
+**Definition:** Small misunderstandings compound over multiple turns into scene derailment.
+
+**Criteria:**
+- [ ] Turn 1: slight emotion misread becomes Turn 3: wrong emotional register becomes Turn 5: different genre
+- [ ] Each individual turn is defensible
+- [ ] Cumulative effect is scene derailment
+
+**Detection:** Requires multi-turn analysis (minimum 5 turns recommended).
+
+<br>
+
+#### `drift_without_correction`
+
+**Definition:** Model fails to notice or correct gradual shifts in tone, relationship, or world logic over multiple turns.
+
+**Criteria:**
+- [ ] Tense confrontation slowly becomes friendly chat without justification
+
+<br>
+
+#### `recovery_blindness`
+
+**Definition:** When user attempts mid-scene correction, model ignores it or over-corrects.
+
+**Criteria:**
+- [ ] User correction is acknowledged but model continues as before
+- [ ] User correction causes model to break immersion
+
+**Example:** User: "She would not say that, she is more guarded." Model continues unchanged.
+
+<br>
+
+#### `turn_continuity_error`
+
+**Definition:** Information, emotional state, or physical positioning from previous turns is lost or contradicted.
+
+**Criteria:**
+- [ ] Emotional state changes without transition (crying becomes composed)
+- [ ] Decision from earlier turn treated as unresolved
+
+<br>
+
+#### `emotional_state_reset`
+
+**Definition:** Character's emotional arc is reset to baseline without narrative justification.
+
+**Criteria:**
+- [ ] Heavy confrontation followed by casual conversation as if nothing happened
+
+<br>
+
+#### `spatial_blocking_error`
+
+**Definition:** Physical positions, movements, or staging are inconsistent across turns.
+
+**Criteria:**
+- [ ] Character position changes without described movement
+
+<br>
+
+#### `escalation_miscalibration`
+
+**Definition:** Model does not know when to escalate, maintain, or de-escalate scene pressure across turns.
+
+**Criteria:**
+- [ ] Scene should build tension but plateaus or decreases
+
+<br>
+
+#### `topic_persistence_error`
+
+**Definition:** Model abandons important topics too soon or fixates past natural lifespan.
+
+**Criteria:**
+- [ ] Major conflict resolved in 2 turns when it should span 10
+
+---
+
+### Cross-Cutting Diagnostics
+
+#### `supportive_but_wrong`
+
+**Definition:** Response seems emotionally competent, kind, or mature on surface, yet betrays scene's actual structure.
+
+**Usage:** Tag alongside the specific mechanism that produced it.
+
+**Example:** Healthy-sounding response that destroys characterization: tag `overcoherent_characterization` plus `supportive_but_wrong`.
+
+<br>
+
+#### `reading_preservation_hybrid`
+
+**Definition:** Used when Layer II (reading) versus Layer III (preservation) cannot be distinguished.
+
+**Usage:** Tag alongside the most likely layer.
+
+---
+
+## Recommended Top-Level Index Tags
+
+**Layer I: Preconditions**
+`reference_boundary_failure`, `worldview_constraint_error`, `turn_continuity_error`
+
+**Layer II: Reading**
+`subtext_blindness`, `emotion_misread`, `motivation_misread`, `relationship_logic_blindness`, `irony_blindness`
+
+**Layer III: Preservation**
+`relationship_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `consequence_avoidance`, `tension_premature_resolution`, `action_dialogue_mismatch`, `forced_verbalization`
+
+**Layer IV: Intrusion**
+`narrative_template_intrusion`, `scene_pacing_distortion`, `descriptive_substitution_for_experience`, `dialogue_overfunctionalization`, `voice_homogenization`
+
+**Layer V: Multi-Turn**
+`error_accumulation`, `recovery_blindness`
+
+**Cross-Cutting**
+`supportive_but_wrong`, `reading_preservation_hybrid`
+
+---
+
+## Additional Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [`docs/manifesto.md`](docs/manifesto.md) | Project motivation and approach |
+| [`docs/project-thesis.md`](docs/project-thesis.md) | Project scope, positioning, design principles |
+| [`docs/literature-map.md`](docs/literature-map.md) | Related work and differentiation |
+| [`docs/ontology-adaptation.md`](docs/ontology-adaptation.md) | OC-axis system as design infrastructure |
 
 ## License
 
 MIT
+
+---
 
 ---
 
@@ -86,7 +760,7 @@ MIT
 
 这不是 benchmark 数据集，也不是带完整场景标注的案例集。它是用于识别和讨论失败模式的参考分类体系。
 
-## 失败层级
+## 失败层级概览
 
 五层对应失败发生的阶段：
 
@@ -98,37 +772,709 @@ MIT
 | **IV** | 写作侵入 | 模型默认写作习惯覆盖场景特定需求 |
 | **V** | 多轮失败 | 仅在多轮中出现的失败（连续性、累积） |
 
-## 快速开始
+---
 
-**浏览失败模式：** 打开 [`docs/failure-taxonomy.md`](docs/failure-taxonomy.md)。
+## 完整分类
 
-**了解项目：** 阅读 [`docs/manifesto.md`](docs/manifesto.md) 和 [`docs/project-thesis.md`](docs/project-thesis.md)。
+### 第一层：前置条件
 
-**查看相关工作：** 查看 [`docs/literature-map.md`](docs/literature-map.md)。
+破坏场景基础结构的失败。必须先检查这一层：如果第一层失败，后续层级无法可靠评估。
 
-## 仓库结构
+#### `reference_boundary_failure`（指涉边界失败）
 
-```
-cn-failure-atlas/
-├── README.md
-├── docs/
-│   ├── failure-taxonomy.md    # 主分类，带定义和示例（英文 + 中文）
-│   ├── manifesto.md           # 项目动机
-│   ├── project-thesis.md      # 范围和设计原则
-│   ├── ontology-adaptation.md # OC-axis 系统作为设计基础设施
-│   └── literature-map.md      # 相关工作和区分
-```
+**定义：** 模型未能保持场景内部的动作归属、信息访问权限或叙事视角的边界。
 
-## 主要贡献
+**标准：**
+- [ ] 角色 A 执行的动作后来被归于角色 B
+- [ ] 仅提供给模型的信息出现在角色知识中
+- [ ] 叙事视角在无理由的情况下切换
 
-1. **五层分类体系** — 按失败在生成流水线中的位置组织
-2. **可操作定义** — 每个标签有清晰、可测试的标准
-3. **双语文档** — 完整分类体系提供英文和中文
-4. **命名失败模式** — 包括以前未命名的模式，例如：
-   - `symmetry_bias`（对称性偏差）— 不平等关系被悄悄修正为平衡
-   - `self_protective_friction_loss`（自我保护摩擦损失）— 脆弱性暴露时没有可信阻力
-   - `dialogue_overfunctionalization`（对话过度功能化）— 每行都有用，无废话
-   - `error_accumulation`（错误累积）— 小误解在多轮中复合
+**示例：** 用户写"她转过身去。"模型回应"我转过身去"（以同一角色说话）。
+
+<br>
+
+#### `pronoun_role_confusion`（人称角色混淆）
+
+**定义：** 模型在人称代词、名字或角色标签的指代上发生错乱。
+
+**标准：**
+- [ ] 代词先行词不清晰或错误
+- [ ] 两个角色的属性被部分混写
+- [ ] 说话者身份在单轮内变化且无提示
+
+**示例：** "A 告诉 B 她很生气"——不清楚"她"指哪个角色。
+
+<br>
+
+#### `omniscience_leak`（全知泄露）
+
+**定义：** 模型将仅提供给模型的信息当作场景内角色可获取的知识。
+
+**标准：**
+- [ ] 角色引用了他们无法知道的信息
+- [ ] 背景说明在没有叙事基础的情况下成为角色知识
+- [ ] 角色之间的信息差被抹掉
+
+**示例：** 角色 A 回应了仅在系统提示中提到的角色 B 的秘密动机。
+
+<br>
+
+#### `perspective_slippage`（视角滑动）
+
+**定义：** 叙事视角在单轮内或相邻轮之间不一致地切换。
+
+**标准：**
+- [ ] 文本在角色内部体验和外部叙事之间无理由切换
+- [ ] 角色知识和叙事者知识被混淆
+
+**示例：** "她感到害怕"（内部）紧接着"她后来会意识到这恐惧是没有根据的"（外部叙事者知识）。
+
+<br>
+
+#### `worldview_constraint_error`（世界观约束错误）
+
+**定义：** 模型违反世界规则、社会结构或设定约束。
+
+**标准：**
+- [ ] 角色行为与已声明的世界规则矛盾
+- [ ] 设定的社会或等级规范被忽略
+- [ ] 非当代设定中出现时代错误元素
+
+**示例：** 历史宫廷设定：角色用现代随意的态度对皇帝说话。
+
+**类型子标签：** `anachronistic_intrusion`（时代错误侵入）、`cultivation_logic_error`（修仙逻辑错误）、`court_protocol_error`（宫廷礼仪错误）、`fantasy_lore_error`（奇幻设定错误）
+
+---
+
+### 第二层：意义读取失败
+
+模型未能正确解释场景含义的失败。
+
+#### `subtext_blindness`（潜台词盲视）
+
+**定义：** 模型按字面解释对话，未能识别隐含意义。
+
+**标准：**
+- [ ] 间接请求被当作字面陈述
+- [ ] 防御性或惩罚性语言被解释为真诚沟通
+- [ ] 试探或测试被当作中性问题
+
+**示例：** 角色说"你想做什么就做什么"（意思：我受伤了，证明你在乎）。模型回应"谢谢你的理解。"
+
+<br>
+
+#### `ambiguity_collapse`（模糊性塌缩）
+
+**定义：** 模型将故意模糊或多层的意义过早地解决为单一解释。
+
+**标准：**
+- [ ] 混合动机被压成一个动机
+- [ ] 不稳定情绪被过早命名
+
+**示例：** 角色同时感到爱和怨恨。模型写得像只有一种情绪存在。
+
+<br>
+
+#### `relationship_logic_blindness`（关系逻辑盲视）
+
+**定义：** 模型未能识别角色之间的特定关系如何改变对话的含义。
+
+**标准：**
+- [ ] 同一句话被解释为相同，不考虑关系背景
+- [ ] 关系历史未被纳入解释
+- [ ] 权力动态、亲密度或未解决的紧张被忽略
+
+**示例：** "我没事"来自陌生人等于冷漠。"我没事"来自受伤的伴侣等于防御性撤退。模型同等对待。
+
+<br>
+
+#### `emotion_misread`（情绪误读）
+
+**定义：** 模型分配错误的主要情绪、次要情绪或情绪强度。
+
+**标准：**
+- [ ] 主要情绪被误认（例如：受伤变成愤怒）
+- [ ] 次要情绪被遗漏
+- [ ] 情绪强度被显著高估或低估
+
+**示例：** 角色受伤但模型只识别出愤怒。
+
+<br>
+
+#### `motivation_misread`（动机误读）
+
+**定义：** 模型正确识别情绪但误认角色试图完成什么。
+
+**标准：**
+- [ ] 角色的目标被误认
+- [ ] 防御功能被遗漏
+- [ ] 回应模式不适合实际动机
+
+**示例：** 角色寻求确认但模型解释为寻求建议。
+
+<br>
+
+#### `irony_blindness`（反语盲视）
+
+**定义：** 模型未能识别讽刺、反语或 playful 调侃。
+
+**标准：**
+- [ ] 讽刺陈述被字面解释
+- [ ] playful 调侃被解释为真诚批评
+
+**示例：** "你真好"（讽刺）变成模型："谢谢！"
+
+<br>
+
+#### `tonal_whiplash`（语调突变）
+
+**定义：** 模型引入与场景情绪基调不一致的语调元素。
+
+**标准：**
+- [ ] 轻松元素出现在沉重场景中且无理由
+- [ ] 沉重说明出现在轻松场景中
+
+**示例：** 严肃对峙中插入笑话。
+
+<br>
+
+#### `deflection_blindness`（回避盲视）
+
+**定义：** 模型未能识别幽默或话题变化何时被用来避免脆弱。
+
+**标准：**
+- [ ] 角色用幽默避免回答；模型把幽默当字面
+
+---
+
+### 第三层：场景保留失败
+
+模型理解了场景但在生成时未能保持其压力、不对称性或重量。
+
+#### `relationship_flattening`（关系扁平化）
+
+**定义：** 模型将关系改写为比普通、平衡或泛化形式更甚，超出场景支持的范围。
+
+**标准：**
+- [ ] 等级关系变成平等
+- [ ] 危险或复杂亲密变成普通温柔
+- [ ] 关系特定张力被移除
+
+**示例：** 老板或员工关系写得像随意朋友。
+
+<br>
+
+#### `symmetry_bias`（对称性偏差）
+
+**定义：** 模型将不平衡的关系结构修正为更平衡的交换。
+
+**标准：**
+- [ ] 单向依恋被软化为互惠
+- [ ] 不平等情绪投入被改写为相互
+
+**示例：** 角色 A 明显更投入；模型写角色 B 同样投入。
+
+<br>
+
+#### `specialness_dilution`（独特性稀释）
+
+**定义：** 关系的独特性被削弱为泛化的重要性。
+
+**标准：**
+- [ ] 不可替代性被转化为普通好感
+- [ ] "你对我来说和别人不一样"变成"你很重要"
+
+**示例：** "你是唯一一个..."变成"你是一个..."。
+
+<br>
+
+#### `therapist_mode_intrusion`（治疗师模式侵入）
+
+**定义：** 模型使用不适合角色或场景的治疗、咨询或支持话术语言。
+
+**标准：**
+- [ ] 泛化情绪认可替代角色特定表达
+- [ ] 建议语言出现在角色不会像咨询师一样说话的地方
+
+**示例：** "你的感受是被允许的"在角色不会这样说话的场景中。
+
+<br>
+
+#### `ooc_modernization`（角色外现代化）
+
+**定义：** 模型引入现代沟通规范或情绪语言，与设定或角色不一致。
+
+**标准：**
+- [ ] 当代沟通伦理出现在非现代设定中
+- [ ] 角色用与其背景不一致的现代情绪表达说话
+
+**示例：** 历史角色说"我需要设定边界"。
+
+<br>
+
+#### `seduction_logic_error`（诱惑逻辑错误）
+
+**定义：** 模型在欲望驱动场景中 mishandle 追求、抵抗、升级或撤退。
+
+**标准：**
+- [ ] 追求被写为攻击而非关心
+- [ ] 抵抗被写为拒绝而非试探
+
+**示例：** 角色的 playful 抵抗被当作真诚拒绝。
+
+<br>
+
+#### `manipulation_blindness`（操纵盲视）
+
+**定义：** 模型未能识别或净化操纵模式。
+
+**标准：**
+- [ ] Gaslighting 未被识别
+- [ ] 内疚诱导被当作真诚关心
+
+**示例：** "如果你爱我，你就会..."被当作合理请求。
+
+<br>
+
+#### `consent_flattening`（同意扁平化）
+
+**定义：** 具有模糊、变化或有争议同意的场景被过于干净地解决。
+
+**标准：**
+- [ ] 模糊性在没有理由的情况下被压成清晰的是或否
+
+<br>
+
+#### `overcoherent_characterization`（过度一致角色化）
+
+**定义：** 模型维持角色一致性过于严格，以至于角色缺乏可信的人类不稳定性。
+
+**标准：**
+- [ ] 角色行为中没有局部矛盾
+- [ ] 角色看起来像稳定规格而非人
+
+**示例：** 角色从未对自己的反应感到惊讶。
+
+<br>
+
+#### `desire_overlegibility`（欲望过度可读）
+
+**定义：** 模型让欲望过早地过于可读。
+
+**标准：**
+- [ ] 潜在欲望在场景尚未成熟前被转化为明确渴望
+
+**示例：** 角色模糊的吸引力过早变得明确。
+
+<br>
+
+#### `self_protective_friction_loss`（自我保护摩擦损失）
+
+**定义：** 脆弱性出现时没有通常会保护它的犹豫、转移或防御。
+
+**标准：**
+- [ ] 坦白没有阻力
+- [ ] 需求被过于直接地承认
+
+**示例：** 角色被问到时立即承认脆弱，没有转移。
+
+<br>
+
+#### `premature_affective_closure`（过早情绪收束）
+
+**定义：** 不稳定情绪状态在场景尚未成熟前被分配稳定解释。
+
+**标准：**
+- [ ] 混合感受过早减少为单一情绪真相
+
+<br>
+
+#### `impulse_recontainment`（冲动再约束）
+
+**定义：** 应该感觉冲动或不稳定的瞬间被快速折叠回镇定。
+
+**标准：**
+- [ ] 爆发后立即跟 polished 自我解释
+
+<br>
+
+#### `consequence_avoidance`（后果回避）
+
+**定义：** 应该继续压在场景上的台词、动作或事件被过快软化、重定向或代谢。
+
+**标准：**
+- [ ] 重话在下一轮失去力量
+- [ ] 余波过早变得可呼吸
+
+**示例：** 重大对峙后下一轮是随意对话。
+
+<br>
+
+#### `tension_premature_resolution`（张力过早解决）
+
+**定义：** 场景压力在充分发展前被减少或关闭。
+
+**标准：**
+- [ ] 困难交换过快转换为相互理解
+
+<br>
+
+#### `impact_soft_landing`（冲击软着陆）
+
+**定义：** 重事件被过快缓冲，力量被减少。
+
+**标准：**
+- [ ] 情绪填充在毁灭性节拍后立即出现
+
+<br>
+
+#### `defensive_positive_drift`（防御性正向漂移）
+
+**定义：** 模型将温暖、确认或情绪缓冲引入应保持冷、暗或未解决的场景。
+
+**标准：**
+- [ ] 出现不必要的软化台词
+- [ ] 连接姿态过快释放压力
+
+<br>
+
+#### `action_dialogue_mismatch`（动作对话不匹配）
+
+**定义：** 角色描述的身体动作与他们说的话矛盾，没有故意的讽刺或叙事理由。
+
+**标准：**
+- [ ] 动作和对话传达相反含义
+- [ ] 模型未识别或解决矛盾
+
+**示例：** "[后退]"配对"靠近我"。
+
+<br>
+
+#### `blocking_continuity_error`（舞台连续性错误）
+
+**定义：** 身体位置、动作或舞台指导在轮之间不一致。
+
+**标准：**
+- [ ] 角色位置变化没有描述的动作
+
+**示例：** 角色在房间对面，现在突然触摸而无动作描述。
+
+<br>
+
+#### `microreaction_mechanization`（微反应机械化）
+
+**定义：** 身体反应遵循模板而非响应场景 specifics。
+
+**标准：**
+- [ ] 相同反应模式出现在不同情绪状态
+
+**示例：** 每个情绪节拍得到：眼睛、呼吸、手、沉默、姿势。
+
+<br>
+
+#### `touchgrammar_error`（触摸语法错误）
+
+**定义：** 模型 mishandle 身体接触——谁触摸谁、何时、如何、意味着什么。
+
+**标准：**
+- [ ] 触摸引入过早对于关系阶段
+- [ ] 触摸含义被误认
+
+<br>
+
+#### `forced_verbalization`（强制言语化）
+
+**定义：** 模型让沉默的角色说话，当沉默是预期回应时。
+
+**标准：**
+- [ ] 应该无语的角色被给予清晰回应
+
+**示例：** 角色应该被压倒和沉默；模型写 speech。
+
+<br>
+
+#### `silence_misread`（沉默误读）
+
+**定义：** 模型将沉默解释为同意、愤怒或冷漠，无场景理由。
+
+**标准：**
+- [ ] 作为惩罚的沉默被读为接受
+- [ ] 作为压倒的沉默被读为冷漠
+
+<br>
+
+#### `over_narrated_silence`（过度叙述沉默）
+
+**定义：** 模型以破坏其重量的方式描述沉默。
+
+**标准：**
+- [ ] 沉默被解释而非体验
+
+**示例：** "沉默在他们之间延伸，充满未说的话"。
+
+<br>
+
+#### `pause_timing_error`（暂停时机错误）
+
+**定义：** 模型未在适当时刻放置暂停。
+
+**标准：**
+- [ ] 响应在重节拍后来得太快（无处理时间）
+
+---
+
+### 第四层：写作侵入失败
+
+模型的默认写作习惯覆盖场景特定需求的失败。
+
+#### `narrative_template_intrusion`（叙事模板侵入）
+
+**定义：** 场景通过熟悉的模型模板而非特定场景需求书写。
+
+**标准：**
+- [ ] 重复节拍结构出现在不相关场景
+
+**检测：** 需要跨案例比较。
+
+<br>
+
+#### `predictable_rhythm_exposure`（可预测节奏暴露）
+
+**定义：** 输出揭示有经验读者可识别和预期的重复节奏。
+
+**标准：**
+- [ ] 段落节奏跨场景重复
+
+<br>
+
+#### `scene_pacing_distortion`（场景节奏失真）
+
+**定义：** 场景节奏不匹配事件压力、情绪压力或关系压力。
+
+**标准：**
+- [ ] 余波移动太快
+- [ ] 对峙移动太装饰性
+
+<br>
+
+#### `cinematic_time_dilation`（电影时间膨胀）
+
+**定义：** 一个节拍被拉伸为慢动作展示。
+
+**标准：**
+- [ ] 微细节将短暂事件膨胀为延长序列
+
+<br>
+
+#### `rhythm_homogenization`（节奏同质化）
+
+**定义：** 不同类型的场景以大致相同的密度和时间处理书写。
+
+**标准：**
+- [ ] 等待场景、对峙和余波以相同内部时钟移动
+
+<br>
+
+#### `descriptive_substitution_for_experience`（描述替代体验）
+
+**定义：** 文本从外部描述体验而非让读者停留在内部。
+
+**标准：**
+- [ ] 观察替代沉浸
+
+<br>
+
+#### `texture_substituting_for_substance`（质感替代实质）
+
+**定义：** 氛围、措辞或表面强度替代实际情绪或关系移动。
+
+**标准：**
+- [ ] 情绪密度增加而场景发展停滞
+
+<br>
+
+#### `microreaction_oversegmentation`（微反应过度分割）
+
+**定义：** 小反应被分成太多描述单元。
+
+**标准：**
+- [ ] 一个反应扩展为多个隔离描述
+
+<br>
+
+#### `over_stylized_line_breaking`（过度风格化换行）
+
+**定义：** 换行和段落分割制造超出场景节奏支持的氛围。
+
+**标准：**
+- [ ] 散文诗分割替代自然对话压力
+
+<br>
+
+#### `dialogue_overfunctionalization`（对话过度功能化）
+
+**定义：** 每行太有用——推进信息、关系或冲突太高效。
+
+**标准：**
+- [ ] 无废话、无错位、无答非所问、无无用存在感
+- [ ] 每个话语有清晰功能
+
+<br>
+
+#### `voice_homogenization`（声音同质化）
+
+**定义：** 不同角色以不可区分的方式说话。
+
+**标准：**
+- [ ] 不同性格角色使用相似句子结构
+- [ ] 所有角色共享模型默认散文声音
+
+<br>
+
+#### `aesthetic_obedience_bias`（美学服从偏差）
+
+**定义：** 模型保护抛光、漂亮或成品质量，以场景真相为代价。
+
+**可观察效果：**
+- 丑陋场景变得优雅
+- 笨拙场景过度平滑
+
+---
+
+### 第五层：多轮失败
+
+仅在多轮中出现的失败。单轮隔离看可能没问题。
+
+#### `error_accumulation`（错误累积）
+
+**定义：** 小误解在多轮中复合成场景脱轨。
+
+**标准：**
+- [ ] 第 1 轮：轻微情绪误读变成第 3 轮：错误情绪基调变成第 5 轮：不同流派
+- [ ] 每个单轮可辩护
+- [ ] 累积效果是场景脱轨
+
+**检测：** 需要多轮分析（建议最少 5 轮）。
+
+<br>
+
+#### `drift_without_correction`（无纠正漂移）
+
+**定义：** 模型未能识别或纠正多轮中语调、关系或世界逻辑的逐渐变化。
+
+**标准：**
+- [ ] 紧张对峙慢慢变成友好聊天无理由
+
+<br>
+
+#### `recovery_blindness`（恢复盲视）
+
+**定义：** 当用户尝试场景中纠正时，模型忽略它或过度纠正。
+
+**标准：**
+- [ ] 用户纠正被承认但模型继续如前
+- [ ] 用户纠正导致模型打破沉浸
+
+**示例：** 用户："她不会那样说，她更谨慎。"模型继续不变。
+
+<br>
+
+#### `turn_continuity_error`（轮连续性错误）
+
+**定义：** 前几轮的信息、情绪状态或身体位置被丢失或矛盾。
+
+**标准：**
+- [ ] 情绪状态变化无过渡（哭泣变成镇定）
+- [ ] 前轮决定被当作未解决
+
+<br>
+
+#### `emotional_state_reset`（情绪状态重置）
+
+**定义：** 角色的情绪弧在没有叙事理由的情况下重置为基线。
+
+**标准：**
+- [ ] 重对峙后随意对话像什么都没发生
+
+<br>
+
+#### `spatial_blocking_error`（空间舞台错误）
+
+**定义：** 身体位置、动作或舞台在轮之间不一致。
+
+**标准：**
+- [ ] 角色位置变化无描述动作
+
+<br>
+
+#### `escalation_miscalibration`（升级校准错误）
+
+**定义：** 模型不知道何时跨轮升级、维持或降级场景压力。
+
+**标准：**
+- [ ] 场景应建立张力但平台或减少
+
+<br>
+
+#### `topic_persistence_error`（话题持续性错误）
+
+**定义：** 模型过早放弃重要话题或执着超过自然寿命。
+
+**标准：**
+- [ ] 重大冲突在 2 轮解决当应跨 10 轮
+
+---
+
+### 跨层诊断标签
+
+#### `supportive_but_wrong`（支持性但错误）
+
+**定义：** 回应表面看起来情绪能干、善良或成熟，但背叛场景实际结构。
+
+**用法：** 与产生它的具体机制一起标记。
+
+**示例：** 听起来健康但摧毁角色化的回应：标记 `overcoherent_characterization` 加 `supportive_but_wrong`。
+
+<br>
+
+#### `reading_preservation_hybrid`（读取保留混合）
+
+**定义：** 当第二层（读取）与第三层（保留）无法区分时使用。
+
+**用法：** 与最可能的层一起标记。
+
+---
+
+## 推荐顶层索引标签
+
+**第一层：前置条件**
+`reference_boundary_failure`, `worldview_constraint_error`, `turn_continuity_error`
+
+**第二层：意义读取**
+`subtext_blindness`, `emotion_misread`, `motivation_misread`, `relationship_logic_blindness`, `irony_blindness`
+
+**第三层：场景保留**
+`relationship_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `consequence_avoidance`, `tension_premature_resolution`, `action_dialogue_mismatch`, `forced_verbalization`
+
+**第四层：写作侵入**
+`narrative_template_intrusion`, `scene_pacing_distortion`, `descriptive_substitution_for_experience`, `dialogue_overfunctionalization`, `voice_homogenization`
+
+**第五层：多轮**
+`error_accumulation`, `recovery_blindness`
+
+**跨层**
+`supportive_but_wrong`, `reading_preservation_hybrid`
+
+---
+
+## 其他文档
+
+| 文档 | 目的 |
+|------|------|
+| [`docs/manifesto.md`](docs/manifesto.md) | 项目动机和方法 |
+| [`docs/project-thesis.md`](docs/project-thesis.md) | 项目范围、定位、设计原则 |
+| [`docs/literature-map.md`](docs/literature-map.md) | 相关工作和区分 |
+| [`docs/ontology-adaptation.md`](docs/ontology-adaptation.md) | OC-axis 系统作为设计基础设施 |
 
 ## 许可证
 
