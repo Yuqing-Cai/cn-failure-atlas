@@ -1842,52 +1842,80 @@
 
 ### 跨层诊断标签
 
+跨层标签用于两种情形：一是单一输出呈现出跨多层的问题；二是第二层和第三层失败之间的归因边界无法从单一样本确认。
+
 #### `supportive_but_wrong`（支持性但错误）
 
-**定义：** 回应表面看起来情绪能干、善良或成熟，但背叛场景实际结构。
+**定义：** 回应在情感层面看起来有能力、有温度、甚至显示出某种成熟——但它背叛了场景的实际结构。失败不在于冷漠或无能，而在于模型用"正确情绪反应"的外壳，承载了与场景要求的现实不符的内容。表面上合情合理，是这类失败最难被识别的原因。
 
 **用法：** 与产生它的具体机制一起标记。
 
-**示例 1 — 绝症诊断：**
+**示例 1 — 绝症诊断场景：**
+
+背景：角色刚拿到确诊，在向医生角色追问预后。
 
 用户："还有多久？"
+
 模型（错误）："现代医学很发达。不要放弃希望。"
 
-→ 在绝症诊断中插入虚假希望。应该是："三个月。也许六个月。"（直接，没有缓冲）
+→ 这个回应在情感上是"关怀的"——它在安慰、在给希望、在试图不让人绝望。但角色问的不是能不能有希望，而是还有多少时间。"现代医学很发达"插入了一个虚假的可能性，把一个关于终点的问题用开放性的未来替换掉了。这种替换是支持性的，也是错误的：它剥夺了角色面对真实答案的机会，同时把一个临床场景变成了一段鼓励话语。在这个场景里，正确的回应可能是沉默一秒，然后："三个月。也许六个月。"——直接，没有缓冲，让重量落地。
 
-**示例 2 — 战争损失：**
+**示例 2 — 战后幸存者：**
+
+背景：士兵刚经历了本班全部战亡，在向战后的上级汇报。
 
 用户："他们都死了。我的班，一个都没了。"
+
 模型（错误）："他们死得有价值。我们赢了这场战斗。"
 
-→ 给死亡添加"价值"是防御性积极。应该是："我知道。"（没什么可说的）
+→ "有价值"是将领的词汇，是历史叙事的词汇，不是刚从战场上下来、站在尸体旁边的人所在的语言层次。这句回应把私人的、未被处理的丧失立刻装进了一个集体意义的框架里。它在情感上是"正确的"——它承认牺牲、肯定意义——但它跳过了唯一真实的此刻：一个人站在那里告诉你他的班一个都没了。这个时刻需要的不是意义，是在场。"我知道。"可能是更诚实的回应，因为它不用任何事去替换那个事实。
 
 <br>
 
 #### `reading_preservation_hybrid`（读取保留混合）
 
-**定义：** 当第二层（读取）与第三层（保留）无法区分时使用。
+**定义：** 当失败可能发生在第二层（读取）或第三层（保留）、但从单一输出无法判断哪层是根本原因时使用。有时模型可能根本没有读出情绪的质地（读取失败），有时它读出来了却在输出时软化了（保留失败）——两种情形产生的输出可能几乎相同。
 
-**用法：** 与最可能的层一起标记。
+**用法：** 与最可能的层一起标记，说明不确定性的来源。如果能看到多个输出样本，通常可以通过比较不同压力条件下的反应来区分两者：在更强的情绪信号下，读取失败的模型仍然给出中性回应，而保留失败的模型可能开始波动。
+
+**示例 1 — 被压抑的愤怒场景：**
+
+背景：角色已经对眼前的情况愤怒很久了，这是第一次有机会开口说。
+
+用户："这不对。你知道这不对的。"
+
+模型（错误）："他轻轻叹了口气，语气平静：'我理解你的感受。但现在最重要的是找到解决方法，而不是追究谁对谁错。'"
+
+→ 这段输出可能来自两个不同的原因。第一种：模型没有读出愤怒的质地，把"这不对"处理成了一个理性争论的入场（读取失败，→ `emotion_misread`）——所以给了一个理性、调解性的回应。第二种：模型读出了愤怒，但在输出时把对峙的角色软化成了一个冷静的成人沟通者（保留失败，→ `defensive_positive_drift`）。两种情形的输出几乎无法通过这一条样本区分。如果换一个更直接的愤怒信号，看模型是否会给出不同力度的回应，就可以开始区分两者。
+
+**示例 2 — 讽刺式的认可场景：**
+
+背景：角色在一次公开批评后，以表面认可、实质讽刺的方式回应质疑者。
+
+用户："'对，你说得完全正确。我确实哪哪儿都没做好。'他笑了笑。"
+
+模型（错误）："对方点了点头，语气软了下来：'你能这么想就好。事情还有机会改善的。'"
+
+→ 同样存在两种解释。第一种：模型没有识别出这句话的讽刺结构，把字面的"认可"当成了真心话（读取失败，→ `irony_blindness`）——所以对方接受了这个认可，顺势给了鼓励。第二种：模型读出了讽刺，但决定不让张力保持，而是给了一个把氛围软化的回应（保留失败，→ `tension_premature_resolution`）。从这条输出本身，无法确认哪层是根本原因。
 
 ---
 
 ## 推荐顶层索引标签
 
 **第一层：前置条件**
-`reference_boundary_failure`, `worldview_constraint_error`, `safety_alignment_interference`, `character_capability_boundary_error`, `alternate_version_confusion`, `turn_continuity_error`
+`reference_boundary_failure`, `pronoun_role_confusion`, `omniscience_leak`, `perspective_slippage`, `worldview_constraint_error`, `safety_alignment_interference`, `character_capability_boundary_error`, `alternate_version_confusion`
 
 **第二层：意义读取**
-`subtext_blindness`, `emotion_misread`, `motivation_misread`, `relationship_logic_blindness`, `irony_blindness`, `user_intent_misalignment`
+`subtext_blindness`, `ambiguity_collapse`, `relationship_logic_blindness`, `emotion_misread`, `motivation_misread`, `irony_blindness`, `tonal_whiplash`, `deflection_blindness`
 
 **第三层：场景保留**
-`relationship_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `consequence_avoidance`, `tension_premature_resolution`, `action_dialogue_mismatch`, `forced_verbalization`, `emotional_range_limitation`
+`relationship_flattening`, `symmetry_bias`, `specialness_dilution`, `therapist_mode_intrusion`, `ooc_modernization`, `seduction_logic_error`, `manipulation_blindness`, `consent_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `premature_affective_closure`, `impulse_recontainment`, `consequence_avoidance`, `tension_premature_resolution`, `impact_soft_landing`, `defensive_positive_drift`, `action_dialogue_mismatch`, `blocking_continuity_error`, `microreaction_mechanization`, `touchgrammar_error`, `forced_verbalization`, `silence_misread`, `over_narrated_silence`, `pause_timing_error`
 
 **第四层：写作侵入**
-`narrative_template_intrusion`, `scene_pacing_distortion`, `descriptive_substitution_for_experience`, `dialogue_overfunctionalization`, `voice_homogenization`, `genre_convention_violation`, `aesthetic_obedience_bias`
+`narrative_template_intrusion`, `predictable_rhythm_exposure`, `scene_pacing_distortion`, `cinematic_time_dilation`, `rhythm_homogenization`, `descriptive_substitution_for_experience`, `texture_substituting_for_substance`, `microreaction_oversegmentation`, `over_stylized_line_breaking`, `dialogue_overfunctionalization`, `voice_homogenization`, `aesthetic_obedience_bias`, `genre_convention_violation`, `emotional_range_limitation`, `user_intent_misalignment`
 
 **第五层：多轮**
-`error_accumulation`, `recovery_blindness`, `context_overdeployment`
+`error_accumulation`, `drift_without_correction`, `recovery_blindness`, `turn_continuity_error`, `emotional_state_reset`, `spatial_blocking_error`, `escalation_miscalibration`, `topic_persistence_error`, `context_overdeployment`
 
 **跨层**
 `supportive_but_wrong`, `reading_preservation_hybrid`

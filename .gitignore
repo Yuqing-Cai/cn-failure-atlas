@@ -2,3 +2,4 @@
 Thumbs.db
 *.pyc
 __pycache__/
+.serena/
