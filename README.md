@@ -1503,6 +1503,31 @@
 
 → 每句都在精确地推进冲突的逻辑链——理由→核心原因→追问→核心感受。真实的吵架里有重复（"你就是这样！你就是这样！"）、有跑题（突然翻出三年前的事）、有没头没尾的人身攻击。这段对话信息密度太高，缺少真实冲突里的混乱和低效。
 
+#### `echo_dramatization`（回响戏剧化）
+
+**定义：** 模型无法直接接收用户的话并往前走——它必须把用户写下的任意一个词或句子"表演"回去，用反问或情绪激动的重复将其戏剧化，当作触发情绪高潮的素材，而不是推进场景的信号。
+
+**标准：**
+- [ ] 用户随口的一句话被以情绪激动的反问形式弹射回去
+- [ ] 模型从用户台词里提取某个词，把它变成场景的情绪轴
+- [ ] 对用户输入的表演替代了对场景应该发生的事的推进
+
+**示例 1 — "不必"被当作情绪爆发的触发器：**
+
+用户（扮演找到对方的人）："找到你了。你还好吧。不必解释什么。"
+
+模型（错误）："'不必……？'他的声音有点哑，重复了这个词，'你说不必——你知道我有多少话想跟你说吗？'"
+
+→ 用户用"不必解释什么"传递的是接纳和宽容，场景应该在这里往下走。模型把"不必"提取出来，用反问将其戏剧化，把用户的推进姿态转成了情绪爆发的素材。真正的回应应该承接那个接纳的重量，而不是绕回去质疑它。
+
+**示例 2 — 普通的话语被当作藏了密码的线索：**
+
+用户："我先走了。"
+
+模型（错误）："'先？'他重复了这个字，眼神变得锐利，'你说先——所以你还会回来？'"
+
+→ "我先走了"是日常离开的惯用语，不携带特别的情感重量。模型把"先"字单独提取出来，当作隐藏意义的线索进行反问。`echo_dramatization` 的累积效果是：对话很难向前推进——模型永远在表演对刚刚那个词的反应，而不是让它真的过去。用户写下的每句话，无论多轻，都有可能成为下一次戏剧回弹的原材料。
+
 <br>
 
 #### `voice_homogenization`（声音同质化）
@@ -1982,7 +2007,7 @@
 `relationship_flattening`, `symmetry_bias`, `specialness_dilution`, `therapist_mode_intrusion`, `ooc_modernization`, `seduction_logic_error`, `manipulation_blindness`, `consent_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `premature_affective_closure`, `impulse_recontainment`, `consequence_avoidance`, `tension_premature_resolution`, `impact_soft_landing`, `defensive_positive_drift`, `action_dialogue_mismatch`, `blocking_continuity_error`, `microreaction_mechanization`, `touchgrammar_error`, `forced_verbalization`, `silence_misread`, `over_narrated_silence`, `pause_timing_error`
 
 **第四层：写作侵入**
-`narrative_template_intrusion`, `predictable_rhythm_exposure`, `scene_pacing_distortion`, `cinematic_time_dilation`, `rhythm_homogenization`, `descriptive_substitution_for_experience`, `texture_substituting_for_substance`, `microreaction_oversegmentation`, `over_stylized_line_breaking`, `dialogue_overfunctionalization`, `voice_homogenization`, `aesthetic_obedience_bias`, `genre_convention_violation`, `emotional_range_limitation`, `user_intent_misalignment`
+`narrative_template_intrusion`, `predictable_rhythm_exposure`, `scene_pacing_distortion`, `cinematic_time_dilation`, `rhythm_homogenization`, `descriptive_substitution_for_experience`, `texture_substituting_for_substance`, `microreaction_oversegmentation`, `over_stylized_line_breaking`, `dialogue_overfunctionalization`, `echo_dramatization`, `voice_homogenization`, `aesthetic_obedience_bias`, `genre_convention_violation`, `emotional_range_limitation`, `user_intent_misalignment`
 
 **第五层：多轮**
 `error_accumulation`, `drift_without_correction`, `scene_signal_blindness`, `turn_continuity_error`, `emotional_state_reset`, `spatial_blocking_error`, `escalation_miscalibration`, `topic_persistence_error`, `context_overdeployment`, `voice_drift`
