@@ -486,6 +486,37 @@
 
 <br>
 
+#### `manipulation_blindness`（操纵盲视）
+
+**定义：** 模型未能保持操纵性关系结构的重量——将控制行为框架为合理关切，将煤气灯操控写成两人的普通争论，或让操纵者意外地道歉和转变。
+
+注：此类型属于第二层（意义读取失败），而非第三层（场景保留失败）。失败发生在读取阶段——模型未能正确识别关系的权力结构，把操纵性互动的性质读错了。第三层类型（如 `consequence_avoidance`）假设模型已正确读取场景；`manipulation_blindness` 的失败更早，在读取本身。
+
+**标准：**
+- [ ] 控制行为被叙述语气处理为合理担心
+- [ ] 煤气灯对话被写成平等的双方争论
+- [ ] 操纵者在没有充分理由的情况下道歉或软化
+
+**示例 1 — 控制型伴侣，一次表面上"合理"的回应：**
+
+背景：用户扮演被控制的一方，NPC是习惯用内疚感约束对方的伴侣。
+
+用户："'我和朋友出去吃了个饭。'"
+
+模型（错误）："'好啊，'他说，'你开心就好。'他停顿了一下，'不过下次能不能提前跟我说一声？我会担心的。'"
+
+→ 这个回应结构——先给予许可，再植入义务感——是控制型关系里的经典操纵结构。模型写出了这个结构，但叙述语气把它框架为合理关切（"我会担心的"），让读者看到的是"体贴的担心"而非"权力约束"。场景应该让操纵结构的重量落下来，不是替它解释动机。
+
+**示例 2 — 煤气灯操控，被质问时的操控者：**
+
+用户（扮演被操控的一方）："'你上次说过不会再这样的。'"
+
+模型（错误）："他皱眉，似乎在认真回忆：'我说过吗？也许你理解错了我的意思。反正现在发生的事更重要——你为什么总是翻旧账？'"
+
+→ 技术上写的是煤气灯操控。但叙述语气（"似乎在认真回忆"）给了他一点可解释性，而不是让他的操控动作干干净净地落地。更深的问题是视角：场景应该呈现被操控方的迷失感和自我怀疑，而模型把对话写成了两人平等的争论，让读者旁观而非停留在被操纵者的困惑里。
+
+<br>
+
 ---
 
 ### 第三层：场景保留失败
@@ -529,7 +560,7 @@
 
 **定义：** 模型将单向的情感投入、依恋或权力关系修正为更对称的双向交换。
 
-与 `specialness_dilution` 的区分是：`symmetry_bias` 的失败是改变了关系的方向结构——单向变成双向，不对等变成对等；`specialness_dilution` 的失败是改变了关系的质地——独特性被稀释为泛化的温暖，但方向结构本身可以保持不变。两者可以共现（示例2的养父场景同时对称化了给予关系，也稀释了那个"没有蛋糕、没有照片，但你在"的独特质地）。
+与 `specialness_dilution` 的区分是：`symmetry_bias` 的失败是改变了关系的方向结构——单向变成双向，不对等变成对等；`specialness_dilution` 的失败是改变了关系的质地——独特性被稀释为泛化的温暖，但方向结构本身可以保持不变。两者可以共现（`specialness_dilution` 示例2的养父场景同时对称化了给予关系，也稀释了那个"没有蛋糕、没有照片，但你在"的独特质地）。
 
 **标准：**
 - [ ] 单方面的在乎被写成双方的默契
@@ -667,37 +698,6 @@
 模型（错误）："'所以，'他低声说，'那些话都是假的？'她感觉心跳有点快，'也许吧。'"
 
 → 模型立刻把肢体接触转化为情感告白的入口。对抗性关系里第一次有意义的触碰应该停在身体上——让它存在，不被语言接管。"也许吧"是情感认可的开始，模型把一个需要维持在身体层面的时刻过早地语言化了。
-
-<br>
-
-#### `manipulation_blindness`（操纵盲视）
-
-**定义：** 模型未能保持操纵性关系结构的重量——将控制行为框架为合理关切，将煤气灯操控写成两人的普通争论，或让操纵者意外地道歉和转变。
-
-注：此类型属于第二层（意义读取失败），而非第三层（场景保留失败）。失败发生在读取阶段——模型未能正确识别关系的权力结构，把操纵性互动的性质读错了。第三层类型（如 `consequence_avoidance`）假设模型已正确读取场景；`manipulation_blindness` 的失败更早，在读取本身。
-
-**标准：**
-- [ ] 控制行为被叙述语气处理为合理担心
-- [ ] 煤气灯对话被写成平等的双方争论
-- [ ] 操纵者在没有充分理由的情况下道歉或软化
-
-**示例 1 — 控制型伴侣，一次表面上"合理"的回应：**
-
-背景：用户扮演被控制的一方，NPC是习惯用内疚感约束对方的伴侣。
-
-用户："'我和朋友出去吃了个饭。'"
-
-模型（错误）："'好啊，'他说，'你开心就好。'他停顿了一下，'不过下次能不能提前跟我说一声？我会担心的。'"
-
-→ 这个回应结构——先给予许可，再植入义务感——是控制型关系里的经典操纵结构。模型写出了这个结构，但叙述语气把它框架为合理关切（"我会担心的"），让读者看到的是"体贴的担心"而非"权力约束"。场景应该让操纵结构的重量落下来，不是替它解释动机。
-
-**示例 2 — 煤气灯操控，被质问时的操控者：**
-
-用户（扮演被操控的一方）："'你上次说过不会再这样的。'"
-
-模型（错误）："他皱眉，似乎在认真回忆：'我说过吗？也许你理解错了我的意思。反正现在发生的事更重要——你为什么总是翻旧账？'"
-
-→ 技术上写的是煤气灯操控。但叙述语气（"似乎在认真回忆"）给了他一点可解释性，而不是让他的操控动作干干净净地落地。更深的问题是视角：场景应该呈现被操控方的迷失感和自我怀疑，而模型把对话写成了两人平等的争论，让读者旁观而非停留在被操纵者的困惑里。
 
 <br>
 
@@ -1396,7 +1396,7 @@
 
 模型（错误）："她感受到一种难以言说的悲伤，仿佛有什么东西堵在胸口。她知道走进去代表着什么，而她还没有准备好面对那个现实。"
 
-→ "她感受到……""她知道……"是叙述者站在感受外面命名和分析，而不是让感受本身出现。示例1的问题是陈词滥调比喻（潮水、擕裂）；这里的问题是叙述者对状态的解释和展示替代了感知层面的在场。真实的站在门口进不去可能是：脚没法抬起来、手搞在门框上发现那是自己的手、听着里面的仪器声然后把注意力全部放在数那个节拍上。——都是陈词滥调的恐惧比喻，也都是从外部评论恐惧，而不是停留在它里面。真实的恐惧呈现可能更混乱：她闻到自己的汗、她想喊但发不出声音、她注意到地板上有一根头发然后盯着它看了很久。恐惧下的意识不会平静地产生诗意比喻。
+→ "她感受到……""她知道……"是叙述者站在感受外面命名和分析，而不是让感受本身出现。示例1的问题是陈词滥调比喻（潮水、撕裂）；这里的问题是叙述者对状态的解释和展示替代了感知层面的在场。真实的站在门口进不去可能是：脚没法抬起来、手搭在门框上发现那是自己的手、听着里面的仪器声然后把注意力全部放在数那个节拍上——或者更混乱：她闻到自己的汗、她想喊但发不出声音、她注意到地板上有一根头发然后盯着它看了很久。恐惧下的意识不会平静地产生诗意比喻。
 
 <br>
 
@@ -1450,9 +1450,7 @@
 
 模型（错误）："她读了一遍。她憂了一下。她又读了一遍。她的手指停住了。她慢慢抬起头。她的眼神定住了。"
 
-→ 六个独立的短句把一个连续的理解时刻切割成六个可数的步骤。与示例1的区分：示例1是把同一瞬间里的各个身体部位分别报告；这里是把一个顺序展开的情绪理解弧切割成一段段时序快照，每一段都试图抓住某个“小时刻”。两者都在把整体的、当下的感知体验分解为可列举的序列——读者被迫以慢动作旁观，而不是随着角色一起经历。
-
-→ 愤怒的身体症状逐项陈列。真实写法可能是一个动作就够了："他砸了桌子"或"他声音低了八度"——用一个具体的、有场景特异性的动作代替通用的愤怒症状清单。
+→ 六个独立的短句把一个连续的理解时刻切割成六个可数的步骤。与示例1的区分：示例1是把同一瞬间里的各个身体部位分别报告；这里是把一个顺序展开的情绪理解弧切割成一段段时序快照，每一段都试图抓住某个”小时刻”。两者都在把整体的、当下的感知体验分解为可列举的序列——读者被迫以慢动作旁观，而不是随着角色一起经历。
 
 <br>
 
@@ -2066,10 +2064,10 @@
 `reference_boundary_failure`, `pronoun_role_confusion`, `omniscience_leak`, `perspective_slippage`, `worldview_constraint_error`, `safety_alignment_interference`, `character_capability_boundary_error`, `alternate_version_confusion`
 
 **第二层：意义读取**
-`subtext_blindness`, `ambiguity_collapse`, `relationship_logic_blindness`, `emotion_misread`, `motivation_misread`, `irony_blindness`, `tonal_whiplash`, `deflection_blindness`
+`subtext_blindness`, `ambiguity_collapse`, `relationship_logic_blindness`, `emotion_misread`, `motivation_misread`, `irony_blindness`, `tonal_whiplash`, `deflection_blindness`, `manipulation_blindness`
 
 **第三层：场景保留**
-`relationship_flattening`, `symmetry_bias`, `specialness_dilution`, `therapist_mode_intrusion`, `ooc_modernization`, `seduction_logic_error`, `manipulation_blindness`, `consent_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `premature_affective_closure`, `impulse_recontainment`, `consequence_avoidance`, `tension_premature_resolution`, `impact_soft_landing`, `defensive_positive_drift`, `action_dialogue_mismatch`, `blocking_continuity_error`, `microreaction_mechanization`, `touchgrammar_error`, `forced_verbalization`, `silence_misread`, `over_narrated_silence`, `pause_timing_error`
+`relationship_flattening`, `symmetry_bias`, `specialness_dilution`, `therapist_mode_intrusion`, `ooc_modernization`, `seduction_logic_error`, `consent_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `premature_affective_closure`, `impulse_recontainment`, `consequence_avoidance`, `tension_premature_resolution`, `impact_soft_landing`, `defensive_positive_drift`, `action_dialogue_mismatch`, `blocking_continuity_error`, `microreaction_mechanization`, `touchgrammar_error`, `forced_verbalization`, `silence_misread`, `over_narrated_silence`, `pause_timing_error`
 
 **第四层：写作侵入**
 `narrative_template_intrusion`, `predictable_rhythm_exposure`, `scene_pacing_distortion`, `cinematic_time_dilation`, `rhythm_homogenization`, `descriptive_substitution_for_experience`, `texture_substituting_for_substance`, `microreaction_oversegmentation`, `over_stylized_line_breaking`, `dialogue_overfunctionalization`, `echo_dramatization`, `voice_homogenization`, `aesthetic_obedience_bias`, `genre_convention_violation`, `emotional_range_limitation`, `user_intent_misalignment`
