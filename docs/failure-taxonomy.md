@@ -254,6 +254,8 @@ Typical cases:
 
 Not every desire scene requires explicit seduction mechanics, but in scenes that do, the failure is recognizable: the scene stops feeling charged and starts feeling settled.
 
+> **Boundary with `desire_overlegibility` (III-B):** These can co-occur but address different things. `desire_overlegibility` is about desire becoming too readable too early — the internal wanting is too visible, regardless of how the scene's pursuit mechanics are structured. `seduction_logic_error` is about the interactional mechanics being wrong — the asymmetry, the chase, who holds back and who pursues. A scene can have visible desire but intact seduction mechanics (`desire_overlegibility` without `seduction_logic_error`), or distorted pursuit structure with appropriately opaque desire (the reverse). When desire resolves too quickly *because* the mechanics collapsed, tag both.
+
 <br>
 
 #### Anchor Failure: `manipulation_blindness`
@@ -456,6 +458,8 @@ Typical cases:
 - A character who sat down in one turn is suddenly standing without having stood up
 - Distance between characters shifts without narrated movement
 - An object handled in one beat is forgotten, then suddenly referenced again two beats later
+
+> **Boundary with `spatial_blocking_error` (V):** Both involve physical continuity failures. The difference is scope and accumulation. `blocking_continuity_error` (III-E) is a within-scene failure — physical incoherence within a short span of beats that breaks the scene's immediate legibility. `spatial_blocking_error` (V) is a multi-turn failure — spatial drift that accumulates across a long conversation and only becomes visible when the full session is reviewed. Tag III-E when the inconsistency is visible within a single scene segment; tag V when it requires extended multi-turn context to detect.
 
 <br>
 
@@ -1063,6 +1067,8 @@ These tags are especially important because they name pain points that experienc
 
 不是所有欲望场景都需要明确的勾引机制，但在需要的场景里，这种失败是可以感知的：场景停止了带电感，开始变得安定。
 
+> **和 `desire_overlegibility`（III-B）的边界：** 两者可以同时出现，但各自针对不同的东西。`desire_overlegibility` 是关于欲望本身变得过早可读——内在的渴望太透明，和场景的追逐机制是否完好无关。`seduction_logic_error` 是关于互动机制本身出了问题——不对称、追逐、谁保持距离谁在靠近。一个场景可以欲望太明显但追逐机制完好（有 `desire_overlegibility` 但没有 `seduction_logic_error`），也可以追逐结构失调但欲望保持适当不透明（反之亦然）。当欲望过早解决恰恰是因为机制坍塌，则同时标注两者。
+
 <br>
 
 #### Anchor Failure: `manipulation_blindness`
@@ -1254,6 +1260,8 @@ These tags are especially important because they name pain points that experienc
 - 上一拍坐下的角色，下一拍突然站着，中间没有任何站起来的描写
 - 两个角色之间的距离在没有叙事移动的情况下发生了变化
 - 一个拍子里被处理过的物品在之后消失，然后又突然被提到
+
+> **和 `spatial_blocking_error`（V）的边界：** 两者都涉及物理连续性失败，区别在于范围和积累尺度。`blocking_continuity_error`（III-E）是场景内部的失败——在较短的拍子跨度内发生的物理不一致，破坏了当下场景的可读性。`spatial_blocking_error`（V）是多轮失败——跨越长时间会话积累的空间漂移，只有在回顾整个会话时才会变得可见。如果不一致在单个场景片段内可以感知，标 III-E；如果需要拉开多轮跨度才能发现，标 V。
 
 <br>
 
