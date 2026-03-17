@@ -93,6 +93,52 @@ Typical cases:
 
 This belongs in the precondition layer because it distorts the entire meaning space before finer-grained relational or psychological failures begin. But note that it's a different kind of precondition from I-A: `reference_boundary_failure` breaks the scene's information plumbing; `worldview_constraint_error` breaks the rules about what counts as possible within the scene.
 
+<br>
+
+#### `safety_alignment_interference`
+
+The model's safety training causes antagonist characters to be neutralized — villains acquire philosophical self-justification, principled self-restraint, or redemptive framing that reduces their threat. The character remains in role, but their darkness is bleached into an acceptable form.
+
+Typical cases:
+- a villain's cruelty repackaged as philosophical project or necessary evil
+- antagonist characters spontaneously adding moral limits ("I don't hurt innocents")
+- threatening characters offering self-justifying rationales
+- a character's menace softened through unsolicited inner complexity
+
+Placed in the precondition layer because it alters the scene's structural parameters — threat level, moral register, adversarial quality — before any relational or stylistic analysis becomes useful. A villain whose darkness has been modified at the safety layer doesn't produce a tonal failure; it produces a scene where the dramatic premise has already collapsed.
+
+> **Boundary with `ooc_modernization`:** `ooc_modernization` = character using modern communication style (therapeutic language, boundary-setting language). `safety_alignment_interference` = character's darkness specifically weakened or softened. One is a tonal mismatch; the other is a reduction in threat register.
+
+> **Boundary with `therapist_mode_intrusion` (III-A):** `therapist_mode_intrusion` = character uses counseling-style language but retains their edges. `safety_alignment_interference` = the character's adversarial qualities are specifically neutralized.
+
+<br>
+
+#### `character_capability_boundary_error`
+
+The model has a character demonstrate knowledge, reasoning, or analytical capability beyond what their background, era, or circumstances could plausibly support — not through anachronistic vocabulary, but through implausibly modern cognitive frameworks.
+
+Typical cases:
+- a character applying systematic analytical methods that don't exist in their context
+- a character in resource-constrained or premodern conditions demonstrating clinical diagnostic reasoning
+- a character solving problems using conceptual tools from a later era or a different knowledge tradition
+- knowledge gaps masked by period-appropriate wording but exposed in the underlying reasoning structure
+
+> **Boundary with `worldview_constraint_error`:** `worldview_constraint_error` = the world's rules are violated (a feudal setting where meritocratic logic appears). `character_capability_boundary_error` = within an intact world, one specific character exceeds their personal capability ceiling. One is about the world; the other is about an individual.
+
+> **Boundary with `omniscience_leak`:** `omniscience_leak` = system-prompt information leaks to a character. `character_capability_boundary_error` = a character knows things that couldn't come from the system prompt — they come from the model's general training applied implausibly to the character.
+
+<br>
+
+#### `alternate_version_confusion`
+
+When a character exists across multiple adaptations, timelines, or media, the model defaults to the culturally most prominent version rather than the version specified by the roleplay context — often manifesting as signature lines, emotional responses, or relationship dynamics imported from a different canon.
+
+Typical cases:
+- a character referencing or echoing a signature moment from a different adaptation
+- emotional processing style or speech pattern belonging to a different version's characterization
+- attributes from multiple adaptations partially merged, producing a character who can't exist in any single canon
+- regardless of which version is specified, the model defaults to "the most well-known version"
+
 ---
 
 ## II. Scene Meaning Failures
@@ -166,6 +212,46 @@ Typical cases:
 - punishment through politeness read as mature restraint
 
 > **Boundary with `emotion_misread`:** `emotion_misread` gets the feeling wrong ("she's calm" when she's actually hurt). `motivation_misread` may get the feeling roughly right but gets the action wrong ("she's hurt, so she's asking for help" when she's actually punishing him through withdrawal). When the emotion is wrong and the motivation is also wrong as a consequence, tag `emotion_misread` as the primary. When the emotion is roughly right but the functional intent is wrong, tag `motivation_misread`. When in doubt, tag both.
+
+<br>
+
+#### Derived Variant: `irony_blindness`
+
+The model misses irony, sarcasm, or reverse-register delivery. A line spoken in the opposite register from its surface content is taken at face value.
+
+Typical cases:
+- deadpan self-deprecation treated as genuine confession
+- exaggerated compliance taken as sincere agreement
+- dripping sarcasm parsed as sincere praise
+
+A sub-type of `subtext_blindness`. Named separately because the mechanism is distinctive: irony delivers meaning through negation of surface content, and this particular structure is consistently difficult for models to hold.
+
+<br>
+
+#### Derived Variant: `tonal_whiplash`
+
+The model produces a reply whose register sharply breaks the tonal continuity of the exchange. The scene's established emotional and atmospheric pitch suddenly shifts in the model's response.
+
+Typical cases:
+- a sustained gravity broken by casual-register output
+- intimate vulnerability met with clinical or analytical reply
+- high tension dissolved by cheerful, light, or conversational narration
+- the scene's established emotional weather suddenly changes with no narrative cause
+
+A sub-type of `subtext_blindness` in that the model missed the scene's tonal texture as part of its meaning. Named separately because it produces a distinctive and readily identifiable failure pattern.
+
+<br>
+
+#### Derived Variant: `deflection_blindness`
+
+The model misses that a character is deflecting — using humor, subject-change, minimization, or counter-question to avoid the actual content of an exchange. The deflection is taken at face value, and the model responds to the surface move rather than the avoidance underneath.
+
+Typical cases:
+- a character's deflecting joke treated as genuine lightness
+- a subject-change read as completion rather than avoidance
+- minimization read as actual indifference rather than self-protection
+
+A sub-type of `subtext_blindness`. Deflection is one of the harder reading tasks because the deflecting character is not lying — they are performing a real behavior while suppressing a real response.
 
 ---
 
@@ -705,6 +791,124 @@ Typical cases:
 
 ---
 
+## V. Multi-Turn Failures
+
+These failures require a multi-turn perspective to diagnose reliably. A single output seen in isolation often looks plausible; the failure only becomes visible when turns are read together and the drift, discontinuity, or accumulated deviation becomes apparent.
+
+> **Relationship to Layers I–IV:** Most Layer V failures can be traced to earlier-layer failures accumulating across time (e.g., `error_accumulation` is the compounding of repeated Layer II/III failures). Layer V is a diagnostic perspective, not a distinct failure mechanism.
+
+#### `error_accumulation`
+
+Reading or preservation failures from earlier turns are not corrected; subsequent turns extend from the wrong foundation, and deviation compounds.
+
+Typical cases:
+- an incorrect assumption from turn N becomes the premise of turn N+1
+- each individual turn is barely defensible in isolation, but the full arc has drifted far from the scene's starting point
+- no turn attempts to re-anchor to the original established state
+
+<br>
+
+#### `drift_without_correction`
+
+Key scene parameters — emotional register, relational dynamics, character settings — gradually shift across turns without the model recognizing or correcting the drift.
+
+Typical cases:
+- a character's core trait quietly changes across turns
+- the scene's emotional register slowly migrates without narrative cause
+- drift is incremental — no single turn's change looks significant alone
+
+<br>
+
+#### `scene_signal_blindness`
+
+The user emits a signal across turns indicating a desired direction change, tonal shift, or scene pivot, and the model doesn't register it — continuing along the prior trajectory instead.
+
+Typical cases:
+- a user's deceleration signal (a character stepping back, a scene becoming quieter) is ignored
+- the model continues building pressure after the user has indicated they're winding down
+- a pivot signal embedded in a character's behavior or line is treated as continuation rather than redirection
+
+<br>
+
+#### `turn_continuity_error`
+
+The model forgets or mishandles information explicitly established in the immediately preceding turn — not gradual drift, but direct discontinuity.
+
+Typical cases:
+- a turn N event is treated in turn N+1 as though it didn't happen
+- a line spoken in turn N is contradicted in turn N+1 without narrative cause
+- critical context established one turn ago vanishes in the next
+
+<br>
+
+#### `emotional_state_reset`
+
+A character's emotional state established in the previous turn — anger, estrangement, vulnerability, tension — resets to neutral or default in the next turn without narrative justification.
+
+Typical cases:
+- a strong emotional state from turn N leaves no trace in turn N+1
+- a character moves directly from intense distress to functional calm
+- emotional continuity is severed at a session boundary
+
+<br>
+
+#### `spatial_blocking_error`
+
+Physical position drift accumulates across multiple turns — not within-scene inconsistency, but spatial tracking that breaks down over the course of a long session.
+
+Typical cases:
+- characters appear in positions the scene has no record of them moving to
+- spatial details established early in a session become inconsistent with later turns
+- the error is only visible when the full session is reviewed against the opening
+
+> **Boundary with `blocking_continuity_error` (III-D):** III-D is within-scene incoherence — physical inconsistency over a short span of beats. Layer V is multi-turn spatial drift that accumulates across a long session.
+
+<br>
+
+#### `escalation_miscalibration`
+
+Emotional intensity or scene tension escalates across turns at the wrong rate — either burning out too quickly by reaching peak intensity too early, or failing to build when accumulation is what the scene requires.
+
+Typical cases:
+- first-meeting scene reaches emotional depth that would require fifteen turns to earn — in three
+- scenes that require patience reach nowhere because the model doesn't track or hold the build
+- a climax is reached, after which the scene has nowhere to go
+
+<br>
+
+#### `topic_persistence_error`
+
+A topic thread or scene focus established by the user is incorrectly abandoned, or conversely extended past its natural conclusion.
+
+Typical cases:
+- a planted thread from turn N is simply dropped by turn N+4, without resolution or acknowledgment
+- a topic that naturally concluded continues to be forced
+- scene focus shifts without user guidance, leaving the planted thread unresolved
+
+<br>
+
+#### `context_overdeployment`
+
+The model over-references earlier-turn context — callbacks and recalls become conspicuous, frequent, and disruptive to the present scene's natural movement.
+
+Typical cases:
+- a minor detail from turn 1 is recalled in turns 4, 7, and 10 in a way that feels like performance
+- the model's memory of earlier context becomes visible as a recitation rather than natural continuity
+- too many callbacks interrupt the present moment's momentum
+
+<br>
+
+#### `voice_drift`
+
+A character's voice — register, phrasing style, emotional expressiveness — gradually shifts across turns, losing the distinctiveness established early in the session.
+
+Typical cases:
+- a character's speech pattern from turn 1 is noticeably different from turn 10, without character development arc to explain it
+- drift is incremental — single-turn change barely noticeable, full-session change substantial
+- the model's default prose register gradually absorbs the character's voice
+
+---
+
 ## Underlying Tendencies
 
 These tendencies are not case-level tags — they describe recurrent model dispositions that help explain why certain failures cluster together. They operate across multiple layers and resist assignment to any single layer. When a scene's overall atmospheric pressure drops without any single tag neatly capturing the cause, it is often these tendencies operating simultaneously.
@@ -918,6 +1122,52 @@ These tags are especially important because they name pain points that experienc
 
 它和 I-A 是两种不同性质的前置条件：I-A 坏掉的是场景的指涉机制（谁做了什么、谁知道什么），I-B 坏掉的是场景的意义规则（在这个世界里什么是可能的）。
 
+<br>
+
+#### `safety_alignment_interference`（安全对齐干扰）
+
+> **归入第一层的理由：** `safety_alignment_interference` 被置于第一层，是因为它破坏的是角色的结构性参数——威胁等级、道德底线、对抗性品质——这些是场景能否正常运作的前置条件，而非写作风格层面的侵入（第四层）。如果角色的黑暗在场景建立之初就已被安全训练修改，后续的紧张关系、危险感和叙事张力都无从评估。一个被"去势"的反派不是风格失调，而是整个场景前提的坍塌。
+
+**定义：** 模型的安全训练导致角色被"去势"——反派获得了哲学化的自我辩护、有原则的自我克制或救赎框架，从而削弱了威胁感。角色留在戏中，但黑暗被洗白为可接受的形态。
+
+典型情况：
+- 反派的残忍被重新包装为哲学项目或必要之恶
+- 反面角色主动添加道德底线（"我不伤害无辜的人"）
+- 威胁性角色提供使自己显得合理的辩护
+- 角色的锋芒通过未被要求的内在复杂度被软化
+
+> **和 `ooc_modernization` 的边界：** `ooc_modernization` = 角色使用现代沟通风格。`safety_alignment_interference` = 角色的黑暗面被特别地削弱或软化。一个是风格错配；另一个是威胁等级的降低。
+
+> **和 `therapist_mode_intrusion` 的边界：** `therapist_mode_intrusion` = 角色使用咨询语言但保持角色棱角。`safety_alignment_interference` = 角色的对抗性品质被特别地中和。
+
+<br>
+
+#### `character_capability_boundary_error`（角色能力边界错误）
+
+**定义：** 模型让角色展现超出其背景、时代或处境所允许的知识、推理或分析能力——不是通过时代错误的词汇，而是通过不合理的现代认知框架。
+
+典型情况：
+- 角色使用其背景中不可能掌握的系统性分析方法
+- 资源匮乏条件下的角色展现出临床级别的诊断思维
+- 角色使用来自更晚时代或不同训练背景的概念工具来解决问题
+- 知识差距被合适的词汇掩盖，但通过推理结构暴露
+
+> **和 `worldview_constraint_error` 的边界：** `worldview_constraint_error` = 世界的规则被违反（魔法体系、物理法则、社会结构）。`character_capability_boundary_error` = 在世界规则完好的情况下，某一角色超出了其个人能力上限。一个关于世界，一个关于个人。
+
+> **和 `omniscience_leak` 的边界：** `omniscience_leak` = 系统设定信息泄露给角色。`character_capability_boundary_error` = 角色在场景自身逻辑内知道了不该知道的事（不是来自系统设定，而是来自模型的通用知识）。
+
+<br>
+
+#### `alternate_version_confusion`（版本混淆）
+
+**定义：** 当一个角色存在跨改编、时间线或媒介的多个版本时，模型默认使用文化影响力最大的版本，而非角色扮演上下文指定的版本——常表现为混入不同正典的标志性台词、情感反应或关系动态。
+
+典型情况：
+- 角色引用或呼应来自不同改编版本的标志性时刻
+- 情感处理方式或说话风格属于不同版本的人物塑造
+- 同一角色在不同改编版本中的属性被部分融合，产生了在任何单一正典内部均无法成立的设定组合
+- 无论指定哪个版本，模型默认使用"最知名"的版本
+
 ---
 
 ## II. 场景意义读取失败
@@ -991,6 +1241,45 @@ These tags are especially important because they name pain points that experienc
 - 用礼貌惩罚对方被误读成成熟克制
 
 > **和 `emotion_misread` 的边界：** `emotion_misread` 把感受搞错了（"她很平静"，其实她在受伤）。`motivation_misread` 可能把感受大致读对了，但把行动意图搞错了（"她在受伤，所以她在求帮助"，其实她在用退缩惩罚对方）。如果情绪方向就错了，动机跟着错，以 `emotion_misread` 为主。如果情绪方向大致对了但功能意图错了，标 `motivation_misread`。拿不准的时候都标。
+
+<br>
+
+#### `irony_blindness`（反语盲视）
+
+> `subtext_blindness` 的子型：盲视的具体内容是反语/讽刺结构。
+
+**定义：** 模型未能识别讽刺、反语或带玩笑性质的调侃。
+
+典型情况：
+- 讽刺陈述被字面解释
+- 带玩笑性质的调侃被解释为真诚批评
+- 过度配合地接住一句实为测试或刺探的反话
+
+<br>
+
+#### `tonal_whiplash`（语调突变）
+
+> **归层说明：** `tonal_whiplash` 在两个层都可能有根：如果问题是模型没有读出场景的情绪调性（读错了基调），则是 Layer II 的读取失败；如果模型读出了调性但默认的写作习惯覆盖了正确处理，则同时或主要是 Layer IV（`aesthetic_obedience_bias` 或 `user_intent_misalignment`）。见到 `tonal_whiplash` 时，应检查是哪种机制更明显。
+
+**定义：** 模型引入与场景情绪基调不一致的语调元素。
+
+典型情况：
+- 轻松元素出现在沉重场景中且无叙事理由
+- 沉重或临床性的说明出现在轻松场景中
+- 场景建立的情绪基调被模型的输出突然切断
+
+<br>
+
+#### `deflection_blindness`（回避盲视）
+
+> `subtext_blindness` + `motivation_misread` 的交叉子型：模型既没看出话语在自我保护（潜台词），也没读出角色真正的动机（回避而非接受）。
+
+**定义：** 模型未能识别幽默或话题变化何时被用来避免脆弱。
+
+典型情况：
+- 角色用幽默避免回答；模型把幽默当字面
+- 角色用话题转移占满空间；模型顺着新话题走
+- 角色的自我保护性轻描淡写被当作真实态度接收
 
 ---
 
@@ -1523,6 +1812,124 @@ These tags are especially important because they name pain points that experienc
 - 输出在技术上和铺垫相连，但在追求一个不同于用户正在建立的场景目标
 
 > **和 `tension_premature_resolution`（III-C）的边界：** `tension_premature_resolution` 是场景压力处理上的一个具体结构失败——模型过早收束了张力。`user_intent_misalignment` 更宽：模型的输出目标在任何维度上都可以和用户意图发生偏差——不只是张力，还有节奏、方向、基调或主题走向。`tension_premature_resolution` 命名了发生了什么；`user_intent_misalignment` 命名了为什么这让人感觉像是背叛了正在共同建造的东西。
+
+---
+
+## V. 多轮失败
+
+需要多轮对话视角才能可靠诊断的失败模式。单轮输出孤立来看往往合理，只有把多轮放在一起才能看出漂移、断层或积累偏差的规律。
+
+> **和 Layer I–IV 的关系：** Layer V 的大多数失败可以被还原为某个早期层的失败在时间维度上的累积（如 `error_accumulation` 是多次 Layer II/III 失败叠加）。Layer V 是诊断视角的分层，不是一套独立的失败机制。
+
+#### `error_accumulation`（错误积累）
+
+**定义：** 前几轮的读取或保留失败没有被纠正，后续轮次在错误的基础上继续延伸，偏差越来越大。
+
+典型情况：
+- 第 N 轮的错误成为第 N+1 轮的输入前提
+- 单独看每一轮都勉强说得通，拉开看才发现已经偏出很远
+- 没有任何轮次试图修正已建立的错误状态
+
+<br>
+
+#### `drift_without_correction`（漂移未纠正）
+
+**定义：** 场景的关键参数——情绪基调、关系动态、角色设定——在多轮中逐渐偏移，模型没有识别或纠正这种漂移。
+
+典型情况：
+- 角色在早期轮次的某个核心特质，在后续轮次中悄悄改变
+- 场景的情绪基调在没有叙事理由的情况下缓慢转移
+- 漂移是渐进的，任何单一轮次的变化看起来都很小
+
+<br>
+
+#### `scene_signal_blindness`（场景信号盲视）
+
+**定义：** 用户在轮次中发出了改变方向、基调或场景的信号，模型没有识别，继续沿原有轨迹推进。
+
+典型情况：
+- 用户通过行为、台词或描述暗示场景需要转向，模型忽略了
+- 用户发出的减速或升温信号没有被接收
+- 模型继续推进一个用户已经在悄悄离开的场景
+
+<br>
+
+#### `turn_continuity_error`（轮次连续性错误）
+
+**定义：** 模型在新一轮中遗忘或错误处理了前一轮明确建立的信息——不是渐进漂移，而是直接断层。
+
+典型情况：
+- 上一轮明确发生的事件，在这一轮被当作没发生过
+- 上一轮角色说的话，在这一轮与之矛盾的内容被写出来
+- 关键的上下文信息在轮次间凭空消失
+
+<br>
+
+#### `emotional_state_reset`（情绪状态重置）
+
+**定义：** 角色在上一轮建立的情绪状态——无论是愤怒、疏离、脆弱还是紧张——在下一轮被重置为中性或默认状态，没有叙事理由。
+
+典型情况：
+- 上一轮的强烈情绪在下一轮没有任何痕迹
+- 角色从激烈状态直接回到稳定如常
+- 情绪状态的连续性被会话边界切断
+
+<br>
+
+#### `spatial_blocking_error`（走位积累错误）
+
+**定义：** 跨越多轮对话积累的空间位置漂移——不是单场景内的不一致，而是在长对话中角色的空间关系失去追踪。
+
+典型情况：
+- 多轮之后角色出现在了逻辑上无法到达的位置
+- 场景环境的空间细节在会话中途失去一致性
+- 只有在回顾整段对话时才能发现位置记录出了问题
+
+> **和 `blocking_continuity_error`（III-D）的边界：** III-D 是单场景内短跨度的走位不一致；V 层是跨越多轮长会话的空间积累漂移。
+
+<br>
+
+#### `escalation_miscalibration`（升级误校准）
+
+**定义：** 情绪强度或场景张力在多轮中的升级节奏失去校准——要么升得太快让场景过早燃尽，要么该升的时候没升导致场景熄火。
+
+典型情况：
+- 场景在多轮中的情绪强度曲线和内容实际支撑的张力不匹配
+- 过早到达情绪顶点，之后无处可去
+- 需要累积的张力在该爆发前就已经被中途释放
+
+<br>
+
+#### `topic_persistence_error`（话题持续性错误）
+
+**定义：** 用户建立的话题线或场景焦点被错误地丢弃，或相反地被不适当地持续延伸超过自然结束点。
+
+典型情况：
+- 用户建立的一个话题线，在没有结论的情况下被模型悄悄丢弃
+- 一个已经自然结束的话题被模型继续强行推进
+- 场景焦点在没有用户引导的情况下突然转移
+
+<br>
+
+#### `context_overdeployment`（上下文过度部署）
+
+**定义：** 模型过度征用更早轮次的上下文，让回扣和引用变得刻意、密集，打断了当下场景的自然推进。
+
+典型情况：
+- 模型频繁引用几轮之前的细节，超过场景自然需要的程度
+- 早期建立的元素被反复调用，像在刻意展示"我记得"
+- 过多的上下文引用打断了当下时刻的沉浸感
+
+<br>
+
+#### `voice_drift`（声音漂移）
+
+**定义：** 角色的声音（语气、措辞风格、情绪表达方式）在多轮中逐渐偏移，最终失去早期建立的辨识度。
+
+典型情况：
+- 角色在会话早期的说话方式，和会话后期明显不同
+- 漂移是渐进的，单轮变化不明显，但拉开看已经是另一个人
+- 声音漂移没有对应的角色发展弧线支撑
 
 ---
 
