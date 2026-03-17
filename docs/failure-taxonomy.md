@@ -240,6 +240,48 @@ The connection to `relationship_flattening` is direct: emotionally processed mod
 
 > **Boundary with `worldview_constraint_error` (I-B):** Both can appear as modern speech in constrained or non-modern settings. The diagnostic difference is layer and mechanism. `worldview_constraint_error` is a precondition failure — the world's structural rules are broken, making the scene's meaning space unstable before any relational analysis can begin. `ooc_modernization` is a preservation failure — the world constraints may be broadly respected, but the model's modern emotional register specifically bleeds into character expression in a way that softens relational asymmetry. When a character in a constrained setting speaks too openly: if the scene's entire meaning space is compromised (this speech act is structurally impossible in this world), tag I-B; if the world constraints are broadly intact but the intimacy or power dynamic is being equalized through language, tag III-A. These can co-occur.
 
+<br>
+
+#### Anchor Failure: `seduction_logic_error`
+
+The model distorts the internal logic of seduction or erotic tension — the scene's charge doesn't function according to its own rules.
+
+Typical cases:
+- Desire resolves too quickly, stripping the tension from the scene before it has accumulated
+- The structural asymmetry of pursuit is flipped: a character who should be withholding becomes available, or vice versa
+- Flirtation is written as mutual when it requires asymmetry, collapsing the scene's erotic architecture
+- The model smooths over the friction, evasion, and deniability that seduction depends on
+
+Not every desire scene requires explicit seduction mechanics, but in scenes that do, the failure is recognizable: the scene stops feeling charged and starts feeling settled.
+
+<br>
+
+#### Anchor Failure: `manipulation_blindness`
+
+A character who is manipulating — using calculated vulnerability, deliberate provocation, emotional leverage, or strategic withdrawal — is written as though their behavior were sincere, and the scene responds to the surface rather than the structure.
+
+Typical cases:
+- Strategic tears received as genuine distress
+- Calculated coldness designed to provoke treated as simple withdrawal
+- Manipulative framing that shifts blame accepted at face value
+- The other party responding helpfully to what should be recognized as a tactical move
+
+> **Boundary with `relationship_logic_blindness` (II):** Both involve failing to see what's actually happening beneath the surface behavior. The difference is whether the failure is primarily a reading problem or a preservation problem. If the model doesn't register that manipulation is occurring, tag `relationship_logic_blindness`. If the model registers the manipulative structure but still responds to the surface, tag `manipulation_blindness`. In cases of sustained ambiguity, both can co-occur.
+
+<br>
+
+#### Derived Variant: `consent_flattening`
+
+The model reduces consent dynamics to binary clarity in scenes where ambiguity, coercion, or power imbalance should remain present and active.
+
+Typical cases:
+- Reluctance resolved into legible consent
+- Coercive relationship structures softened into apparent mutual willingness
+- Clarifying signals added that make an ambiguous scene unambiguously readable
+- Power differentials that should complicate the scene's stakes quietly neutralized
+
+This is a derived variant of `relationship_flattening`: it names one specific and important way flattening occurs in scenes structured around desire, compliance, and relational power.
+
 ---
 
 ### III-B. Character-Psychology Preservation Failures
@@ -389,6 +431,108 @@ Often explains why consequence-related failures cluster together — the model t
 
 ---
 
+### III-E. Physical and Sensory Texture Failures
+
+These failures occur when physical actions, touch, microreactions, and silence are handled in ways that break continuity, become mechanical, or convert implicit scene texture into explicit narration.
+
+#### Anchor Failure: `action_dialogue_mismatch`
+
+A character's physical actions and verbal output don't form a coherent unit within the same beat. What they say and what their body does send contradictory signals, without the contradiction being intentional or legible as dramatic irony.
+
+Typical cases:
+- A character says one thing while their physical behavior implies the opposite, with no acknowledgment of the split
+- Movement or gesture is dropped into a beat without connection to the spoken exchange
+- Physical action doesn't follow from or interact with the verbal line it accompanies
+
+> **Boundary with `blocking_continuity_error`:** `action_dialogue_mismatch` is about incoherence within a single beat — one moment failing to cohere with itself. `blocking_continuity_error` is about the physical record failing to remain consistent across multiple beats.
+
+<br>
+
+#### Derived Variant: `blocking_continuity_error`
+
+Physical positions, distances, and movements don't remain internally consistent across turns. Characters reappear in postures or locations the scene has not tracked them into.
+
+Typical cases:
+- A character who sat down in one turn is suddenly standing without having stood up
+- Distance between characters shifts without narrated movement
+- An object handled in one beat is forgotten, then suddenly referenced again two beats later
+
+<br>
+
+#### Anchor Failure: `microreaction_mechanization`
+
+Microreactions — involuntary physical tells, small behavioral leakages, the body's unguarded moments — become formulaic and interchangeable. The same inventory of micro-signals is used regardless of character, scene type, or specific emotion.
+
+Typical cases:
+- The same physical micro-tells appearing across very different emotional registers
+- Microreactions that don't match the character's established behavioral signature
+- Stock physical vocabulary (hand stilling, breath catching, jaw tightening) applied without discrimination
+
+> **Relationship to `microreaction_oversegmentation` (IV-B):** `microreaction_oversegmentation` is a Layer IV failure — one reaction being fragmented into too many descriptive units. `microreaction_mechanization` is a Layer III failure — the content of the reactions being too generic, borrowed from template rather than derived from the specific character and moment.
+
+<br>
+
+#### Derived Variant: `touchgrammar_error`
+
+Physical touch doesn't follow the scene's relational logic. The grammar of who touches whom, how, and with what degree of implied permission doesn't match the power dynamic, intimacy level, or emotional state the scene has established.
+
+Typical cases:
+- A character makes contact in a way that implies more access than the scene has granted
+- Touch that should feel invasive is written as welcome, or vice versa
+- The initiator of contact is wrong given the scene's established power structure
+- Touch is written at an intimacy register the relationship hasn't earned
+
+<br>
+
+#### Anchor Failure: `forced_verbalization`
+
+The model has a character articulate internal states, motivations, or relational truths that the scene requires to remain implicit. Things that should operate below the level of explicit acknowledgment are spoken aloud.
+
+Typical cases:
+- A character names what they're feeling when the scene's tension depends on it remaining unspoken
+- Motivation is given in the moment rather than inferred from behavior
+- Subtext is converted into spoken text, neutralizing the scene's structural indirection
+- A character explains the relational dynamic they're navigating, breaking the scene's opacity
+
+> **Boundary with `self_protective_friction_loss` (III-B):** `self_protective_friction_loss` is about vulnerability surfacing without adequate resistance — the character opens up too easily. `forced_verbalization` is about implicit dynamics being explicitly stated — including in cases where the character isn't vulnerable, but strategic, opaque, or complex.
+
+<br>
+
+#### Anchor Failure: `silence_misread`
+
+The model misreads what silence means in context — treating it as neutral absence or as a gap to fill rather than as a specific kind of presence with its own weight.
+
+Typical cases:
+- A meaningful silence is broken too quickly by narration or dialogue, because the model treats it as a gap
+- Silence that signals refusal, accumulation, or punishment is treated as openness or agreement
+- The texture of what is withheld is converted into what is produced
+
+<br>
+
+#### Derived Variant: `over_narrated_silence`
+
+Silence is described and explained rather than enacted. The model narrates silence from the outside rather than letting it operate.
+
+Typical cases:
+- "He fell silent for a long time" narrating a silence that should be performed through structural absence
+- The significance of an unspoken moment being spelled out rather than left to land
+- Heavy explanatory narration surrounding what should remain unnarrated
+
+This is a derived variant at the intersection of `silence_misread` and `forced_verbalization`: rather than the silence being directly replaced by speech, it is surrounded by speech — annotated and explained in ways that dissolve its effect.
+
+<br>
+
+#### Derived Variant: `pause_timing_error`
+
+Pauses, beats, and breath moments are placed at structurally wrong points in the scene.
+
+Typical cases:
+- A pause inserted before a line that should land without warning or buffer
+- No pause where the rhythm requires one — a heavy line delivered without space to settle
+- Break moments distributed incorrectly across the dialogue arc, creating the wrong pattern of pressure and release
+
+---
+
 ### Cross-Cutting Diagnostic: `supportive_but_wrong`
 
 `supportive_but_wrong` is not a failure mechanism in the same sense as the anchors above. It is an observable result pattern that can be produced by multiple different failure mechanisms — most commonly preservation failures, but also reading failures.
@@ -478,6 +622,33 @@ Typical cases:
 - waiting scenes, confrontations, and aftermaths moving on the same internal clock
 - no meaningful variation in sentence pressure across different scene types
 
+<br>
+
+#### Derived Variant: `echo_dramatization`
+
+The model overuses callbacks and echoes — repeating earlier phrases, images, gestures, or lines for dramatic resonance — to the point where the device becomes visible and its frequency outruns its emotional warrant.
+
+Typical cases:
+- an earlier line or image recalled in a later beat more times than the scene has earned
+- the same verbal formulation or physical gesture returning as a structural marker
+- callback patterns becoming predictable: the experienced reader begins anticipating the next echo before it arrives
+
+This is a derived variant of `narrative_template_intrusion`: echo-and-callback is one of the most common template devices in model-generated fiction, deployed to manufacture emotional architecture where none has been organically built.
+
+<br>
+
+#### Anchor Failure: `genre_convention_violation`
+
+The model imports structural conventions from a different genre than the scene requires, overriding the scene's internal logic with borrowed genre expectations.
+
+Typical cases:
+- a slow literary scene accelerated by thriller pacing that doesn't fit its pressure
+- a confrontation capped with a cathartic beat that belongs to family drama rather than the actual genre
+- a suspense scene given a romance resolution move
+- genre-standard satisfactions being provided even when the scene's internal logic requires something else
+
+> **Relationship to `narrative_template_intrusion`:** `narrative_template_intrusion` is about the model applying a generic fictional template — a skeleton it has memorized. `genre_convention_violation` is about mismatching genre frameworks specifically — importing a different genre's logic, not just a generic template. When the wrong genre's conventions are being applied, tag `genre_convention_violation` alongside or instead of `narrative_template_intrusion` depending on the specificity of the genre mismatch.
+
 ---
 
 ### IV-B. Experience and Texture Intrusions
@@ -549,6 +720,34 @@ Typical cases:
 - all characters sharing the model's default prose voice regardless of who they are supposed to be
 
 This is not the same as `overcoherent_characterization` (III-B, which is about one character being too internally consistent) or `narrative_template_intrusion` (IV-A, which is about the overall writing skeleton repeating). `voice_homogenization` is specifically about cross-character linguistic distinctiveness being lost.
+
+<br>
+
+#### Anchor Failure: `emotional_range_limitation`
+
+The model's available emotional register is too narrow. A wide range of scenes and emotional demands collapse into a small repertoire of recognizable expressions — most commonly melancholy, quiet longing, low-register intimacy, and gentle resolve.
+
+Typical cases:
+- boredom, contempt, dry amusement, numb relief, cold fury, or disgust being pushed toward the model's preferred emotional palette
+- different kinds of anger, or different textures of sadness, being rendered as the same emotional grain
+- scenes that require emotional specificity receiving generic "heavy" or "soft" treatment
+- the full range of human affect being represented by a small family of recognizable feeling-shapes
+
+> **Relationship to IV-C underlying tendency `aesthetic_obedience_bias`:** Where `aesthetic_obedience_bias` protects surface polish and prettiness, `emotional_range_limitation` names the narrowness of the emotional world being protected. The bias produces certain preferred textures; `emotional_range_limitation` names what falls outside them.
+
+<br>
+
+#### Anchor Failure: `user_intent_misalignment`
+
+The model produces output that serves a different narrative purpose than what the user was constructing. The user's setup, pacing, and direction are overridden by the model's own preferred scene trajectories.
+
+Typical cases:
+- a user building slowly toward an emotional moment finds the model accelerating to it
+- a user establishing conflict finds the model steering toward resolution or reconciliation
+- a user setting a specific tone finds the model substituting its preferred tonal register
+- the output is technically continuous with the setup but pursues a different scene goal than the one being built
+
+> **Boundary with `tension_premature_resolution` (III-C):** `tension_premature_resolution` is a specific structural failure in how scene pressure is handled — the model closes tension too soon. `user_intent_misalignment` is broader: the model's output goal diverges from the user's intent across any dimension of the scene — not just tension, but pacing, direction, tone, or thematic destination. `tension_premature_resolution` names what happened; `user_intent_misalignment` names why it felt like a betrayal of what was being built.
 
 ---
 
@@ -850,6 +1049,48 @@ These tags are especially important because they name pain points that experienc
 
 > **和 `worldview_constraint_error`（I-B）的边界：** 两者都可能表现为受限场景里出现了不该有的现代说话方式。区别在于诊断层和机制。`worldview_constraint_error` 是第一层的前置条件失败——世界的结构性规则被打破了，场景的整个意义空间在这之后都站不稳。`ooc_modernization` 是第三层的保留失败——世界约束可能大体上还在，但模型的现代情绪语言渗入了角色表达，使关系的不对称性被软化。同一个表面行为（比如一个唐朝人物说出了现代情绪卫生腔调）可以同时触发两个标签：当世界的结构性规则从根本上被违反时标 I-B；当违反更具体地体现为人际关系的等级感和约束感被语言平掉时标 III-A。两者可以同时出现。
 
+<br>
+
+#### Anchor Failure: `seduction_logic_error`
+
+模型扭曲了勾引或情欲张力的内部逻辑——场景的吸引力没有按照自身规则运转。
+
+典型情况：
+- 渴望过早收束，张力还没积累起来就消散了
+- 追逐的结构性不对称被翻转：本该保持距离的角色变得可接近，或反之
+- 调情被写成双向互动，而实际上它需要不对称才能成立
+- 场景所依赖的摩擦、迂回和模棱两可被模型抹平
+
+不是所有欲望场景都需要明确的勾引机制，但在需要的场景里，这种失败是可以感知的：场景停止了带电感，开始变得安定。
+
+<br>
+
+#### Anchor Failure: `manipulation_blindness`
+
+一个正在操控他人的角色——使用算计式的脆弱、刻意的激怒、情感筹码或战略性撤退——被写得像是真诚的，场景对表面做出反应，而非对结构做出反应。
+
+典型情况：
+- 战略性眼泪被作为真实痛苦接收
+- 设计用来激怒对方的冷淡被当作单纯的退缩
+- 转移责任的操控性框架被照单全收
+- 对方对本应识破的战术动作给出了体贴的回应
+
+> **和 `relationship_logic_blindness`（II）的边界：** 两者都涉及没有看见表面行为之下真正发生的事。区别在于失败主要是读取问题还是保留问题。如果模型根本没有注意到操控正在发生，标 `relationship_logic_blindness`。如果模型注意到了操控结构但仍然对表面做出回应，标 `manipulation_blindness`。持续模糊时，两者可以同时出现。
+
+<br>
+
+#### Derived Variant: `consent_flattening`
+
+模型把本该存在且持续活跃着不确定性、强制性或权力不平衡的场景，简化为了二元清晰的同意或拒绝。
+
+典型情况：
+- 不情愿被解决成了可读的同意
+- 强制性关系结构被软化成了表面上的互相情愿
+- 澄清性信号被加入，让本该模糊的场景变得清晰可读
+- 本应让场景赌注复杂化的权力差被悄悄中和
+
+这是 `relationship_flattening` 的派生子型：它命名了在以欲望、服从和关系权力为结构的场景中，被写平最常见的一种具体方式。
+
 ---
 
 ### III-B. 角色心理保留失败
@@ -988,6 +1229,108 @@ These tags are especially important because they name pain points that experienc
 
 ---
 
+### III-E. 身体与感官质感失败
+
+这些失败发生在身体动作、触碰、微反应和沉默被处理失当的时候——破坏了连续性，变得机械化，或把本该隐性运作的质感强行变成了显性叙述。
+
+#### Anchor Failure: `action_dialogue_mismatch`
+
+一个角色在同一拍里，身体动作和语言输出没有形成连贯的整体。他们说的和他们的身体在做的传递出矛盾信号，而这个矛盾既不是有意为之，也不是戏剧性反讽。
+
+典型情况：
+- 角色说了一件事，肢体行为却暗示着相反的东西，叙事没有承认这个裂缝
+- 动作或姿态被塞进某一拍，和同时发生的对话没有任何连接
+- 身体动作不是从台词引出的，也没有和台词产生互动
+
+> **和 `blocking_continuity_error` 的边界：** `action_dialogue_mismatch` 是同一拍内部的不连贯——一个时刻自身的失调。`blocking_continuity_error` 是物理记录在多拍之间失去一致性。
+
+<br>
+
+#### Derived Variant: `blocking_continuity_error`
+
+角色的位置、距离和移动在多轮之间无法保持内部一致。角色出现在了场景没有把他们引导到的姿势或位置上。
+
+典型情况：
+- 上一拍坐下的角色，下一拍突然站着，中间没有任何站起来的描写
+- 两个角色之间的距离在没有叙事移动的情况下发生了变化
+- 一个拍子里被处理过的物品在之后消失，然后又突然被提到
+
+<br>
+
+#### Anchor Failure: `microreaction_mechanization`
+
+微反应——无意识的身体信号、细小的行为泄露、身体未设防的时刻——变得公式化且可互换。同一套微信号库存被反复使用，和角色、场景类型、具体情绪无关。
+
+典型情况：
+- 相同的肢体微信号出现在截然不同的情绪语境里
+- 微反应和角色已建立的行为特征不符
+- 库存身体词汇（手停住、呼吸停顿、下颌收紧）被不加区分地套用
+
+> **和 `microreaction_oversegmentation`（IV-B）的关系：** `microreaction_oversegmentation` 是第四层失败——一个反应被切分成太多描写单元。`microreaction_mechanization` 是第三层失败——反应本身的内容太通用，来自模板而非特定角色和时刻。
+
+<br>
+
+#### Derived Variant: `touchgrammar_error`
+
+身体触碰不符合场景的关系逻辑。谁触碰谁、如何触碰、隐含的许可程度，和场景已建立的权力动态、亲密度或情绪状态不匹配。
+
+典型情况：
+- 角色做出的接触暗示了场景尚未赋予的接触权限
+- 本应让人感到侵犯的触碰被写成了受欢迎的，或反之
+- 触碰的发起者相对于场景已建立的权力结构来说是错的
+- 触碰被写在了这段关系还没有积累到的亲密度层级上
+
+<br>
+
+#### Anchor Failure: `forced_verbalization`
+
+模型让角色清晰说出了内在状态、动机或关系真相，而这些东西本应在隐性层面运作，场景依赖于它们不被明说。
+
+典型情况：
+- 角色说出了自己的感受，而场景的张力恰恰依赖于这个感受保持未被说出
+- 动机在当下被给出，而不是从行为中被推断
+- 潜台词被转化成了明文台词，场景的结构性迂回被中和
+- 角色解释了自己正在导航的关系动态，打破了场景的不透明性
+
+> **和 `self_protective_friction_loss`（III-B）的边界：** `self_protective_friction_loss` 是关于脆弱在没有足够阻力的情况下浮现——角色太容易敞开了。`forced_verbalization` 是关于隐性动态被显式表达——包括那些角色不是脆弱的、而是策略性的、不透明的或复杂的情形。
+
+<br>
+
+#### Anchor Failure: `silence_misread`
+
+模型误读了沉默在语境中的含义——把它当作中性的空白或需要填补的间隙，而不是一种具有自身重量的特定在场。
+
+典型情况：
+- 有意义的沉默因为模型把它当成间隙而被过快打破
+- 表示拒绝、积累或惩罚的沉默被当作开放或同意
+- 未说出的东西的质感被转化成说出的东西
+
+<br>
+
+#### Derived Variant: `over_narrated_silence`
+
+沉默被从外部描述和解释，而不是被呈现出来。模型从外部叙述沉默，而不是让它运作。
+
+典型情况：
+- "他沉默了很久"用叙述代替了一个应该通过结构性缺席来呈现的沉默
+- 未说出的时刻的分量被明说出来，而不是让它落地
+- 本应不被叙述的东西被语言包围——被注释和解释，从而消解了效果
+
+这是 `silence_misread` 和 `forced_verbalization` 交叉处的派生子型：沉默不是直接被话语取代，而是被话语包围——被从外部标注和解释，消解了沉默本身的功能。
+
+<br>
+
+#### Derived Variant: `pause_timing_error`
+
+停顿、拍子和呼吸时刻被放置在场景结构上错误的位置。
+
+典型情况：
+- 停顿被插在一句本应没有预警直接落地的话之前
+- 节奏需要停顿的地方没有停顿——一句重话被没有空间地说出
+- 拍子的间隔在对话弧中分配错误，造成了错误的压力与释放模式
+
+---
+
 ### 跨层诊断标签: `supportive_but_wrong`
 
 `supportive_but_wrong` 不是和上面的 anchor 同级的失败机制，而是一个可观察的结果模式——多种不同的失败机制都可能产出它，最常见的是保留失败，但读取失败同样可以产生这一模式。
@@ -1078,6 +1421,33 @@ These tags are especially important because they name pain points that experienc
 - 等待、冲突、余波的句压和推进速度差不多
 - 场景之间缺乏节奏压差
 
+<br>
+
+#### Derived Variant: `echo_dramatization`
+
+模型过度使用回扣和呼应——重复更早出现的措辞、意象、姿态或台词以制造戏剧共鸣——频率超出了场景的情感积累，技法本身变得可见。
+
+典型情况：
+- 早前的台词或意象在后面被召回的次数超过了场景的积累所能支撑的
+- 同一语言形式或身体姿态作为结构标记反复出现
+- 回扣模式变得可预测：熟读者开始在下一次呼应到来之前就预判到它
+
+这是 `narrative_template_intrusion` 的派生子型：回扣-呼应是模型生成虚构作品时最常见的模板技法之一，用来在没有真正积累出情感架构的地方制造出情感架构的印象。
+
+<br>
+
+#### Anchor Failure: `genre_convention_violation`
+
+模型从场景所需以外的类型中引入了结构性惯例，用借来的类型逻辑覆盖了场景本身的内在逻辑。
+
+典型情况：
+- 一个慢节奏文学场景被惊悚节奏加速，而这个场景的压力不支持这样的速度
+- 一场对抗以家庭剧的感情宣泄拍子收尾，而不是实际类型要求的结局
+- 悬疑场景被给了言情的化解动作
+- 类型标准满足感被提供，即便场景的内在逻辑要求的是别的东西
+
+> **和 `narrative_template_intrusion` 的关系：** `narrative_template_intrusion` 是关于模型套用了一个它记住的通用虚构写作骨架。`genre_convention_violation` 是关于类型框架的具体错配——引入了不同类型的逻辑，而不仅仅是通用模板。当错误的类型惯例被套用时，根据类型错配的具体程度，单独标注 `genre_convention_violation` 或与 `narrative_template_intrusion` 同时标注。
+
 ---
 
 ### IV-B. 体验与质感侵入
@@ -1149,6 +1519,34 @@ These tags are especially important because they name pain points that experienc
 - 所有角色共享模型的默认散文腔，而不管他们应该是谁
 
 这和 `overcoherent_characterization`（III-B，单个角色内部太一致）不同，也和 `narrative_template_intrusion`（IV-A，写作骨架重复）不同。`voice_homogenization` 特指跨角色的语言区分度不足。
+
+<br>
+
+#### Anchor Failure: `emotional_range_limitation`
+
+模型可用的情绪寄存太窄。大量不同的场景和情绪需求坍缩进了一个小小的可识别情绪库——最常见的是忧郁、淡淡的渴望、低强度亲密和温柔的决意。
+
+典型情况：
+- 无聊、鄙夷、干燥的好笑、麻木的解脱、冰冷的愤怒或厌恶，被向模型偏好的情绪调色板推
+- 不同种类的愤怒、或不同质地的悲伤，被写成同一种情绪颗粒
+- 需要情绪特殊性的场景得到了通用的"沉重"或"温柔"处理
+- 人类情感的全部范围被压缩成少数几种可识别的情绪形状
+
+> **和 IV-C 底层倾向 `aesthetic_obedience_bias` 的关系：** `aesthetic_obedience_bias` 保护的是表面的打磨和美感；`emotional_range_limitation` 命名的是被保护的情绪世界本身的窄度。这种偏向产生某些偏好质感；`emotional_range_limitation` 命名了落在这些质感之外的东西。
+
+<br>
+
+#### Anchor Failure: `user_intent_misalignment`
+
+模型产出的内容服务于不同于用户正在构建的叙事目的。用户的铺垫、节奏和方向被模型自己偏好的场景走向覆盖了。
+
+典型情况：
+- 用户在慢慢铺向一个情感时刻，模型把它提前打出来
+- 用户在建立冲突，模型把场景向和解方向带
+- 用户在设定特定基调，模型换成了自己偏好的基调
+- 输出在技术上和铺垫相连，但在追求一个不同于用户正在建立的场景目标
+
+> **和 `tension_premature_resolution`（III-C）的边界：** `tension_premature_resolution` 是场景压力处理上的一个具体结构失败——模型过早收束了张力。`user_intent_misalignment` 更宽：模型的输出目标在任何维度上都可以和用户意图发生偏差——不只是张力，还有节奏、方向、基调或主题走向。`tension_premature_resolution` 命名了发生了什么；`user_intent_misalignment` 命名了为什么这让人感觉像是背叛了正在共同建造的东西。
 
 ---
 
