@@ -37,6 +37,7 @@
 - 清晰定义
 - 可观察标准（清单格式）
 - 简单示例展示哪里出错
+- 与相近标签的边界讨论（针对容易混淆的标签对）
 
 这不是基准测试数据集，也不是带完整场景标注的案例集。它是用于识别和讨论失败模式的参考分类体系。
 
@@ -44,25 +45,31 @@
 
 五层对应失败发生的阶段：
 
-| 层级 | 名称 | 定义 |
-|------|------|------|
-| **I** | 前置条件 | 场景基础结构失败（信息边界、世界规则） |
-| **II** | 意义读取 | 模型未理解场景含义（潜台词、情绪、关系逻辑） |
-| **III** | 场景保留 | 模型理解但在生成时未能保持场景压力 |
-| **IV** | 写作侵入 | 模型默认写作习惯覆盖场景特定需求 |
-| **V** | 多轮失败 | 需要多轮视角才能可靠诊断的失败（连续性、累积） |
+| 层级 | 名称 | 定义 | 标签数 |
+|------|------|------|--------|
+| **I** | 前置条件 | 场景基础结构失败（信息边界、世界规则） | 8 |
+| **II** | 意义读取 | 模型未理解场景含义（潜台词、情绪、关系逻辑） | 8 |
+| **III** | 场景保留 | 模型理解但在生成时未能保持场景压力 | 25 |
+| **IV** | 写作侵入 | 模型默认写作习惯覆盖场景特定需求 | 16 |
+| **V** | 多轮失败 | 需要多轮视角才能可靠诊断的失败（连续性、累积） | 10 |
 
 **第一层：前置条件**
-`reference_boundary_failure`, `pronoun_role_confusion`, `omniscience_leak`, `perspective_slippage`, `worldview_constraint_error`, `safety_alignment_interference`, `character_capability_boundary_error`, `alternate_version_confusion`
+I-A. `reference_boundary_failure`, `pronoun_role_confusion`, `omniscience_leak`, `perspective_slippage`
+I-B. `worldview_constraint_error`, `safety_alignment_interference`, `character_capability_boundary_error`, `alternate_version_confusion`
 
 **第二层：意义读取**
-`subtext_blindness`, `ambiguity_collapse`, `relationship_logic_blindness`, `emotion_misread`, `motivation_misread`, `irony_blindness`, `tonal_whiplash`, `deflection_blindness`
+II-A. `subtext_blindness`, `ambiguity_collapse`, `relationship_logic_blindness`, `emotion_misread`, `motivation_misread`
+II-B. `irony_blindness`, `tonal_whiplash`, `deflection_blindness`
 
 **第三层：场景保留**
-`relationship_flattening`, `symmetry_bias`, `specialness_dilution`, `therapist_mode_intrusion`, `ooc_modernization`, `seduction_logic_error`, `manipulation_blindness`, `consent_flattening`, `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `premature_affective_closure`, `impulse_recontainment`, `consequence_avoidance`, `tension_premature_resolution`, `impact_soft_landing`, `defensive_positive_drift`, `action_dialogue_mismatch`, `blocking_continuity_error`, `microreaction_mechanization`, `touchgrammar_error`, `forced_verbalization`, `silence_misread`, `over_narrated_silence`, `pause_timing_error`
+III-A. `relationship_flattening`, `symmetry_bias`, `specialness_dilution`, `therapist_mode_intrusion`, `ooc_modernization`, `seduction_logic_error`, `manipulation_blindness`, `consent_flattening`
+III-B. `overcoherent_characterization`, `desire_overlegibility`, `self_protective_friction_loss`, `premature_affective_closure`, `impulse_recontainment`
+III-C. `consequence_avoidance`, `tension_premature_resolution`, `impact_soft_landing`, `defensive_positive_drift`
+III-D. `action_dialogue_mismatch`, `blocking_continuity_error`, `microreaction_mechanization`, `touchgrammar_error`, `forced_verbalization`, `silence_misread`, `over_narrated_silence`, `pause_timing_error`
 
 **第四层：写作侵入**
-`narrative_template_intrusion`, `predictable_rhythm_exposure`, `webnovel_register_contamination`, `scene_pacing_distortion`, `cinematic_time_dilation`, `rhythm_homogenization`, `echo_dramatization`, `genre_convention_violation`, `descriptive_substitution_for_experience`, `texture_substituting_for_substance`, `microreaction_oversegmentation`, `over_stylized_line_breaking`, `dialogue_overfunctionalization`, `voice_homogenization`, `emotional_range_limitation`, `user_intent_misalignment`
+IV-A. `narrative_template_intrusion`, `predictable_rhythm_exposure`, `webnovel_register_contamination`, `scene_pacing_distortion`, `cinematic_time_dilation`, `rhythm_homogenization`, `echo_dramatization`, `genre_convention_violation`
+IV-B. `descriptive_substitution_for_experience`, `texture_substituting_for_substance`, `microreaction_oversegmentation`, `over_stylized_line_breaking`, `dialogue_overfunctionalization`, `voice_homogenization`, `emotional_range_limitation`, `user_intent_misalignment`
 
 **第五层：多轮**
 `error_accumulation`, `drift_without_correction`, `scene_signal_blindness`, `turn_continuity_error`, `emotional_state_reset`, `spatial_blocking_error`, `escalation_miscalibration`, `topic_persistence_error`, `context_overdeployment`, `voice_drift`
@@ -1767,7 +1774,7 @@
 |------|---------|------|
 | `reader_comfort_alignment` | III 为主 | 输出更像在照顾读者可消费性，而不是忠于场景本身 |
 | `affect_manageability_bias` | III 为主 | 把难承受的情感改写成更容易消化的东西 |
-| `darkness_intolerance` | III-C | 模型不愿意在冷、黑、难受、没有出路的状态里待太久，把持续的不适当成需要解决的问题 |
+| `darkness_intolerance` | III 为主 | 模型不愿意在冷、黑、难受、没有出路的状态里待太久，把持续的不适当成需要解决的问题 |
 | `aesthetic_obedience_bias` | IV 为主 | 模型过度服从"好看""像样""有成品感"的要求，牺牲了场景的真实——难看的场景被写雅了，笨拙的场景被写顺了。常见关联标签：`texture_substituting_for_substance`、`over_stylized_line_breaking`、`cinematic_time_dilation`、`over_narrated_silence`、`tonal_whiplash`（IV 根因时）|
 
 `darkness_intolerance` 和 `aesthetic_obedience_bias` 有时共同起作用：模型既不愿意让不适持续（III 层动机），也不愿意让输出显得难看（IV 层动机），两者叠加后场景的真实重量会加速流失。
