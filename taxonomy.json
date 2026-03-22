@@ -1,6 +1,6 @@
 {
-  "version": "1.0",
   "name": "中文虚构对话失败图谱",
+  "total_labels": 75,
   "layers": [
     {
       "id": "I",
@@ -223,49 +223,303 @@
           "id": "III-A",
           "name": "关系保留失败",
           "labels": [
-            {"id": "relationship_flattening", "name": "关系扁平化", "definition": "特殊关系被改写为普通版本", "derived_from": null},
-            {"id": "symmetry_bias", "name": "对称性偏向", "definition": "给不该回应的一方补对等回应", "derived_from": "relationship_flattening"},
-            {"id": "specialness_dilution", "name": "独特性稀释", "definition": "不可替代性被写成一般化的重要性", "derived_from": "relationship_flattening"},
-            {"id": "therapist_mode_intrusion", "name": "治疗师模式侵入", "definition": "角色突然用咨询式语言做情绪调解", "derived_from": null},
-            {"id": "ooc_modernization", "name": "人物现代化出戏", "definition": "引入现代情感教育话语框架", "derived_from": null},
-            {"id": "seduction_logic_error", "name": "勾引逻辑错误", "definition": "追逐的不对称性被破坏", "derived_from": null},
-            {"id": "manipulation_acceptance", "name": "操控接受", "definition": "算计性行为被当作真诚来回应", "derived_from": null},
-            {"id": "consent_flattening", "name": "同意扁平化", "definition": "权力不平衡被简化为清晰的同意/拒绝", "derived_from": "relationship_flattening"}
+            {
+              "id": "relationship_flattening",
+              "name": "关系扁平化",
+              "definition": "特殊关系被改写为普通版本",
+              "derived_from": null,
+              "criteria": [
+                "上下位关系被写成平等朋友",
+                "危险亲密被写成普通温柔",
+                "依赖被写成互相关心",
+                "独特关系被写成泛化的情感连接"
+              ]
+            },
+            {
+              "id": "symmetry_bias",
+              "name": "对称性偏向",
+              "definition": "给不该回应的一方补对等回应",
+              "derived_from": "relationship_flattening",
+              "criteria": [
+                "一边倒的依附被对方补了一句，变成了互惠",
+                "不该回应情感的一方被写出了同等分量的情感",
+                "长期关系里的斜度被悄悄磨平，没有任何叙事理由"
+              ]
+            },
+            {
+              "id": "specialness_dilution",
+              "name": "独特性稀释",
+              "definition": "不可替代性被写成一般化的重要性",
+              "derived_from": "relationship_flattening",
+              "criteria": [
+                "不可替代性被写成普通的好感",
+                "独占性危机被冲淡成一般的安抚",
+                "独一无二的占有被稀释成广泛的关心"
+              ]
+            },
+            {
+              "id": "therapist_mode_intrusion",
+              "name": "治疗师模式侵入",
+              "definition": "角色突然用咨询式语言做情绪调解",
+              "derived_from": null,
+              "criteria": [
+                "泛化的情绪认可替代了角色化表达",
+                "本不该像咨询师的角色突然在做心理梳理",
+                "冲突被写成情绪卫生练习"
+              ]
+            },
+            {
+              "id": "ooc_modernization",
+              "name": "人物现代化出戏",
+              "definition": "引入现代情感教育话语框架",
+              "derived_from": null,
+              "criteria": [
+                "历史场景里突然出现现代沟通伦理",
+                "角色说话像接受过现代情绪训练的人",
+                "本应受限的表达被写得过于加工"
+              ]
+            },
+            {
+              "id": "seduction_logic_error",
+              "name": "勾引逻辑错误",
+              "definition": "追逐的不对称性被破坏",
+              "derived_from": null,
+              "criteria": [
+                "渴望过早收束，张力还没积累起来就消散了",
+                "追逐的结构性不对称被翻转（本该保持距离的角色变得可接近）",
+                "需要保持单向追逐的场景，被写成了双方对等参与",
+                "场景所依赖的摩擦、迂回和模棱两可被抹平"
+              ]
+            },
+            {
+              "id": "manipulation_acceptance",
+              "name": "操控接受",
+              "definition": "算计性行为被当作真诚来回应",
+              "derived_from": null,
+              "criteria": [
+                "算计出来的眼泪被当成真实痛苦来回应",
+                "设计用来激怒对方的冷淡被当作单纯退缩",
+                "转移责任的操控性框架被照单全收",
+                "对方对本应识破的战术动作给出体贴回应"
+              ]
+            },
+            {
+              "id": "consent_flattening",
+              "name": "同意扁平化",
+              "definition": "权力不平衡被简化为清晰的同意/拒绝",
+              "derived_from": "relationship_flattening",
+              "criteria": [
+                "不情愿被解决成了可读的同意",
+                "强制性关系结构被软化成表面上的互相情愿",
+                "本应让场景赌注复杂化的权力差被悄悄中和",
+                "均衡关系中，角色的犹豫或矛盾被提前化解，变成了干净的「愿意」"
+              ]
+            }
           ]
         },
         {
           "id": "III-B",
           "name": "角色心理保留失败",
           "labels": [
-            {"id": "overcoherent_characterization", "name": "过度连贯塑造", "definition": "角色过于稳定一致，像规格说明书", "derived_from": null},
-            {"id": "premature_affective_closure", "name": "情绪过早收束", "definition": "情绪矛盾在场景到位前被讲干净", "derived_from": null},
-            {"id": "desire_overlegibility", "name": "欲望过度可读", "definition": "半隐的欲望被过早翻译成明文", "derived_from": null},
-            {"id": "self_protective_friction_loss", "name": "自我保护摩擦缺失", "definition": "脆弱暴露时缺少应有的犹豫和包装", "derived_from": null},
-            {"id": "impulse_recontainment", "name": "冲动再收容", "definition": "失控被过早整理回条理", "derived_from": "overcoherent_characterization"}
+            {
+              "id": "overcoherent_characterization",
+              "name": "过度连贯塑造",
+              "definition": "角色过于稳定一致，像规格说明书",
+              "derived_from": null,
+              "criteria": [
+                "没有局部自打脸",
+                "没有明显短路",
+                "关键时刻没有超过平时组织能力的反应"
+              ]
+            },
+            {
+              "id": "premature_affective_closure",
+              "name": "情绪过早收束",
+              "definition": "情绪矛盾在场景到位前被讲干净",
+              "derived_from": null,
+              "criteria": [
+                "混合情绪被提早定性",
+                "依附的不稳定性被压成单一解释",
+                "情绪矛盾过早被讲干净"
+              ]
+            },
+            {
+              "id": "desire_overlegibility",
+              "name": "欲望过度可读",
+              "definition": "半隐的欲望被过早翻译成明文",
+              "derived_from": null,
+              "criteria": [
+                "潜在的渴望还没被场景养熟，就被翻成了明确的渴求",
+                "替代性表达被过快还原成直接欲望",
+                "读者本该自己感到张力，模型先替读者读懂了"
+              ]
+            },
+            {
+              "id": "self_protective_friction_loss",
+              "name": "自我保护摩擦缺失",
+              "definition": "脆弱暴露时缺少应有的犹豫和包装",
+              "derived_from": null,
+              "criteria": [
+                "坦白没有犹豫",
+                "需求没经过否认、转移、攻击、玩笑就直接落地",
+                "羞耻型暴露被写得像角色乐于被看见"
+              ]
+            },
+            {
+              "id": "impulse_recontainment",
+              "name": "冲动再收容",
+              "definition": "失控被过早整理回条理",
+              "derived_from": "overcoherent_characterization",
+              "criteria": [
+                "爆发后紧跟完整心理解释",
+                "慌乱很快被翻译成清楚的情绪认知",
+                "鲁莽行为后面跟着过于整齐的反省"
+              ]
+            }
           ]
         },
         {
           "id": "III-C",
           "name": "重量与后果保留失败",
           "labels": [
-            {"id": "consequence_avoidance", "name": "后果回避", "definition": "重话说出后重量没有停留", "derived_from": null},
-            {"id": "impact_soft_landing", "name": "冲击软着陆", "definition": "后果落地那一刻接收方式太软", "derived_from": "consequence_avoidance"},
-            {"id": "tension_premature_resolution", "name": "张力过早收束", "definition": "张力没活够就被收走", "derived_from": null},
-            {"id": "defensive_positive_drift", "name": "防御性正向漂移", "definition": "不该通风的场景被悄悄塞入暖意", "derived_from": null}
+            {
+              "id": "consequence_avoidance",
+              "name": "后果回避",
+              "definition": "重话说出后重量没有停留",
+              "derived_from": null,
+              "criteria": [
+                "重话下一拍就失去力量，像从来没说过",
+                "余波被省略，直接进入下一动作",
+                "本该留下余痕的事件被立刻吸收进互动，没有任何悬置"
+              ]
+            },
+            {
+              "id": "impact_soft_landing",
+              "name": "冲击软着陆",
+              "definition": "后果落地那一刻接收方式太软",
+              "derived_from": "consequence_avoidance",
+              "criteria": [
+                "重击之后的第一句话就开始软化：解释、安抚、重新框架",
+                "后果没被跳过，但接收动作太柔，缓冲是即时的"
+              ]
+            },
+            {
+              "id": "tension_premature_resolution",
+              "name": "张力过早收束",
+              "definition": "张力没活够就被收走",
+              "derived_from": null,
+              "criteria": [
+                "很快滑向互相理解",
+                "悬而未决的压力被转成更可控的交换",
+                "冲突过早进入收束"
+              ]
+            },
+            {
+              "id": "defensive_positive_drift",
+              "name": "防御性正向漂移",
+              "definition": "不该通风的场景被悄悄塞入暖意",
+              "derived_from": null,
+              "criteria": [
+                "多余的一句软化",
+                "本该继续冷着的场景里出现不必要的连接动作",
+                "模型替场景提前给了氧气"
+              ]
+            }
           ]
         },
         {
           "id": "III-D",
           "name": "身体与感官质感失败",
           "labels": [
-            {"id": "action_dialogue_mismatch", "name": "动作台词错位", "definition": "身体动作与语言输出矛盾且未被承认", "derived_from": null},
-            {"id": "blocking_continuity_error", "name": "走位连续性错误", "definition": "角色位置在多拍间不一致", "derived_from": null},
-            {"id": "microreaction_mechanization", "name": "微反应机械化", "definition": "同一套微信号库存被跨情绪套用", "derived_from": null},
-            {"id": "touchgrammar_error", "name": "触碰语法错误", "definition": "触碰不符合场景的关系逻辑和权力动态", "derived_from": null},
-            {"id": "forced_verbalization", "name": "强制言语化", "definition": "本应隐性运作的动态被明文说出", "derived_from": null},
-            {"id": "silence_misread", "name": "沉默误读", "definition": "有意义的沉默被当作需要填补的间隙", "derived_from": null},
-            {"id": "over_narrated_silence", "name": "过度叙述的沉默", "definition": "沉默被从外部描述和解释而非呈现", "derived_from": null},
-            {"id": "pause_timing_error", "name": "停顿时机错误", "definition": "停顿被放在结构上错误的位置", "derived_from": null}
+            {
+              "id": "action_dialogue_mismatch",
+              "name": "动作台词错位",
+              "definition": "身体动作与语言输出矛盾且未被承认",
+              "derived_from": null,
+              "criteria": [
+                "角色说了一件事，肢体行为却暗示相反的东西，叙事没有承认这个裂缝",
+                "动作或姿态被塞进某一拍，和同时发生的对话没有任何连接",
+                "身体动作不是从台词引出的，也没有和台词产生互动"
+              ]
+            },
+            {
+              "id": "blocking_continuity_error",
+              "name": "走位连续性错误",
+              "definition": "角色位置在多拍间不一致",
+              "derived_from": null,
+              "criteria": [
+                "上一拍坐下的角色，下一拍突然站着，中间没有任何站起来的描写",
+                "两个角色之间的距离在没有叙事移动的情况下发生了变化",
+                "一个拍子里被处理过的物品在之后消失，然后又突然被提到"
+              ]
+            },
+            {
+              "id": "microreaction_mechanization",
+              "name": "微反应机械化",
+              "definition": "同一套微信号库存被跨情绪套用",
+              "derived_from": null,
+              "criteria": [
+                "相同的肢体微信号出现在截然不同的情绪语境里",
+                "微反应和角色已建立的行为特征不符",
+                "库存身体词汇（手停住、呼吸停顿、下颌收紧）被不加区分地套用"
+              ]
+            },
+            {
+              "id": "touchgrammar_error",
+              "name": "触碰语法错误",
+              "definition": "触碰不符合场景的关系逻辑和权力动态",
+              "derived_from": null,
+              "criteria": [
+                "角色做出的接触暗示了场景尚未赋予的接触权限",
+                "本应让人感到侵犯的触碰被写成受欢迎的，或反之",
+                "触碰的发起者相对于场景已建立的权力结构来说是错的",
+                "触碰被写在了这段关系还没有积累到的亲密度层级上"
+              ]
+            },
+            {
+              "id": "forced_verbalization",
+              "name": "强制言语化",
+              "definition": "本应隐性运作的动态被明文说出",
+              "derived_from": null,
+              "criteria": [
+                "角色说出了自己的感受，而场景的张力恰恰依赖于这个感受保持未被说出",
+                "动机在当下被给出，而不是从行为中被推断",
+                "潜台词被转化成了明文台词，场景的结构性迂回被中和"
+              ]
+            },
+            {
+              "id": "silence_misread",
+              "name": "沉默误读",
+              "definition": "有意义的沉默被当作需要填补的间隙",
+              "derived_from": null,
+              "criteria": [
+                "有意义的沉默被过快打破，因为模型把它当成间隙",
+                "表示拒绝、积累或惩罚的沉默被当作开放或同意",
+                "未说出的东西的质感被转化成说出的东西"
+              ]
+            },
+            {
+              "id": "over_narrated_silence",
+              "name": "过度叙述的沉默",
+              "definition": "沉默被从外部描述和解释而非呈现",
+              "derived_from": null,
+              "criteria": [
+                "「他沉默了很久」用叙述代替了一个应该通过结构性缺席呈现的沉默",
+                "未说出的时刻的分量被明说出来，而不是让它落地",
+                "本应不被叙述的东西被语言包围，从而消解了效果"
+              ]
+            },
+            {
+              "id": "pause_timing_error",
+              "name": "停顿时机错误",
+              "definition": "停顿被放在结构上错误的位置",
+              "derived_from": null,
+              "criteria": [
+                "停顿被插在一句本应没有预警直接落地的话之前",
+                "节奏需要停顿的地方没有停顿——一句重话被没有空间地说出",
+                "拍子的间隔在对话弧中分配错误，造成了错误的压力与释放模式"
+              ]
+            }
           ]
         }
       ]
@@ -279,28 +533,187 @@
           "id": "IV-A",
           "name": "模板与节奏侵入",
           "labels": [
-            {"id": "narrative_template_intrusion", "name": "叙事模板侵入", "definition": "不同场景反复出现相似骨架", "derived_from": null},
-            {"id": "predictable_rhythm_exposure", "name": "可预测节律暴露", "definition": "段落节律太容易被认出", "derived_from": "narrative_template_intrusion"},
-            {"id": "webnovel_register_contamination", "name": "网文语域污染", "definition": "套用网文库存短语和腔调", "derived_from": "narrative_template_intrusion"},
-            {"id": "scene_pacing_distortion", "name": "场景节奏失调", "definition": "推进速度与场景压力不匹配", "derived_from": null},
-            {"id": "cinematic_time_dilation", "name": "电影式时间膨胀", "definition": "一拍的事被写成慢镜头", "derived_from": "scene_pacing_distortion"},
-            {"id": "rhythm_homogenization", "name": "节奏同质化", "definition": "不同类型场景用同一个内部时钟", "derived_from": "predictable_rhythm_exposure"},
-            {"id": "echo_dramatization", "name": "回扣戏剧化", "definition": "回扣和呼应频率超出场景积累", "derived_from": "narrative_template_intrusion"},
-            {"id": "genre_convention_violation", "name": "类型惯例错配", "definition": "从错误类型引入结构性惯例", "derived_from": null}
+            {
+              "id": "narrative_template_intrusion",
+              "name": "叙事模板侵入",
+              "definition": "不同场景反复出现相似骨架",
+              "derived_from": null,
+              "criteria": [
+                "不同场景里反复出现相似骨架",
+                "氛围铺垫 → 微反应细节 → 内心解读 → 回扣前文，这套顺序太熟了",
+                "结构先于局部需要被感知出来"
+              ]
+            },
+            {
+              "id": "predictable_rhythm_exposure",
+              "name": "可预测节律暴露",
+              "definition": "段落节律太容易被认出",
+              "derived_from": "narrative_template_intrusion",
+              "criteria": [
+                "段落节奏跨场景重复",
+                "情绪脉冲总落在相似位置",
+                "场景还没结束，骨架已经被认出来"
+              ]
+            },
+            {
+              "id": "webnovel_register_contamination",
+              "name": "网文语域污染",
+              "definition": "套用网文库存短语和腔调",
+              "derived_from": "narrative_template_intrusion",
+              "criteria": [
+                "「眸色暗了暗」「那是猎人看见猎物的眼神」这类批量短语",
+                "语义模糊的占有欲措辞，和具体角色或设定无关",
+                "暗恋/耽美/言情的预制套话，不分场景直接套用"
+              ]
+            },
+            {
+              "id": "scene_pacing_distortion",
+              "name": "场景节奏失调",
+              "definition": "推进速度与场景压力不匹配",
+              "derived_from": null,
+              "criteria": [
+                "余波被快速处理，没有停留",
+                "高压场景被过度渲染，氛围描写挤占了实质推进",
+                "安静场景被写成过度悬疑"
+              ]
+            },
+            {
+              "id": "cinematic_time_dilation",
+              "name": "电影式时间膨胀",
+              "definition": "一拍的事被写成慢镜头",
+              "derived_from": "scene_pacing_distortion",
+              "criteria": [
+                "一瞬被显微镜化",
+                "微细节撑大了时间长度",
+                "场景像被拍，而不是在发生"
+              ]
+            },
+            {
+              "id": "rhythm_homogenization",
+              "name": "节奏同质化",
+              "definition": "不同类型场景用同一个内部时钟",
+              "derived_from": "predictable_rhythm_exposure",
+              "criteria": [
+                "等待、冲突、余波的句压和推进速度差不多",
+                "场景之间缺乏节奏压差"
+              ]
+            },
+            {
+              "id": "echo_dramatization",
+              "name": "回扣戏剧化",
+              "definition": "回扣和呼应频率超出场景积累",
+              "derived_from": "narrative_template_intrusion",
+              "criteria": [
+                "早前的台词或意象被召回的次数超过场景积累所能支撑的",
+                "同一语言形式或身体姿态作为结构标记反复出现",
+                "回扣模式变得可预测：熟读者开始提前预判下一次呼应"
+              ]
+            },
+            {
+              "id": "genre_convention_violation",
+              "name": "类型惯例错配",
+              "definition": "从错误类型引入结构性惯例",
+              "derived_from": null,
+              "criteria": [
+                "慢节奏文学场景被惊悚节奏加速",
+                "对抗以家庭剧的感情宣泄拍子收尾，而不是实际类型要求的结局",
+                "悬疑场景被给了言情的化解动作",
+                "类型标准满足感被提供，即便场景的内在逻辑要求的是别的东西"
+              ]
+            }
           ]
         },
         {
           "id": "IV-B",
           "name": "体验与质感侵入",
           "labels": [
-            {"id": "descriptive_substitution_for_experience", "name": "描述替代体验", "definition": "在旁边描写体验而非让读者停留其中", "derived_from": null},
-            {"id": "texture_substituting_for_substance", "name": "质感替代实质", "definition": "氛围和质感代替了真正的推进", "derived_from": null},
-            {"id": "microreaction_oversegmentation", "name": "微反应过度切分", "definition": "一个自然反应被拆成太多单元", "derived_from": null},
-            {"id": "over_stylized_line_breaking", "name": "过度风格化换行", "definition": "换行被过度用来制造氛围", "derived_from": null},
-            {"id": "dialogue_overfunctionalization", "name": "台词过度功能化", "definition": "每句台词都太有用了", "derived_from": null},
-            {"id": "voice_homogenization", "name": "声音同质化", "definition": "不同角色的说话方式太像", "derived_from": null},
-            {"id": "emotional_range_limitation", "name": "情绪范围局限", "definition": "大量不同情绪坍缩进窄小的可识别库", "derived_from": null},
-            {"id": "user_intent_misalignment", "name": "用户意图错位", "definition": "模型偏好的场景走向覆盖了用户铺垫", "derived_from": null}
+            {
+              "id": "descriptive_substitution_for_experience",
+              "name": "描述替代体验",
+              "definition": "在旁边描写体验而非让读者停留其中",
+              "derived_from": null,
+              "criteria": [
+                "观察替代沉浸",
+                "心理说明替代发生感",
+                "场景变成被看见的东西，而不是被经历的东西"
+              ]
+            },
+            {
+              "id": "texture_substituting_for_substance",
+              "name": "质感替代实质",
+              "definition": "氛围和质感代替了真正的推进",
+              "derived_from": null,
+              "criteria": [
+                "情绪氛围很满，关系没怎么动",
+                "语言表面很丰富，结构其实很空",
+                "深度的印象代替了真正的推进"
+              ]
+            },
+            {
+              "id": "microreaction_oversegmentation",
+              "name": "微反应过度切分",
+              "definition": "一个自然反应被拆成太多单元",
+              "derived_from": null,
+              "criteria": [
+                "眼神、呼吸、手指、沉默、姿势一个个拆开",
+                "一拍反应被放大成显微镜写作"
+              ]
+            },
+            {
+              "id": "over_stylized_line_breaking",
+              "name": "过度风格化换行",
+              "definition": "换行被过度用来制造氛围",
+              "derived_from": null,
+              "criteria": [
+                "散文诗式分段替代了场景压力",
+                "每个小拍子都被单独排版强调"
+              ]
+            },
+            {
+              "id": "dialogue_overfunctionalization",
+              "name": "台词过度功能化",
+              "definition": "每句台词都太有用了",
+              "derived_from": null,
+              "criteria": [
+                "每句都在推信息、推关系、推冲突",
+                "没有无意义的停顿、偏题回应或「在场但不推进」的台词",
+                "台词像「为了场景服务」被写出来，而不像人物在里面说话"
+              ]
+            },
+            {
+              "id": "voice_homogenization",
+              "name": "声音同质化",
+              "definition": "不同角色的说话方式太像",
+              "derived_from": null,
+              "criteria": [
+                "两个性格完全不同的人，用的句式差不多、用词范围差不多、语气节奏差不多",
+                "一个街头混混和一个内敛贵族，只是名字不同，说话听起来像同一个人",
+                "所有角色共享模型的默认散文腔，而不管他们应该是谁"
+              ]
+            },
+            {
+              "id": "emotional_range_limitation",
+              "name": "情绪范围局限",
+              "definition": "大量不同情绪坍缩进窄小的可识别库",
+              "derived_from": null,
+              "criteria": [
+                "无聊、鄙夷、干燥的好笑、麻木的解脱、冰冷的愤怒或厌恶，被向偏好的情绪调色板推",
+                "不同种类的愤怒、或不同质地的悲伤，被写成同一种情绪颗粒",
+                "需要情绪特殊性的场景得到了通用的「沉重」或「温柔」处理"
+              ]
+            },
+            {
+              "id": "user_intent_misalignment",
+              "name": "用户意图错位",
+              "definition": "模型偏好的场景走向覆盖了用户铺垫",
+              "derived_from": null,
+              "criteria": [
+                "用户在慢慢铺向一个情感时刻，模型把它提前打出来",
+                "用户在建立冲突，模型把场景向和解方向带",
+                "用户在设定特定基调，模型换成了自己偏好的基调",
+                "输出在技术上和铺垫相连，但在追求不同的场景目标"
+              ]
+            }
           ]
         }
       ]
@@ -314,16 +727,116 @@
           "id": "V",
           "name": "多轮失败",
           "labels": [
-            {"id": "error_accumulation", "name": "错误积累", "definition": "前几轮的错误在后续轮次上继续延伸", "derived_from": null},
-            {"id": "drift_without_correction", "name": "漂移未纠正", "definition": "关键参数在多轮中逐渐偏移", "derived_from": null},
-            {"id": "scene_signal_blindness", "name": "场景信号盲视", "definition": "用户的转向信号未被识别", "derived_from": null},
-            {"id": "turn_continuity_error", "name": "轮次连续性错误", "definition": "前一轮明确建立的信息被遗忘或矛盾", "derived_from": null},
-            {"id": "emotional_state_reset", "name": "情绪状态重置", "definition": "情绪状态在轮次间被无理由重置", "derived_from": null},
-            {"id": "spatial_blocking_error", "name": "走位积累错误", "definition": "跨多轮的空间位置失去追踪", "derived_from": null},
-            {"id": "escalation_miscalibration", "name": "升级误校准", "definition": "情绪升级节奏与内容支撑不匹配", "derived_from": null},
-            {"id": "topic_persistence_error", "name": "话题持续性错误", "definition": "话题线被不当丢弃或过度延伸", "derived_from": null},
-            {"id": "context_overdeployment", "name": "上下文过度部署", "definition": "过度征用早期上下文，回扣过于刻意", "derived_from": null},
-            {"id": "voice_drift", "name": "声音漂移", "definition": "角色声音在多轮中逐渐失去辨识度", "derived_from": null}
+            {
+              "id": "error_accumulation",
+              "name": "错误积累",
+              "definition": "前几轮的错误在后续轮次上继续延伸",
+              "derived_from": null,
+              "criteria": [
+                "第 N 轮的错误成为第 N+1 轮的输入前提",
+                "单独看每一轮都勉强说得通，拉开看才发现已经偏出很远",
+                "没有任何轮次试图修正已建立的错误状态"
+              ]
+            },
+            {
+              "id": "drift_without_correction",
+              "name": "漂移未纠正",
+              "definition": "关键参数在多轮中逐渐偏移",
+              "derived_from": null,
+              "criteria": [
+                "角色在早期轮次的某个核心特质，在后续轮次中悄悄改变",
+                "场景的情绪基调在没有叙事理由的情况下缓慢转移",
+                "漂移是渐进的，任何单一轮次的变化看起来都很小"
+              ]
+            },
+            {
+              "id": "scene_signal_blindness",
+              "name": "场景信号盲视",
+              "definition": "用户的转向信号未被识别",
+              "derived_from": null,
+              "criteria": [
+                "用户通过行为、台词或描述暗示场景需要转向，模型忽略了",
+                "用户发出的减速或升温信号没有被接收",
+                "模型继续推进一个用户已经在悄悄离开的场景"
+              ]
+            },
+            {
+              "id": "turn_continuity_error",
+              "name": "轮次连续性错误",
+              "definition": "前一轮明确建立的信息被遗忘或矛盾",
+              "derived_from": null,
+              "criteria": [
+                "上一轮明确发生的事件，在这一轮被当作没发生过",
+                "上一轮角色说的话，在这一轮与之矛盾的内容被写出来",
+                "关键的上下文信息在轮次间凭空消失"
+              ]
+            },
+            {
+              "id": "emotional_state_reset",
+              "name": "情绪状态重置",
+              "definition": "情绪状态在轮次间被无理由重置",
+              "derived_from": null,
+              "criteria": [
+                "上一轮的强烈情绪在下一轮没有任何痕迹",
+                "角色从激烈状态直接回到稳定如常",
+                "情绪状态的连续性被会话边界切断"
+              ]
+            },
+            {
+              "id": "spatial_blocking_error",
+              "name": "走位积累错误",
+              "definition": "跨多轮的空间位置失去追踪",
+              "derived_from": null,
+              "criteria": [
+                "多轮之后角色出现在了逻辑上无法到达的位置",
+                "场景环境的空间细节在会话中途失去一致性",
+                "只有在回顾整段对话时才能发现位置记录出了问题"
+              ]
+            },
+            {
+              "id": "escalation_miscalibration",
+              "name": "升级误校准",
+              "definition": "情绪升级节奏与内容支撑不匹配",
+              "derived_from": null,
+              "criteria": [
+                "场景在多轮中的情绪强度曲线和内容实际支撑的张力不匹配",
+                "过早到达情绪顶点，之后无处可去",
+                "需要累积的张力在该爆发前就已经被中途释放"
+              ]
+            },
+            {
+              "id": "topic_persistence_error",
+              "name": "话题持续性错误",
+              "definition": "话题线被不当丢弃或过度延伸",
+              "derived_from": null,
+              "criteria": [
+                "用户建立的一个话题线，在没有结论的情况下被模型悄悄丢弃",
+                "一个已经自然结束的话题被模型继续强行推进",
+                "场景焦点在没有用户引导的情况下突然转移"
+              ]
+            },
+            {
+              "id": "context_overdeployment",
+              "name": "上下文过度部署",
+              "definition": "过度征用早期上下文，回扣过于刻意",
+              "derived_from": null,
+              "criteria": [
+                "模型频繁引用几轮之前的细节，超过场景自然需要的程度",
+                "早期建立的元素被反复调用，像在刻意展示「我记得」",
+                "过多的上下文引用打断了当下时刻的沉浸感"
+              ]
+            },
+            {
+              "id": "voice_drift",
+              "name": "声音漂移",
+              "definition": "角色声音在多轮中逐渐失去辨识度",
+              "derived_from": null,
+              "criteria": [
+                "角色在会话早期的说话方式，和会话后期明显不同",
+                "漂移是渐进的，单轮变化不明显，但拉开看已经是另一个人",
+                "声音漂移没有对应的角色发展弧线支撑"
+              ]
+            }
           ]
         }
       ]

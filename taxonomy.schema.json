@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "中文虚构对话失败图谱分类体系",
+  "description": "面向大语言模型虚构和角色扮演对话的失败模式分类体系的结构化定义",
+  "type": "object",
+  "required": ["name", "total_labels", "layers", "underlying_tendencies", "cross_layer_tags"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "分类体系名称"
+    },
+    "total_labels": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "所有标签的总数（含层级标签、底层倾向、跨层标签）"
+    },
+    "layers": {
+      "type": "array",
+      "description": "失败层级列表",
+      "items": { "$ref": "#/$defs/layer" }
+    },
+    "underlying_tendencies": {
+      "type": "array",
+      "description": "底层驱动偏向列表",
+      "items": { "$ref": "#/$defs/tendency" }
+    },
+    "cross_layer_tags": {
+      "type": "array",
+      "description": "跨层诊断标签列表",
+      "items": { "$ref": "#/$defs/cross_layer_tag" }
+    }
+  },
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "required": ["id", "name", "description", "subcategories"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[IV]+$",
+          "description": "层级编号（罗马数字）"
+        },
+        "name": {
+          "type": "string",
+          "description": "层级名称"
+        },
+        "description": {
+          "type": "string",
+          "description": "层级描述"
+        },
+        "note": {
+          "type": "string",
+          "description": "层级备注"
+        },
+        "subcategories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/subcategory" }
+        }
+      }
+    },
+    "subcategory": {
+      "type": "object",
+      "required": ["id", "name", "labels"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "子类编号（如 III-A）"
+        },
+        "name": {
+          "type": "string",
+          "description": "子类名称"
+        },
+        "labels": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/label" },
+          "minItems": 1
+        }
+      }
+    },
+    "label": {
+      "type": "object",
+      "required": ["id", "name", "definition", "derived_from", "criteria"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "标签唯一标识符（snake_case）"
+        },
+        "name": {
+          "type": "string",
+          "description": "中文标签名"
+        },
+        "definition": {
+          "type": "string",
+          "description": "一句话定义"
+        },
+        "derived_from": {
+          "type": ["string", "null"],
+          "description": "衍生自哪个父标签（null 表示独立标签）"
+        },
+        "criteria": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "可观察判断标准列表"
+        }
+      }
+    },
+    "tendency": {
+      "type": "object",
+      "required": ["id", "name", "primary_layer", "definition"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "primary_layer": {
+          "type": "string",
+          "description": "主要关联层级"
+        },
+        "definition": {
+          "type": "string"
+        }
+      }
+    },
+    "cross_layer_tag": {
+      "type": "object",
+      "required": ["id", "name", "definition"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
