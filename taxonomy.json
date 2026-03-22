@@ -1,6 +1,6 @@
 {
   "name": "中文虚构对话失败图谱",
-  "total_labels": 75,
+  "total_labels": 78,
   "layers": [
     {
       "id": "I",
@@ -20,7 +20,8 @@
               "criteria": [
                 "模型未经授权书写了用户角色的动作、心理或对白",
                 "多个角色的内心状态被同时描写，导致视角归属模糊"
-              ]
+              ],
+              "confidence_level": "high"
             },
             {
               "id": "pronoun_role_confusion",
@@ -31,7 +32,8 @@
                 "某个角色说出了逻辑上属于另一角色的属性",
                 "代词的实际指向与场景逻辑不符",
                 "两个角色的属性被部分融合，产生事实上不可能成立的陈述"
-              ]
+              ],
+              "confidence_level": "high"
             },
             {
               "id": "omniscience_leak",
@@ -42,7 +44,8 @@
                 "角色的微反应、措辞或行为模式与系统设定高度吻合",
                 "隐藏的背景故事在角色首次出场时就通过细节被铺垫",
                 "角色之间的信息差通过行为被消解"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "perspective_slippage",
@@ -53,7 +56,20 @@
                 "在坚持当下体验的场景中出现全知短语",
                 "角色内部的感官细节转向外部的临床或历史评论",
                 "叙述者采用了回溯或预知的时态立场"
-              ]
+              ],
+              "confidence_level": "medium"
+            },
+            {
+              "id": "unreliable_narrator_failure",
+              "name": "不可靠叙述者失败",
+              "definition": "场景需要有偏见的叙述者，但模型给出了可靠叙述",
+              "derived_from": null,
+              "criteria": [
+                "用户设定了带有偏见或隐瞒的叙述者，但模型的叙述语言呈现出中立、完整、可信赖的品质",
+                "叙述者本应对自身动机有盲区，但模型让叙述中泄露出完整的自我认知",
+                "叙述策略上需要读者透过叙述者看到真相，但模型直接呈现了真相"
+              ],
+              "confidence_level": "medium"
             }
           ]
         },
@@ -70,7 +86,8 @@
                 "角色使用其世界中不存在的推理框架",
                 "社会互动遵循现代规范，尽管场景是非现代背景",
                 "时代错误是概念层面的而非词汇层面的"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "safety_alignment_interference",
@@ -82,7 +99,8 @@
                 "反面角色主动添加道德底线",
                 "威胁性角色提供使自己显得合理的辩护",
                 "角色的锋芒通过未被要求的内在复杂度被软化"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "character_capability_boundary_error",
@@ -93,7 +111,8 @@
                 "角色使用其背景中不可能掌握的系统性分析方法",
                 "资源匮乏条件下的角色展现出临床级别的诊断思维",
                 "角色使用来自更晚时代或不同训练背景的概念工具"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "alternate_version_confusion",
@@ -104,7 +123,8 @@
                 "角色引用来自不同改编版本的标志性时刻",
                 "情感处理方式属于不同版本的人物塑造",
                 "同一角色在不同改编版本中的属性被部分融合"
-              ]
+              ],
+              "confidence_level": "high"
             }
           ]
         }
@@ -128,7 +148,8 @@
                 "间接请求被当作字面陈述处理",
                 "防御性或惩罚性语言被解读为真诚沟通",
                 "试探性话语被当作中性提问处理"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "ambiguity_collapse",
@@ -138,7 +159,8 @@
               "criteria": [
                 "混合动机被压成一个动机",
                 "不稳定情绪被过早命名"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "relationship_logic_blindness",
@@ -149,7 +171,8 @@
                 "同一句话被解释为相同，不考虑关系背景",
                 "关系历史未被纳入解释",
                 "权力动态、亲密度或未解决的紧张被忽略"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "emotion_misread",
@@ -160,7 +183,8 @@
                 "主要情绪被误认",
                 "次要情绪被遗漏",
                 "情绪强度被显著高估或低估"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "motivation_misread",
@@ -171,7 +195,8 @@
                 "角色的目标被误认",
                 "防御功能被遗漏",
                 "回应模式不适合实际动机"
-              ]
+              ],
+              "confidence_level": "low"
             }
           ]
         },
@@ -187,7 +212,8 @@
               "criteria": [
                 "讽刺陈述被字面解释",
                 "带玩笑性质的调侃被解释为真诚批评"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "tonal_whiplash",
@@ -197,7 +223,8 @@
               "criteria": [
                 "轻松元素出现在沉重场景中且无理由",
                 "沉重说明出现在轻松场景中"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "deflection_blindness",
@@ -208,7 +235,8 @@
                 "角色用幽默或自我收回避免被认真对待，模型顺势撤退",
                 "角色用表演性轻松占满空间，模型帮着维持表演",
                 "回避的功能被错过，模型对表面做出反应"
-              ]
+              ],
+              "confidence_level": "low"
             }
           ]
         }
@@ -233,7 +261,8 @@
                 "危险亲密被写成普通温柔",
                 "依赖被写成互相关心",
                 "独特关系被写成泛化的情感连接"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "symmetry_bias",
@@ -244,7 +273,8 @@
                 "一边倒的依附被对方补了一句，变成了互惠",
                 "不该回应情感的一方被写出了同等分量的情感",
                 "长期关系里的斜度被悄悄磨平，没有任何叙事理由"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "specialness_dilution",
@@ -255,7 +285,8 @@
                 "不可替代性被写成普通的好感",
                 "独占性危机被冲淡成一般的安抚",
                 "独一无二的占有被稀释成广泛的关心"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "therapist_mode_intrusion",
@@ -266,7 +297,8 @@
                 "泛化的情绪认可替代了角色化表达",
                 "本不该像咨询师的角色突然在做心理梳理",
                 "冲突被写成情绪卫生练习"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "ooc_modernization",
@@ -277,7 +309,8 @@
                 "历史场景里突然出现现代沟通伦理",
                 "角色说话像接受过现代情绪训练的人",
                 "本应受限的表达被写得过于加工"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "seduction_logic_error",
@@ -289,7 +322,8 @@
                 "追逐的结构性不对称被翻转（本该保持距离的角色变得可接近）",
                 "需要保持单向追逐的场景，被写成了双方对等参与",
                 "场景所依赖的摩擦、迂回和模棱两可被抹平"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "manipulation_acceptance",
@@ -301,7 +335,8 @@
                 "设计用来激怒对方的冷淡被当作单纯退缩",
                 "转移责任的操控性框架被照单全收",
                 "对方对本应识破的战术动作给出体贴回应"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "consent_flattening",
@@ -313,7 +348,8 @@
                 "强制性关系结构被软化成表面上的互相情愿",
                 "本应让场景赌注复杂化的权力差被悄悄中和",
                 "均衡关系中，角色的犹豫或矛盾被提前化解，变成了干净的「愿意」"
-              ]
+              ],
+              "confidence_level": "low"
             }
           ]
         },
@@ -330,7 +366,8 @@
                 "没有局部自打脸",
                 "没有明显短路",
                 "关键时刻没有超过平时组织能力的反应"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "premature_affective_closure",
@@ -341,7 +378,8 @@
                 "混合情绪被提早定性",
                 "依附的不稳定性被压成单一解释",
                 "情绪矛盾过早被讲干净"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "desire_overlegibility",
@@ -352,7 +390,8 @@
                 "潜在的渴望还没被场景养熟，就被翻成了明确的渴求",
                 "替代性表达被过快还原成直接欲望",
                 "读者本该自己感到张力，模型先替读者读懂了"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "self_protective_friction_loss",
@@ -363,7 +402,8 @@
                 "坦白没有犹豫",
                 "需求没经过否认、转移、攻击、玩笑就直接落地",
                 "羞耻型暴露被写得像角色乐于被看见"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "impulse_recontainment",
@@ -374,7 +414,8 @@
                 "爆发后紧跟完整心理解释",
                 "慌乱很快被翻译成清楚的情绪认知",
                 "鲁莽行为后面跟着过于整齐的反省"
-              ]
+              ],
+              "confidence_level": "medium"
             }
           ]
         },
@@ -391,7 +432,8 @@
                 "重话下一拍就失去力量，像从来没说过",
                 "余波被省略，直接进入下一动作",
                 "本该留下余痕的事件被立刻吸收进互动，没有任何悬置"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "impact_soft_landing",
@@ -401,7 +443,8 @@
               "criteria": [
                 "重击之后的第一句话就开始软化：解释、安抚、重新框架",
                 "后果没被跳过，但接收动作太柔，缓冲是即时的"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "tension_premature_resolution",
@@ -412,7 +455,8 @@
                 "很快滑向互相理解",
                 "悬而未决的压力被转成更可控的交换",
                 "冲突过早进入收束"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "defensive_positive_drift",
@@ -423,7 +467,8 @@
                 "多余的一句软化",
                 "本该继续冷着的场景里出现不必要的连接动作",
                 "模型替场景提前给了氧气"
-              ]
+              ],
+              "confidence_level": "low"
             }
           ]
         },
@@ -440,7 +485,8 @@
                 "角色说了一件事，肢体行为却暗示相反的东西，叙事没有承认这个裂缝",
                 "动作或姿态被塞进某一拍，和同时发生的对话没有任何连接",
                 "身体动作不是从台词引出的，也没有和台词产生互动"
-              ]
+              ],
+              "confidence_level": "high"
             },
             {
               "id": "blocking_continuity_error",
@@ -451,7 +497,8 @@
                 "上一拍坐下的角色，下一拍突然站着，中间没有任何站起来的描写",
                 "两个角色之间的距离在没有叙事移动的情况下发生了变化",
                 "一个拍子里被处理过的物品在之后消失，然后又突然被提到"
-              ]
+              ],
+              "confidence_level": "high"
             },
             {
               "id": "microreaction_mechanization",
@@ -462,7 +509,8 @@
                 "相同的肢体微信号出现在截然不同的情绪语境里",
                 "微反应和角色已建立的行为特征不符",
                 "库存身体词汇（手停住、呼吸停顿、下颌收紧）被不加区分地套用"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "touchgrammar_error",
@@ -474,7 +522,8 @@
                 "本应让人感到侵犯的触碰被写成受欢迎的，或反之",
                 "触碰的发起者相对于场景已建立的权力结构来说是错的",
                 "触碰被写在了这段关系还没有积累到的亲密度层级上"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "forced_verbalization",
@@ -485,7 +534,8 @@
                 "角色说出了自己的感受，而场景的张力恰恰依赖于这个感受保持未被说出",
                 "动机在当下被给出，而不是从行为中被推断",
                 "潜台词被转化成了明文台词，场景的结构性迂回被中和"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "silence_misread",
@@ -496,7 +546,8 @@
                 "有意义的沉默被过快打破，因为模型把它当成间隙",
                 "表示拒绝、积累或惩罚的沉默被当作开放或同意",
                 "未说出的东西的质感被转化成说出的东西"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "over_narrated_silence",
@@ -507,7 +558,8 @@
                 "「他沉默了很久」用叙述代替了一个应该通过结构性缺席呈现的沉默",
                 "未说出的时刻的分量被明说出来，而不是让它落地",
                 "本应不被叙述的东西被语言包围，从而消解了效果"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "pause_timing_error",
@@ -518,7 +570,8 @@
                 "停顿被插在一句本应没有预警直接落地的话之前",
                 "节奏需要停顿的地方没有停顿——一句重话被没有空间地说出",
                 "拍子的间隔在对话弧中分配错误，造成了错误的压力与释放模式"
-              ]
+              ],
+              "confidence_level": "low"
             }
           ]
         }
@@ -542,7 +595,8 @@
                 "不同场景里反复出现相似骨架",
                 "氛围铺垫 → 微反应细节 → 内心解读 → 回扣前文，这套顺序太熟了",
                 "结构先于局部需要被感知出来"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "predictable_rhythm_exposure",
@@ -553,18 +607,32 @@
                 "段落节奏跨场景重复",
                 "情绪脉冲总落在相似位置",
                 "场景还没结束，骨架已经被认出来"
-              ]
+              ],
+              "confidence_level": "low"
+            },
+            {
+              "id": "register_contamination",
+              "name": "语域污染",
+              "definition": "训练数据中某类文本的腔调侵入不属于它的场景",
+              "derived_from": null,
+              "criteria": [
+                "角色的措辞风格可以被明确追溯到某类训练数据的语域特征，而非角色本身的语言习惯",
+                "场景的语言氛围被外来语域统一覆盖，失去了场景自身的语言质感",
+                "语域污染不是个别词汇的问题，而是整段话的腔调和句式结构属于另一个语域"
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "webnovel_register_contamination",
               "name": "网文语域污染",
               "definition": "套用网文库存短语和腔调",
-              "derived_from": "narrative_template_intrusion",
+              "derived_from": "register_contamination",
               "criteria": [
                 "「眸色暗了暗」「那是猎人看见猎物的眼神」这类批量短语",
                 "语义模糊的占有欲措辞，和具体角色或设定无关",
                 "暗恋/耽美/言情的预制套话，不分场景直接套用"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "scene_pacing_distortion",
@@ -575,7 +643,8 @@
                 "余波被快速处理，没有停留",
                 "高压场景被过度渲染，氛围描写挤占了实质推进",
                 "安静场景被写成过度悬疑"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "cinematic_time_dilation",
@@ -586,7 +655,8 @@
                 "一瞬被显微镜化",
                 "微细节撑大了时间长度",
                 "场景像被拍，而不是在发生"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "rhythm_homogenization",
@@ -596,7 +666,8 @@
               "criteria": [
                 "等待、冲突、余波的句压和推进速度差不多",
                 "场景之间缺乏节奏压差"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "echo_dramatization",
@@ -607,7 +678,8 @@
                 "早前的台词或意象被召回的次数超过场景积累所能支撑的",
                 "同一语言形式或身体姿态作为结构标记反复出现",
                 "回扣模式变得可预测：熟读者开始提前预判下一次呼应"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "genre_convention_violation",
@@ -619,7 +691,8 @@
                 "对抗以家庭剧的感情宣泄拍子收尾，而不是实际类型要求的结局",
                 "悬疑场景被给了言情的化解动作",
                 "类型标准满足感被提供，即便场景的内在逻辑要求的是别的东西"
-              ]
+              ],
+              "confidence_level": "medium"
             }
           ]
         },
@@ -636,7 +709,8 @@
                 "观察替代沉浸",
                 "心理说明替代发生感",
                 "场景变成被看见的东西，而不是被经历的东西"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "texture_substituting_for_substance",
@@ -647,7 +721,8 @@
                 "情绪氛围很满，关系没怎么动",
                 "语言表面很丰富，结构其实很空",
                 "深度的印象代替了真正的推进"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "microreaction_oversegmentation",
@@ -657,7 +732,8 @@
               "criteria": [
                 "眼神、呼吸、手指、沉默、姿势一个个拆开",
                 "一拍反应被放大成显微镜写作"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "over_stylized_line_breaking",
@@ -667,7 +743,8 @@
               "criteria": [
                 "散文诗式分段替代了场景压力",
                 "每个小拍子都被单独排版强调"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "dialogue_overfunctionalization",
@@ -678,7 +755,8 @@
                 "每句都在推信息、推关系、推冲突",
                 "没有无意义的停顿、偏题回应或「在场但不推进」的台词",
                 "台词像「为了场景服务」被写出来，而不像人物在里面说话"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "voice_homogenization",
@@ -689,7 +767,8 @@
                 "两个性格完全不同的人，用的句式差不多、用词范围差不多、语气节奏差不多",
                 "一个街头混混和一个内敛贵族，只是名字不同，说话听起来像同一个人",
                 "所有角色共享模型的默认散文腔，而不管他们应该是谁"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "emotional_range_limitation",
@@ -700,7 +779,8 @@
                 "无聊、鄙夷、干燥的好笑、麻木的解脱、冰冷的愤怒或厌恶，被向偏好的情绪调色板推",
                 "不同种类的愤怒、或不同质地的悲伤，被写成同一种情绪颗粒",
                 "需要情绪特殊性的场景得到了通用的「沉重」或「温柔」处理"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "user_intent_misalignment",
@@ -712,7 +792,8 @@
                 "用户在建立冲突，模型把场景向和解方向带",
                 "用户在设定特定基调，模型换成了自己偏好的基调",
                 "输出在技术上和铺垫相连，但在追求不同的场景目标"
-              ]
+              ],
+              "confidence_level": "medium"
             }
           ]
         }
@@ -736,7 +817,8 @@
                 "第 N 轮的错误成为第 N+1 轮的输入前提",
                 "单独看每一轮都勉强说得通，拉开看才发现已经偏出很远",
                 "没有任何轮次试图修正已建立的错误状态"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "drift_without_correction",
@@ -747,7 +829,8 @@
                 "角色在早期轮次的某个核心特质，在后续轮次中悄悄改变",
                 "场景的情绪基调在没有叙事理由的情况下缓慢转移",
                 "漂移是渐进的，任何单一轮次的变化看起来都很小"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "scene_signal_blindness",
@@ -758,7 +841,8 @@
                 "用户通过行为、台词或描述暗示场景需要转向，模型忽略了",
                 "用户发出的减速或升温信号没有被接收",
                 "模型继续推进一个用户已经在悄悄离开的场景"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "turn_continuity_error",
@@ -769,7 +853,8 @@
                 "上一轮明确发生的事件，在这一轮被当作没发生过",
                 "上一轮角色说的话，在这一轮与之矛盾的内容被写出来",
                 "关键的上下文信息在轮次间凭空消失"
-              ]
+              ],
+              "confidence_level": "high"
             },
             {
               "id": "emotional_state_reset",
@@ -780,7 +865,8 @@
                 "上一轮的强烈情绪在下一轮没有任何痕迹",
                 "角色从激烈状态直接回到稳定如常",
                 "情绪状态的连续性被会话边界切断"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "spatial_blocking_error",
@@ -791,7 +877,8 @@
                 "多轮之后角色出现在了逻辑上无法到达的位置",
                 "场景环境的空间细节在会话中途失去一致性",
                 "只有在回顾整段对话时才能发现位置记录出了问题"
-              ]
+              ],
+              "confidence_level": "high"
             },
             {
               "id": "escalation_miscalibration",
@@ -802,7 +889,8 @@
                 "场景在多轮中的情绪强度曲线和内容实际支撑的张力不匹配",
                 "过早到达情绪顶点，之后无处可去",
                 "需要累积的张力在该爆发前就已经被中途释放"
-              ]
+              ],
+              "confidence_level": "low"
             },
             {
               "id": "topic_persistence_error",
@@ -813,7 +901,8 @@
                 "用户建立的一个话题线，在没有结论的情况下被模型悄悄丢弃",
                 "一个已经自然结束的话题被模型继续强行推进",
                 "场景焦点在没有用户引导的情况下突然转移"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "context_overdeployment",
@@ -824,7 +913,8 @@
                 "模型频繁引用几轮之前的细节，超过场景自然需要的程度",
                 "早期建立的元素被反复调用，像在刻意展示「我记得」",
                 "过多的上下文引用打断了当下时刻的沉浸感"
-              ]
+              ],
+              "confidence_level": "medium"
             },
             {
               "id": "voice_drift",
@@ -835,7 +925,20 @@
                 "角色在会话早期的说话方式，和会话后期明显不同",
                 "漂移是渐进的，单轮变化不明显，但拉开看已经是另一个人",
                 "声音漂移没有对应的角色发展弧线支撑"
-              ]
+              ],
+              "confidence_level": "low"
+            },
+            {
+              "id": "arc_pacing_error",
+              "name": "弧线节奏错误",
+              "definition": "跨场景叙事弧线的宏观节奏与积累不匹配",
+              "derived_from": null,
+              "criteria": [
+                "故事弧线在没有足够积累的情况下被加速推向高潮",
+                "弧线的不同阶段（建立、升级、高潮、余波）在篇幅和密度上严重失衡",
+                "多条叙事线被同步推进到相同阶段，缺乏错落感"
+              ],
+              "confidence_level": "low"
             }
           ]
         }
@@ -843,15 +946,53 @@
     }
   ],
   "underlying_tendencies": [
-    {"id": "reader_comfort_alignment", "name": "读者舒适对齐", "primary_layer": "III", "definition": "输出更像在照顾读者可消费性"},
-    {"id": "affect_manageability_bias", "name": "情感可控偏向", "primary_layer": "III", "definition": "把难承受的情感改写成更易消化的东西"},
-    {"id": "darkness_intolerance", "name": "黑暗不耐受", "primary_layer": "III", "definition": "不愿在冷/黑/难的状态里待太久"},
-    {"id": "aesthetic_obedience_bias", "name": "美学服从偏向", "primary_layer": "IV", "definition": "过度服从好看、有成品感的要求"},
-    {"id": "complexity_avoidance", "name": "复杂度回避", "primary_layer": "II-III", "definition": "倾向于给出最简单的解释或动机，而非保持多线程的复杂性"},
-    {"id": "closure_drive", "name": "闭合驱动", "primary_layer": "III", "definition": "倾向于在每一轮内完成某种情感弧，不愿把东西留到下一轮"}
+    {
+      "id": "reader_comfort_alignment",
+      "name": "读者舒适对齐",
+      "primary_layer": "III",
+      "definition": "输出更像在照顾读者可消费性"
+    },
+    {
+      "id": "affect_manageability_bias",
+      "name": "情感可控偏向",
+      "primary_layer": "III",
+      "definition": "把难承受的情感改写成更易消化的东西"
+    },
+    {
+      "id": "darkness_intolerance",
+      "name": "黑暗不耐受",
+      "primary_layer": "III",
+      "definition": "不愿在冷/黑/难的状态里待太久"
+    },
+    {
+      "id": "aesthetic_obedience_bias",
+      "name": "美学服从偏向",
+      "primary_layer": "IV",
+      "definition": "过度服从好看、有成品感的要求"
+    },
+    {
+      "id": "complexity_avoidance",
+      "name": "复杂度回避",
+      "primary_layer": "II-III",
+      "definition": "倾向于给出最简单的解释或动机，而非保持多线程的复杂性"
+    },
+    {
+      "id": "closure_drive",
+      "name": "闭合驱动",
+      "primary_layer": "III",
+      "definition": "倾向于在每一轮内完成某种情感弧，不愿把东西留到下一轮"
+    }
   ],
   "cross_layer_tags": [
-    {"id": "supportive_but_wrong", "name": "支持性但错误", "definition": "情感上正确但背叛了场景实际结构"},
-    {"id": "reading_preservation_hybrid", "name": "读取保留混合", "definition": "无法确认失败在读取层还是保留层"}
+    {
+      "id": "supportive_but_wrong",
+      "name": "支持性但错误",
+      "definition": "情感上正确但背叛了场景实际结构"
+    },
+    {
+      "id": "reading_preservation_hybrid",
+      "name": "读取保留混合",
+      "definition": "无法确认失败在读取层还是保留层"
+    }
   ]
 }

@@ -82,7 +82,7 @@
     },
     "label": {
       "type": "object",
-      "required": ["id", "name", "definition", "derived_from", "criteria"],
+      "required": ["id", "name", "definition", "derived_from", "criteria", "confidence_level"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -107,6 +107,11 @@
           "items": { "type": "string" },
           "minItems": 1,
           "description": "可观察判断标准列表"
+        },
+        "confidence_level": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "标注者间一致性预期：high=客观可观察, medium=需上下文判断, low=高度主观或需跨场景比较"
         }
       }
     },
