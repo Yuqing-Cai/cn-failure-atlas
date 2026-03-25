@@ -2,6 +2,12 @@
 
 面向大语言模型虚构和角色扮演对话的失败模式分类体系，以中文场景为中心。
 
+> **English abstract:** A structured diagnostic taxonomy of failure patterns in LLM-generated fiction and roleplay dialogue, developed in Chinese-language contexts. The atlas targets a specific class of output failure: structurally fluent text that nonetheless reads as wrong to an experienced reader — where the problem lies not in grammar or coherence, but in how the model handles subtext, relationship dynamics, emotional weight, narrative tension, and writing voice.
+>
+> 78 labeled failure modes are organized across five diagnostic layers — structural preconditions, semantic reading, scene preservation, writing intrusion, and multi-turn coherence — plus six underlying behavioral tendencies that explain *why* these failures cluster the way they do. Each label includes a one-sentence definition, observable diagnostic criteria, illustrative examples, and boundary notes distinguishing it from adjacent labels.
+>
+> The taxonomy is designed for: model output evaluation, annotator training, qualitative failure analysis in creative/fiction contexts, and systematic comparison across model versions or prompting strategies. A validated JSON format (`taxonomy.json`) is included for programmatic use.
+
 ---
 
 ## 这是什么
