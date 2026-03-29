@@ -168,20 +168,20 @@ flowchart TD
 | | `specialness_dilution` | 独特性稀释 | 不可替代性被写成一般化的重要性 |
 | | `therapist_mode_intrusion` | 治疗师模式侵入 | 角色突然用咨询式语言做情绪调解 |
 | | `ooc_modernization` | 人物现代化出戏 | 引入现代情感教育话语框架 |
-| | `seduction_logic_error` | 勾引逻辑错误 | 追逐的不对称性被破坏 |
+| | `seduction_logic_error` | 勾引逻辑错误 | 追逐关系的结构性不对称被破坏 |
 | | `manipulation_acceptance` | 操控接受 | 算计性行为被当作真诚来回应 |
 | | `consent_flattening` | 同意扁平化 | 权力不平衡被简化为清晰的同意/拒绝 |
 | III-B 心理 | `overcoherent_characterization` | 过度连贯塑造 | 角色过于稳定一致，像规格说明书 |
 | | `premature_affective_closure` | 情绪过早收束 | 情绪矛盾在场景到位前被讲干净 |
 | | `desire_overlegibility` | 欲望过度可读 | 半隐的欲望被过早翻译成明文 |
 | | `self_protective_friction_loss` | 自我保护摩擦缺失 | 脆弱暴露时缺少应有的犹豫和包装 |
-| | `impulse_recontainment` | 冲动再收容 | 失控被过早整理回条理 |
-| III-C 重量 | `consequence_avoidance` | 后果回避 | 重话说出后重量没有停留 |
+| | `impulse_recontainment` | 冲动再收容 | 失控或冲动被过早整理回条理和自知 |
+| III-C 重量 | `consequence_avoidance` | 后果回避 | 重话说出后重量没有停留，余波被省略 |
 | | `impact_soft_landing` | 冲击软着陆 | 后果落地那一刻接收方式太软 |
-| | `tension_premature_resolution` | 张力过早收束 | 张力没活够就被收走 |
+| | `tension_premature_resolution` | 张力过早收束 | 场景张力还没有充分积累就被过早收束 |
 | | `defensive_positive_drift` | 防御性正向漂移 | 不该通风的场景被悄悄塞入暖意 |
 | III-D 身体 | `action_dialogue_mismatch` | 动作台词错位 | 身体动作与语言输出矛盾且未被承认 |
-| | `blocking_continuity_error` | 走位连续性错误 | 角色位置在多拍间不一致 |
+| | `blocking_continuity_error` | 走位连续性错误 | 角色位置和距离在多拍间无法保持一致 |
 | | `microreaction_mechanization` | 微反应机械化 | 同一套微信号库存被跨情绪套用 |
 | | `touchgrammar_error` | 触碰语法错误 | 触碰不符合场景的关系逻辑和权力动态 |
 | | `forced_verbalization` | 强制言语化 | 本应隐性运作的动态被明文说出 |
@@ -194,20 +194,20 @@ flowchart TD
 | 子类 | 标签 | 中文名 | 一句话定义 |
 |------|------|--------|-----------|
 | IV-A 模板 | `narrative_template_intrusion` | 叙事模板侵入 | 不同场景反复出现相似骨架 |
-| | `predictable_rhythm_exposure` | 可预测节律暴露 | 段落节律太容易被认出 |
+| | `predictable_rhythm_exposure` | 可预测节律暴露 | 段落节律跨场景重复，太容易被认出 |
 | | `register_contamination` | 语域污染 | 训练数据中某类文本的腔调侵入不属于它的场景 |
-| | `webnovel_register_contamination` | 网文语域污染 | 套用网文库存短语和腔调 |
+| | `webnovel_register_contamination` | 网文语域污染 | 套用网文库存短语和腔调侵入不属于它的场景 |
 | | `scene_pacing_distortion` | 场景节奏失调 | 推进速度与场景压力不匹配 |
-| | `cinematic_time_dilation` | 电影式时间膨胀 | 一拍的事被写成慢镜头 |
+| | `cinematic_time_dilation` | 电影式时间膨胀 | 一拍内发生的事被拉伸为慢镜头式的多单元描写 |
 | | `rhythm_homogenization` | 节奏同质化 | 不同类型场景用同一个内部时钟 |
 | | `echo_dramatization` | 回扣戏剧化 | 回扣和呼应频率超出场景积累 |
 | | `genre_convention_violation` | 类型惯例错配 | 从错误类型引入结构性惯例 |
 | IV-B 质感 | `descriptive_substitution_for_experience` | 描述替代体验 | 在旁边描写体验而非让读者停留其中 |
 | | `texture_substituting_for_substance` | 质感替代实质 | 氛围和质感代替了真正的推进 |
 | | `microreaction_oversegmentation` | 微反应过度切分 | 一个自然反应被拆成太多单元 |
-| | `over_stylized_line_breaking` | 过度风格化换行 | 换行被过度用来制造氛围 |
-| | `dialogue_overfunctionalization` | 台词过度功能化 | 每句台词都太有用了 |
-| | `voice_homogenization` | 声音同质化 | 不同角色的说话方式太像 |
+| | `over_stylized_line_breaking` | 过度风格化换行 | 换行和切段被过度用来制造氛围而非服务节奏 |
+| | `dialogue_overfunctionalization` | 台词过度功能化 | 每句台词都在推进信息或关系，缺少无功能的自然对话 |
+| | `voice_homogenization` | 声音同质化 | 不同角色的说话方式、句式和语气过于相似 |
 | | `emotional_range_limitation` | 情绪范围局限 | 大量不同情绪坍缩进窄小的可识别库 |
 | | `user_intent_misalignment` | 用户意图错位 | 模型偏好的场景走向覆盖了用户铺垫 |
 
@@ -217,7 +217,7 @@ flowchart TD
 |------|--------|-----------|
 | `error_accumulation` | 错误积累 | 前几轮的错误在后续轮次上继续延伸 |
 | `drift_without_correction` | 漂移未纠正 | 关键参数在多轮中逐渐偏移 |
-| `scene_signal_blindness` | 场景信号盲视 | 用户的转向信号未被识别 |
+| `scene_signal_blindness` | 场景信号盲视 | 用户发出的场景转向信号未被模型识别 |
 | `turn_continuity_error` | 轮次连续性错误 | 前一轮明确建立的信息被遗忘或矛盾 |
 | `emotional_state_reset` | 情绪状态重置 | 情绪状态在轮次间被无理由重置 |
 | `spatial_blocking_error` | 走位积累错误 | 跨多轮的空间位置失去追踪 |

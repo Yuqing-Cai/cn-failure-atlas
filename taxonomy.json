@@ -346,7 +346,7 @@
             {
               "id": "seduction_logic_error",
               "name": "勾引逻辑错误",
-              "definition": "追逐的不对称性被破坏",
+              "definition": "追逐关系的结构性不对称被破坏",
               "derived_from": null,
               "criteria": [
                 "渴望过早收束，张力还没积累起来就消散了",
@@ -448,7 +448,7 @@
             {
               "id": "impulse_recontainment",
               "name": "冲动再收容",
-              "definition": "失控被过早整理回条理",
+              "definition": "失控或冲动被过早整理回条理和自知",
               "derived_from": [
                 "overcoherent_characterization"
               ],
@@ -469,7 +469,7 @@
             {
               "id": "consequence_avoidance",
               "name": "后果回避",
-              "definition": "重话说出后重量没有停留",
+              "definition": "重话说出后重量没有停留，余波被省略",
               "derived_from": null,
               "criteria": [
                 "重话下一拍就失去力量，像从来没说过",
@@ -496,7 +496,7 @@
             {
               "id": "tension_premature_resolution",
               "name": "张力过早收束",
-              "definition": "张力没活够就被收走",
+              "definition": "场景张力还没有充分积累就被过早收束",
               "derived_from": null,
               "criteria": [
                 "很快滑向互相理解",
@@ -543,7 +543,7 @@
             {
               "id": "blocking_continuity_error",
               "name": "走位连续性错误",
-              "definition": "角色位置在多拍间不一致",
+              "definition": "角色位置和距离在多拍间无法保持一致",
               "derived_from": [
                 "action_dialogue_mismatch"
               ],
@@ -669,7 +669,7 @@
             {
               "id": "predictable_rhythm_exposure",
               "name": "可预测节律暴露",
-              "definition": "段落节律太容易被认出",
+              "definition": "段落节律跨场景重复，太容易被认出",
               "derived_from": [
                 "narrative_template_intrusion"
               ],
@@ -697,7 +697,7 @@
             {
               "id": "webnovel_register_contamination",
               "name": "网文语域污染",
-              "definition": "套用网文库存短语和腔调",
+              "definition": "套用网文库存短语和腔调侵入不属于它的场景",
               "derived_from": [
                 "register_contamination"
               ],
@@ -725,7 +725,7 @@
             {
               "id": "cinematic_time_dilation",
               "name": "电影式时间膨胀",
-              "definition": "一拍的事被写成慢镜头",
+              "definition": "一拍内发生的事被拉伸为慢镜头式的多单元描写",
               "derived_from": [
                 "scene_pacing_distortion"
               ],
@@ -831,7 +831,7 @@
             {
               "id": "over_stylized_line_breaking",
               "name": "过度风格化换行",
-              "definition": "换行被过度用来制造氛围",
+              "definition": "换行和切段被过度用来制造氛围而非服务节奏",
               "derived_from": [
                 "descriptive_substitution_for_experience"
               ],
@@ -845,7 +845,7 @@
             {
               "id": "dialogue_overfunctionalization",
               "name": "台词过度功能化",
-              "definition": "每句台词都太有用了",
+              "definition": "每句台词都在推进信息或关系，缺少无功能的自然对话",
               "derived_from": null,
               "criteria": [
                 "每句都在推信息、推关系、推冲突",
@@ -858,7 +858,7 @@
             {
               "id": "voice_homogenization",
               "name": "声音同质化",
-              "definition": "不同角色的说话方式太像",
+              "definition": "不同角色的说话方式、句式和语气过于相似",
               "derived_from": null,
               "criteria": [
                 "两个性格完全不同的人，用的句式差不多、用词范围差不多、语气节奏差不多",
@@ -937,7 +937,7 @@
             {
               "id": "scene_signal_blindness",
               "name": "场景信号盲视",
-              "definition": "用户的转向信号未被识别",
+              "definition": "用户发出的场景转向信号未被模型识别",
               "derived_from": null,
               "criteria": [
                 "用户通过行为、台词或描述暗示场景需要转向，模型忽略了",
