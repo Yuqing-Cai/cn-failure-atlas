@@ -69,11 +69,11 @@ All structured data is available in [`taxonomy.json`](taxonomy.json) (with [JSON
 
 | 场景 | 怎么用 |
 |------|--------|
-| **对话产品 QA** | 用标签体系对模型输出做结构化标注，替代纯主观评价，定位系统性缺陷 |
-| **Prompt / 系统指令调优** | 识别出具体失败类型后，针对性修改 prompt 策略（如针对 `relationship_flattening` 加强关系约束） |
-| **模型评测与选型** | 在不同模型间对比同一场景的失败分布，辅助选型决策 |
-| **标注团队校准** | 作为标注规范的参考框架，提高标注一致性（参见[标注指南](docs/annotation-guide.md)） |
-| **产品需求沟通** | 为产品、运营和技术团队提供精确的失败描述语言，减少"感觉不对但说不清"的沟通摩擦 |
+| 对话产品 QA | 用标签体系对模型输出做结构化标注，替代纯主观评价，定位系统性缺陷 |
+| Prompt / 系统指令调优 | 识别出具体失败类型后，针对性修改 prompt 策略（如针对 `relationship_flattening` 加强关系约束） |
+| 模型评测与选型 | 在不同模型间对比同一场景的失败分布，辅助选型决策 |
+| 标注团队校准 | 作为标注规范的参考框架，提高标注一致性（参见[标注指南](docs/annotation-guide.md)） |
+| 产品需求沟通 | 为产品、运营和技术团队提供精确的失败描述语言，减少"感觉不对但说不清"的沟通摩擦 |
 
 ---
 
@@ -145,11 +145,11 @@ flowchart TD
 
 | 层级 | 名称 | 定义 | 标签数 | 详细内容 |
 |------|------|------|--------|----------|
-| **I** | 前置条件 | 场景基础结构失败（信息边界、世界规则） | 9 | [→ 查看](layers/layer-1-preconditions.md) |
-| **II** | 意义读取 | 模型未理解场景含义（潜台词、情绪、关系逻辑） | 8 | [→ 查看](layers/layer-2-semantic-reading.md) |
-| **III** | 场景保留 | 模型理解但在生成时未能保持场景需要的状态 | 25 | [→ 查看](layers/layer-3-scene-preservation.md) |
-| **IV** | 写作侵入 | 模型默认写作习惯覆盖场景特定需求 | 17 | [→ 查看](layers/layer-4-writing-intrusion.md) |
-| **V** | 多轮失败 | 需要多轮视角才能可靠诊断的失败（连续性、累积） | 11 | [→ 查看](layers/layer-5-multi-turn.md) |
+| I | 前置条件 | 场景基础结构失败（信息边界、世界规则） | 9 | [→ 查看](layers/layer-1-preconditions.md) |
+| II | 意义读取 | 模型未理解场景含义（潜台词、情绪、关系逻辑） | 8 | [→ 查看](layers/layer-2-semantic-reading.md) |
+| III | 场景保留 | 模型理解但在生成时未能保持场景需要的状态 | 25 | [→ 查看](layers/layer-3-scene-preservation.md) |
+| IV | 写作侵入 | 模型默认写作习惯覆盖场景特定需求 | 17 | [→ 查看](layers/layer-4-writing-intrusion.md) |
+| V | 多轮失败 | 需要多轮视角才能可靠诊断的失败（连续性、累积） | 11 | [→ 查看](layers/layer-5-multi-turn.md) |
 | — | 底层倾向 & 跨层标签 | 底层驱动偏向 + 跨层诊断辅助标签 | 6 + 2 | [→ 查看](layers/cross-layer.md) |
 
 ---
@@ -335,11 +335,11 @@ flowchart TD
 
 | 影响类型 | 说明 | 常见来源（不限于） |
 |---------|------|-----------------|
-| **前提坍塌** | 场景的基础结构被破坏，后续输出建立在错误前提上 | Layer I 标签，Layer V `error_accumulation` |
-| **方向偏离** | 场景仍可辨认，但走向不再服务于用户意图或角色逻辑 | Layer II 误读，`user_intent_misalignment`，`scene_signal_blindness` |
-| **质量降级** | 场景方向正确，但张力、关系、重量等品质显著下降 | Layer III 多数标签 |
-| **风格干扰** | 场景基本成立，但写作习惯损害了体验的独特性 | Layer IV 标签 |
-| **累积腐蚀** | 单轮不明显，多轮后场景逐渐偏移直至不可辨认 | Layer V 标签 |
+| 前提坍塌 | 场景的基础结构被破坏，后续输出建立在错误前提上 | Layer I 标签，Layer V `error_accumulation` |
+| 方向偏离 | 场景仍可辨认，但走向不再服务于用户意图或角色逻辑 | Layer II 误读，`user_intent_misalignment`，`scene_signal_blindness` |
+| 质量降级 | 场景方向正确，但张力、关系、重量等品质显著下降 | Layer III 多数标签 |
+| 风格干扰 | 场景基本成立，但写作习惯损害了体验的独特性 | Layer IV 标签 |
+| 累积腐蚀 | 单轮不明显，多轮后场景逐渐偏移直至不可辨认 | Layer V 标签 |
 
 同一个标签在不同场景中可能造成不同类型的影响。判断严重度时应以"场景是否因此受损、受损程度多大"为准，而非根据标签所属的层级编号推导。
 
