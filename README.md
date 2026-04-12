@@ -1,3 +1,15 @@
+## English Brief
+
+**CN Failure Atlas** is a diagnostic taxonomy of structural failure modes in LLM-generated fictional and roleplay dialogue, with a focus on Chinese-language scenarios.
+
+It provides **78 labeled failure types** across 5 diagnostic layers — from broken preconditions (e.g. omniscience leaks, role boundary violations) through semantic misreads, scene preservation failures, writing habit intrusions, to multi-turn degradation — plus 6 underlying tendencies and 2 cross-layer tags. Each label includes a definition, observable criteria, and concrete examples.
+
+The taxonomy is designed as a **shared diagnostic vocabulary**: instead of vague quality ratings, it lets you say exactly *what* went wrong, *at which analytical level*, and *what else tends to co-occur*. Use cases include QA annotation, prompt tuning, model evaluation, and cross-team communication about output quality.
+
+All structured data is available in [`taxonomy.json`](taxonomy.json) (with [JSON Schema](taxonomy.schema.json) validation).
+
+---
+
 # 中文虚构对话失败图谱
 
 面向大语言模型虚构和角色扮演对话的失败模式分类体系，以中文场景为中心。
