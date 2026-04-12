@@ -53,6 +53,8 @@ All structured data is available in [`taxonomy.json`](taxonomy.json) (with [JSON
 - 具体示例展示哪里出错
 - 与相近标签的边界讨论（针对容易混淆的标签对）
 
+每个标签的完整展开都在对应的层级文档中，下面「[失败层级概览](#失败层级概览)」表格提供入口。[标注指南](docs/annotation-guide.md)另附两个端到端的标注实例——单轮诊断（一段母女对峙场景的多标签组合）与跨轮次诊断（跨 6 轮的声音漂移追踪），展示实际使用本体系时的判断流程与多标签如何协同。
+
 这不是基准测试数据集，也不是带完整场景标注的案例集。它是用于识别和讨论失败模式的**诊断参考工具**。
 
 ---
@@ -155,6 +157,8 @@ flowchart TD
 ---
 
 ## 快速参考表
+
+> 下面是所有 78 个标签的一句话概览，**仅用于快速检索**。每个标签的完整展开——定义、观察标准、2 条以上具体示例、与相近标签的边界讨论——都在对应的层级文档中：[Layer I](layers/layer-1-preconditions.md) · [Layer II](layers/layer-2-semantic-reading.md) · [Layer III](layers/layer-3-scene-preservation.md) · [Layer IV](layers/layer-4-writing-intrusion.md) · [Layer V](layers/layer-5-multi-turn.md) · [底层倾向 & 跨层](layers/cross-layer.md)
 
 ### 第一层：前置条件（9 个标签）
 
