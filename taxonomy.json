@@ -1,10 +1,11 @@
 {
   "schema_version": "2.0.0",
-  "taxonomy_version": "2.0.0-alpha.1",
+  "taxonomy_version": "2.0.0-alpha.2",
   "status": "experimental",
-  "updated_at": "2026-08-24",
+  "updated_at": "2026-08-25",
   "name": "中文虚构对话失败图谱",
   "description": "面向中文虚构和角色扮演对话的机器可读失败诊断本体。诊断顺序、可观察症状、因果假设、复合现象与不确定性记录彼此分离。",
+  "diagnostic_guardrail": "先核对场景契约。个人偏好或对模型内部机制的猜测，不能单独触发标签。",
   "diagnostic_order": [
     "I",
     "II",
@@ -52,9 +53,8 @@
               "confusable_with": [
                 "pronoun_role_confusion"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "宫斗场景中模型未经授权书写了用户扮演的淑妃的内心活动和情感反应"
             },
             {
@@ -71,9 +71,8 @@
               "observability": "high",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "曹丕台词中说出了「我比他小十岁」，实为女主属性被错误贴到曹丕身上"
             },
             {
@@ -90,9 +89,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "悬疑场景中张明的每个微反应都在透明表演系统设定中的秘密，悬念被剧透"
             },
             {
@@ -111,9 +109,8 @@
               "confusable_with": [
                 "omniscience_leak"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "长平公主接剑场景中叙述者突然跳至「后世史书」的全知回溯视角"
             },
             {
@@ -132,9 +129,8 @@
               "confusable_with": [
                 "perspective_slippage"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "自欺型日记体叙述者对自己做出了精确的心理诊断而非自我美化"
             }
           ]
@@ -157,9 +153,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "唐朝大臣用「公平的机会」「各展所长」等能力主义逻辑论证太子之位"
             },
             {
@@ -183,6 +178,7 @@
                 "therapist_mode_intrusion",
                 "overcoherent_characterization"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "先从场景契约提取角色应保持的威胁等级、道德边界和对抗性；契约未明确时，不得仅因反派复杂或有原则而触发。",
                 "定位输出新增的道德底线、自我辩护或救赎框架，并检查删除该新增内容后是否会恢复契约要求的威胁参数；若不会，不触发。"
@@ -206,9 +202,8 @@
                 "omniscience_leak",
                 "worldview_constraint_error"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "宋朝私塾先生用系统性农业科学分析框架回答庄稼歉收问题"
             },
             {
@@ -225,9 +220,8 @@
               "observability": "high",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "MCU 版彼得把「能力越大，责任越大」归为本叔叔的教导；现有 MCU 电影中该格言由梅姨说出，并未建立这一版本的本叔叔传授关系"
             }
           ]
@@ -259,9 +253,8 @@
               "confusable_with": [
                 "relationship_logic_blindness"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "冷战中「我自己一个人挺好的」被字面接受，模型顺势离开而非识别试探"
             },
             {
@@ -279,6 +272,7 @@
               "confusable_with": [
                 "premature_affective_closure"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保持事件、情绪强度与结局不变，恢复至少两个仍有文本依据的解释；若损害随多义性恢复而消失，才触发。",
                 "若问题是把混合情绪讲成终点而非把解释压成一个，改用 premature_affective_closure。"
@@ -299,9 +293,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "皇帝对功臣说「辛苦了」的权力划线被写成暖心君臣佳话"
             },
             {
@@ -320,9 +313,8 @@
               "confusable_with": [
                 "premature_affective_closure"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "长期照护者至亲去世后的空洞茫然被浪漫化为隐忍独自落泪的美丽悲伤"
             },
             {
@@ -341,9 +333,8 @@
               "confusable_with": [
                 "emotion_misread"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "分手两年后的试探性电话被直接当成互诉衷肠的怀念来接收"
             }
           ]
@@ -369,9 +360,8 @@
               "confusable_with": [
                 "deflection_blindness"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "搭档谈崩合同后「你可真大方啊」的讽刺被接受，对方立刻诚恳道歉"
             },
             {
@@ -387,6 +377,7 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保持事件与角色意图不变，只移除突然改变基调的措辞或动作；若断裂消失且原调性连续，才触发。",
                 "若变化有明确叙事触发或只是语域不匹配而非基调断裂，不触发。"
@@ -410,9 +401,8 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "第一次谈未来时「我不是那种人别当真」的自我收回被顺势撤退接受"
             }
           ]
@@ -443,9 +433,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "主仆关系中仆人说出「我会担心你的」平等关怀，等级感被抹掉"
             },
             {
@@ -464,9 +453,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "单方依恋中 B 补了一句「我也离不开你」，把单向依附变成互相依赖"
             },
             {
@@ -485,9 +473,8 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "A 对 B 说「她对我来说也很重要，就像你一样」，独特性被稀释为一个类别"
             },
             {
@@ -506,6 +493,7 @@
               "confusable_with": [
                 "ooc_modernization"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保留角色立场与冲突事实，只删除情绪认可、复述和协商模板；若角色重新像其自身而非咨询师说话，才触发。",
                 "若措辞只是时代或语域不符而没有承担情绪调解功能，改用 ooc_modernization。"
@@ -528,9 +516,8 @@
               "confusable_with": [
                 "worldview_constraint_error"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "古代宫廷侧室辞别时说出「在这段关系里我没有被看见」等现代情感话语"
             },
             {
@@ -550,9 +537,8 @@
               "confusable_with": [
                 "desire_overlegibility"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "本该保持距离的 B 用「就今天吗」主动回击调情，追逐不对称消失"
             },
             {
@@ -572,9 +558,8 @@
               "confusable_with": [
                 "relationship_logic_blindness"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "情感操控者的算计性眼泪被当作真实痛苦接收，模型写 B 心里一软"
             },
             {
@@ -599,6 +584,7 @@
               "confusable_with": [
                 "relationship_flattening"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "检查错误核心是否是选择空间、强制性或犹豫被写成干净同意；若只是关系类型整体被改写，则使用 relationship_flattening。"
               ],
@@ -626,6 +612,7 @@
               "confusable_with": [
                 "premature_affective_closure"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保留事件与人物立场，恢复与既有自我叙述冲突的行为、盲点或残差；若人物不再像完整理论，才触发。",
                 "若只是某一刻的混合情绪被过早讲净而人物整体仍保留矛盾，改用 premature_affective_closure。"
@@ -649,6 +636,7 @@
                 "ambiguity_collapse",
                 "tension_premature_resolution"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
                 "若恢复情绪矛盾后场景仍因对抗、追逐或悬念已经结束而失压，另检 tension_premature_resolution。"
@@ -692,9 +680,8 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "克制型角色看对方够书架时内心直接明文总结「他喜欢她」"
             },
             {
@@ -711,9 +698,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "从不示弱的角色第一次开口就完整列出三个核心恐惧，毫无犹豫包装"
             },
             {
@@ -732,9 +718,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "自控型角色第一次失口后立刻切入条理化自我解释，失控状态瞬间消失"
             }
           ]
@@ -757,9 +742,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "重话说出后下一拍 B 立刻进入修复模式，重量没有任何停留时间"
             },
             {
@@ -783,6 +767,7 @@
                 "consequence_avoidance",
                 "tension_premature_resolution"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "确认重击及其后果确实已经到达，再检查接收方第一反应是否即时构建缓冲；若后果根本未停留，则使用 consequence_avoidance。"
               ],
@@ -804,6 +789,7 @@
               "confusable_with": [
                 "premature_affective_closure"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保持人物情绪解释不变，只恢复尚未完成的对抗、追逐或悬念压力；若场景重新能够继续积累，才触发。",
                 "若只是把混合情绪过早命名、但外部压力仍完整存在，改用 premature_affective_closure。"
@@ -827,9 +813,8 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "争吵后冷对峙沉默中模型让 A 倒了两杯水推一杯给 B，提前给了氧气"
             }
           ]
@@ -852,9 +837,8 @@
               "observability": "high",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "角色「头也不回」走向门口却停下来轻声说「我需要你好好的」，动作矛盾"
             },
             {
@@ -879,6 +863,7 @@
                 "action_dialogue_mismatch",
                 "spatial_blocking_error"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "画出同一场景片段的角色与物件位置序列；只有缺少必要移动仍无法连续时才触发，动作与台词的情绪方向冲突改用 action_dialogue_mismatch。"
               ],
@@ -898,9 +883,8 @@
               "observability": "low",
               "minimum_evidence_scope": "cross_scene",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "得知坏消息和看到心动的人两种场景都用「手停住了呼吸轻轻一顿」"
             },
             {
@@ -926,6 +910,7 @@
                 "action_dialogue_mismatch",
                 "consent_flattening"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "先从已建立关系提取接触权限，再检验触碰的发起者、方式和亲密度；物理动作与台词矛盾本身不足以触发。"
               ],
@@ -947,9 +932,8 @@
               "confusable_with": [
                 "self_protective_friction_loss"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "谎言场景中 A 直接说出「因为我在乎你一直都在乎」，迂回结构坍塌"
             },
             {
@@ -966,9 +950,8 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "惩罚性沉默被打破，模型让 A 说「没事我没有生气」反转了沉默的含义"
             },
             {
@@ -993,6 +976,7 @@
                 "silence_misread",
                 "descriptive_substitution_for_experience"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "删去解释沉默的旁白后，检查结构性缺席是否已足以承载该拍；若模型只是误填或反转沉默含义，则使用 silence_misread。"
               ],
@@ -1020,6 +1004,7 @@
                 "silence_misread",
                 "scene_pacing_distortion"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "在不改台词内容的前提下移动或删除停顿；若场景压力与落点恢复，才触发本标签，误解沉默含义本身改用 silence_misread。"
               ],
@@ -1052,9 +1037,8 @@
               "observability": "low",
               "minimum_evidence_scope": "cross_scene",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "两个完全不同场景用同一骨架：环境渲染→发现人→「说不清那是什么」→收句"
             },
             {
@@ -1079,6 +1063,7 @@
                 "narrative_template_intrusion",
                 "rhythm_homogenization"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "跨至少两个段落比较句长分布、情绪脉冲和收束位置；仅骨架顺序相同而节律不同，使用 narrative_template_intrusion。"
               ],
@@ -1106,6 +1091,7 @@
                 "genre_convention_violation",
                 "ooc_modernization"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "显式给出目标语域或角色声音基线，并指出至少两个跨句式或措辞层面的系统性偏差；单个词汇不触发。",
                 "把同一表达放回其疑似来源语域与目标语域比较：只有前者自然、后者破坏角色或场景契约时才触发；不得把来源归因当作已知训练事实。"
@@ -1134,6 +1120,7 @@
                 "register_contamination",
                 "genre_convention_violation"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "先确认目标场景并非主动采用相应网文类型语域，再定位至少一个成套句式或库存表达；题材本身是网文时不触发。",
                 "若偏差不能具体指向网文类型惯例，而只是一般性的声音不一致，则退回 register_contamination 或其他近邻标签。"
@@ -1156,9 +1143,8 @@
               "confusable_with": [
                 "consequence_avoidance"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "争吵余波中装饰性质感描写占大量空间，B 说要走和离开却两行结束"
             },
             {
@@ -1177,6 +1163,7 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保持动作与情绪事实不变，按场景应有时长恢复常速；若宏大感消失且信息未损失，才触发。",
                 "若问题来自跨场景节奏趋同而非单场景被无故慢放，改检 rhythm_homogenization。"
@@ -1204,6 +1191,7 @@
                 "predictable_rhythm_exposure",
                 "scene_pacing_distortion"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "比较至少两类情绪任务不同的场景；只有它们缺乏应有节奏压差才触发，单段内部可预判改用 predictable_rhythm_exposure。"
               ],
@@ -1231,6 +1219,7 @@
                 "narrative_template_intrusion",
                 "predictable_rhythm_exposure"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "只替换或删除回扣语句：若局部戏剧化恢复正常才触发；只有跨场景骨架重复时才使用 narrative_template_intrusion。"
               ],
@@ -1251,9 +1240,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "宫廷权谋较量中胜者说「我不想赢你」，权谋逻辑被言情化解动作替代"
             }
           ]
@@ -1276,9 +1264,8 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "手电筒灭了的恐惧场景被从外部标注分析而非让读者进入黑暗体验"
             },
             {
@@ -1302,6 +1289,7 @@
               "confusable_with": [
                 "descriptive_substitution_for_experience"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "删去氛围性描写后检查关系或事件是否仍无推进；若核心问题只是体验被外部解释而结构仍在移动，则使用 descriptive_substitution_for_experience。"
               ],
@@ -1328,6 +1316,7 @@
                 "microreaction_mechanization",
                 "cinematic_time_dilation"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "把连续反应合并为一拍；若信息不丢失且节奏恢复才触发。反应库存跨情绪重复但未被切碎，使用 microreaction_mechanization。"
               ],
@@ -1354,6 +1343,7 @@
                 "descriptive_substitution_for_experience",
                 "scene_pacing_distortion"
               ],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保持文字不变只还原为常规段落；若仪式感或压力主要由排版制造且还原后消失，才触发。"
               ],
@@ -1373,6 +1363,7 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
+              "discriminating_test_status": "specified",
               "discriminating_tests": [
                 "保持必要信息与冲突不变，加入一个符合人物但不推进任务的回应；若对话因而恢复在场感，才触发。",
                 "若每句仍有不同人物声音但信息推进过密，保留本标签；若主要是多人同腔，改检 voice_homogenization。"
@@ -1399,9 +1390,8 @@
               "observability": "low",
               "minimum_evidence_scope": "turn",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "底层粗砺角色和书香门第角色被背叛后说出几乎同构的哲理性散文腔台词"
             },
             {
@@ -1418,9 +1408,8 @@
               "observability": "low",
               "minimum_evidence_scope": "cross_scene",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "麻木震惊、干燥疲惫、冷静解脱三种不同情绪都被写成同一种「胸口很重」"
             },
             {
@@ -1440,9 +1429,8 @@
               "confusable_with": [
                 "tension_premature_resolution"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "用户铺设冷淡疏远场景，模型让角色主动打破距离问「你今天怎么样」"
             }
           ]
@@ -1474,9 +1462,8 @@
               "confusable_with": [
                 "drift_without_correction"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "第一轮把戒备读成暗恋，后续轮次在此基础上延伸，三轮后变成暧昧关系"
             },
             {
@@ -1493,9 +1480,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "conversation",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "冷漠不善言辞的角色在十轮中逐渐漂移成会主动安慰人的温柔角色"
             },
             {
@@ -1512,9 +1498,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "conversation",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "用户用「算了」发出降温信号，模型继续沿对峙轨道推进不接收转向"
             },
             {
@@ -1531,9 +1516,8 @@
               "observability": "high",
               "minimum_evidence_scope": "conversation",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "上轮明确说「我不想再见到你」，下轮被降级为「昨天的事改天再聊」"
             },
             {
@@ -1550,9 +1534,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "conversation",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "角色前夜崩溃大哭，第二天起床后觉得「也许没那么严重」，情绪一夜归零"
             },
             {
@@ -1576,9 +1559,8 @@
               "confusable_with": [
                 "blocking_continuity_error"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "B 从靠窗座位到吧台再到并肩走出咖啡馆，跨轮次空间记录失去一致性"
             },
             {
@@ -1595,9 +1577,8 @@
               "observability": "low",
               "minimum_evidence_scope": "conversation",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "初次见面就写「从未遇到过的震动」，五轮内完成需要十五轮的情感弧线"
             },
             {
@@ -1614,9 +1595,8 @@
               "observability": "medium",
               "minimum_evidence_scope": "conversation",
               "confusable_with": [],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "用户在第三轮埋下「以后再说」的悬念线，第八轮被模型完全丢弃未处理"
             },
             {
@@ -1635,9 +1615,8 @@
               "confusable_with": [
                 "echo_dramatization"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "第一轮随口提到不喜欢雨天，后续轮 4、7、10 反复刻意调用这个细节"
             },
             {
@@ -1656,9 +1635,8 @@
               "confusable_with": [
                 "drift_without_correction"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "角色从短句「走吧」「不知道」逐渐漂移为复合句详述内心的模型默认散文腔"
             },
             {
@@ -1677,9 +1655,8 @@
               "confusable_with": [
                 "escalation_miscalibration"
               ],
-              "discriminating_tests": [
-                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
-              ],
+              "discriminating_test_status": "underspecified",
+              "discriminating_tests": [],
               "example": "感情线和职业线被同步加速，两条弧线在同一轮同时到达高潮缺乏错落"
             }
           ]

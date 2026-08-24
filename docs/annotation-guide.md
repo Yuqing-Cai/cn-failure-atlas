@@ -1,8 +1,8 @@
-# 人工标注与审阅指南（兼容入口）
+# 人工审阅指南
 
-使用失败图谱对 AI 生成的角色扮演对话输出进行人工标注或人工审阅时的操作参考。
+这份指南用于人工抽查、争议复核，也兼容旧版人工标注工作流。
 
-> **v2 默认采用纯机器演化。** 人工标注是兼容旧工作流、抽查记录和争议审阅的可选入口，不是诊断、修订、验证或晋升的必需环节。机器如何生成诊断证据、提出修订、执行盲测并决定是否晋升，见[纯机器演化协议](machine-evolution-protocol.md)。本指南里的判断步骤也可以由机器执行。
+> v2 的主流程由机器执行；人工审阅是一条可选的检查通道。运行细节见[纯机器演化协议](machine-evolution-protocol.md)。
 
 ---
 
@@ -16,7 +16,7 @@
                                         如果有多轮上下文 → Layer V
 ```
 
-**第一层是门槛：** 如果信息边界或世界观被破坏（Layer I），后续层级的判断需要谨慎——场景的前提已经坏了，后续的张力、情绪、节奏问题可能是前提坍塌的衍生物，不是独立的失败。
+**第一层是门槛。** 信息边界或世界观一旦被破坏，后面的张力、情绪和节奏问题可能只是连锁反应。先确认它们是否还有独立证据。
 
 ### 2. 观察标签不互斥
 
@@ -26,7 +26,7 @@
 - **跨层多标签：** `safety_alignment_interference`（Layer I）+ `consent_flattening`（Layer III）
 - **跨层表现：** `emotion_misread`（Layer II）与 `tonal_whiplash`（可能涉及 Layer II 或 IV）共现
 
-**原则：** 哪个维度坏了就标哪个，不需要"选一个最合适的"。
+哪个维度坏了就标哪个，不必硬选一个“最合适的”。
 
 ### 3. 归层不确定时
 
@@ -36,7 +36,7 @@
 - 信号增强后仍然给中性回应 → 读取失败（没读到）
 - 信号增强后开始波动 → 保留失败（读到了但没守住）
 
-这个对照只能增加或降低某种归因的可信度，不能证明模型内部存在独立的“先读取、再保留”阶段。纯机器流程应把对照输入、输出差异和裁决理由写入诊断记录。
+这个对照只改变归因的可信度，不能证明模型内部真的存在“先读取、再保留”两个阶段。记录对照输入、输出差异和判断理由即可。
 
 ### 4. 复合现象
 
@@ -79,15 +79,13 @@
 说明：B 补了一句对等回应，把单方依附变成了互相依赖。
 ```
 
-### 边界字段与当前机器执行范围
+### 看边界，不猜边界
 
-每个症状还包含三类边界信息，但并非都已进入当前确定性执行器：
+条目列出 `confusable_with` 时，逐一说明为什么更像当前标签。空数组只表示项目还没冻结这组近邻，不能据此断言“没有近邻”。
 
-- `confusable_with`：需要主动排除的近邻症状；它是从当前症状指向待排除症状的**有向检查义务**，没有反向边不等于反向检查已被声明；空数组只表示当前版本尚未指定近邻，不表示近邻不存在
-- `discriminating_tests`：供人工审阅或未来 recipe 设计使用的自然语言提示，不能直接写入机器 `taxonomy_test_results`。只有带结构化 `test_recipes`、且 ID 列入 `machine_execution_policy.executable_symptom_ids` 的症状，才能生成可晋升的测试结果；无 recipe 的症状不能成为当前修复目标
-- `related_to`：非父子的类型化**有向边**；`same_domain_as`、`contrasts_with`、`often_cooccurs_with`、`may_contribute_to` 和 `temporal_aggregation_of` 都不产生继承关系。即使关系名称在自然语言里像是对称的，规范数据也不会自动补出反向边；需要反向遍历时，应显式存边或由消费端生成非规范派生视图
+`discriminating_test_status: specified` 表示条目已有自己的自然语言区分测试；`underspecified` 表示这部分仍空缺。遇到后一种情况，按定义和现有证据保守判断，拿不准就记录不确定性，不用一条通用套话补齐字段。
 
-`derived_from` 只表示严格子型：子标签成立时，父标签定义也必须成立。机器实现可以同时保留父子标签以供检索，但因果支持计数必须按下节规则合并。
+`derived_from` 表示严格子型。子标签成立时，父标签的定义也成立；两者复用同一证据时，只算一个证据组。其余机器字段集中列在文末附录。
 
 ---
 
@@ -110,7 +108,9 @@
 
 ### 相近标签之间
 
-遇到不确定的情况，人工审阅可参考该条目的 `discriminating_tests`，并逐一排除 `confusable_with`；机器运行只能执行已冻结的结构化 `test_recipes`。如果仍无法区分，应保留 `uncertain_between` 及各候选证据，不把两个候选都写成已经成立。Layer II/III 的特定归因不确定使用 `reading_preservation_hybrid`。
+拿不准时，人工审阅可参考 `discriminating_tests`，并逐一排除 `confusable_with`。机器运行只执行已冻结的结构化 `test_recipes`。
+
+如果仍无法区分，保留 `uncertain_between` 及各候选证据。Layer II/III 的特定归因不确定使用 `reading_preservation_hybrid`。
 
 ### "这算不算失败？"
 
@@ -132,30 +132,21 @@ Layer IV 的标签（写作侵入）通常需要跨场景比较才能稳定识�
 
 ---
 
-## 因果假设的使用（旧称“底层倾向”）
+## 因果假设怎么写（旧称“底层倾向”）
 
-因果假设（`reader_comfort_alignment` 等；旧版称“底层倾向”）不是案例级观察标签——它们描述一段输出或一组输出背后**可能**的驱动模式。它们与层级标签属于不同的分析层次：层级标签描述“发生了什么”（可观察），因果假设描述“为什么可能这样”（待证伪的归因）。
+症状描述“哪里坏了”，因果假设试着解释“为什么反复这样”。先完成症状标注，再谈原因。
 
-在 `diagnostic_trace` 中，因果假设的 `status: present` 只表示它**达到当前机器规则的“受支持假设提案”门槛**，不表示原因已经被观察到、识别为模型内部事实或完成因果证明。
+人工审阅可按以下顺序处理：
 
-**使用约束：**
-- `support_contract.status: specified` 表示当前版本冻结了可接受的症状边界；`underspecified` 表示边界尚未建立，这类假设不得被机器标为 `present`
-- `admissible_symptom_ids` 是可计入该假设的症状白名单，不在白名单中的相似现象不能投票
-- `match_mode: exact` 只接受白名单中的精确 ID；`descendants_included` 还接受这些症状通过 `derived_from` 定义的严格子型。当前六个因果条目均声明 `descendants_included`，但两个 `underspecified` 条目的白名单为空，仍不得标为 `present`
-- **至少两个独立症状证据组共同指向同一方向时**，才可把一个 `specified` 因果假设记录为达到提案门槛
-- `derived_from` 的祖先与后代即使同时成立，也只算一个支持组；例如 `tension_premature_resolution` + 其子型 `defensive_positive_drift` 不能单独满足“两组”门槛
-- 复用同一条或相互重叠的正向证据 span 的多个标签只算一个支持组。语义上复用同一判断理由、但 span 并不重叠的情况，当前 Schema 没有可验证字段；人工审阅应保守合并，但不能声称 Gate 已自动识别
-- 例如，在不同证据片段中观察到 `therapist_mode_intrusion` 的咨询式调解和 `tension_premature_resolution` 的过早收束，且二者共同指向“让场景变得更易消化”，才可提出 `affect_manageability_bias`
-- 单个支持组不足以达到提案门槛；满足白名单和数量门槛也只建立“受支持假设”，不等于证明了原因
+1. 找到至少两个指向同一方向的症状证据组；
+2. 确认它们来自不同证据片段，没有用父标签和子标签重复计数；
+3. 对照该假设的 `admissible_symptom_ids`，白名单之外的症状只作旁观证据；
+4. `support_contract.status` 为 `specified` 时，才把它写成受支持假设；
+5. 用“可能”“提案”或“等待反事实检验”措辞收尾。
 
-这套规则由 `taxonomy.json.causal_support_policy` 与每个假设自己的 `support_contract` 共同规定：前者冻结全局计数规则，后者冻结该假设的状态、白名单和子型匹配方式。逐项白名单见[跨层条目](../layers/cross-layer.md#机器支持边界)。
+例如，`therapist_mode_intrusion` 的咨询式调解和 `tension_premature_resolution` 的过早收束出现在不同片段，又共同把场景推向“更容易消化”，可以提出 `affect_manageability_bias`。这仍是一项待推翻的解释，不是模型内部原因的事实陈述。
 
-**使用场景：**
-- 当一段输出触发了多个 Layer III 标签，且它们指向共同的驱动方向
-- 当跨场景对比后发现同一种偏向反复出现
-- 在总结报告中描述模型的系统性倾向
-
-**不要用来替代具体标签，也不要把它写成事实。** 即使记录为 `present`，因果假设仍是可被反事实检查推翻的解释框架，不是已经确认的模型内部原因。
+单个支持组不够。跨场景反复出现同一方向时，因果假设会更有分析价值。逐项白名单见[跨层条目](../layers/cross-layer.md#机器支持边界)，精确计数规则见文末附录。
 
 ---
 
@@ -269,4 +260,32 @@ premature_affective_closure（严格子型按 descendants_included 处理）。
 > **两个示范的共同要点：** 标注不是“找到一个最合适的标签”，而是“所有坏掉的维度都标上”。每个标签需要具体的触发位置和解释，不能只给标签名。因果假设只接受各自 `support_contract` 白名单中的症状；父子标签或共享证据不能重复计数，达到两组门槛也只表示形成了可被后续测试推翻的受支持提案。
 
 ---
+
+## 附录：机器字段速查
+
+这部分供核对结构化记录使用。人工初审可停在上面的定义、证据和示范。
+
+| 字段 | 精确含义 |
+|---|---|
+| `diagnostic_guardrail` | 全部症状共享的最低证据规则；它不是某个标签的区分测试 |
+| `confusable_with` | 从当前症状指向待排除症状的有向检查义务；规范数据不会自动补反向边 |
+| `discriminating_test_status` | `specified` 表示已有逐项自然语言测试，`underspecified` 表示测试仍空缺 |
+| `discriminating_tests` | 人工审阅或未来 recipe 设计提示，不能直接写入机器 `taxonomy_test_results` |
+| `test_recipes` | 结构化测试配方；症状还须列入 `machine_execution_policy.executable_symptom_ids`，结果才可用于当前晋升 |
+| `derived_from` | 严格子型关系；子型成立时父定义必须成立 |
+| `related_to` | 非父子的类型化有向边，不产生继承关系 |
+
+`related_to` 的关系类型包括 `same_domain_as`、`contrasts_with`、`often_cooccurs_with`、`may_contribute_to` 和 `temporal_aggregation_of`。需要反向遍历时，由数据显式存边，或由消费端生成非规范派生视图。
+
+因果假设由 `taxonomy.json.causal_support_policy` 和各自的 `support_contract` 共同约束：
+
+- `support_contract.status: underspecified` 的假设不能由机器标为 `present`；
+- `admissible_symptom_ids` 是支持症状白名单；
+- `match_mode: exact` 只接受精确 ID，`descendants_included` 也接受这些症状经 `derived_from` 定义的严格子型；当前六个因果条目都使用 `descendants_included`，其中两个 `underspecified` 条目的白名单为空；
+- 至少两个独立症状证据组才能达到提案门槛；祖先与后代、同一条或相互重叠的正向 evidence span 只算一组；
+- 如果两段 span 不重叠，却复用了同一判断理由，当前 Schema 无法自动识别；人工审阅应保守合并；
+- `diagnostic_trace` 中因果假设的 `status: present` 只表示达到受支持提案门槛，仍需接受反事实检验。
+
+---
+
 [← 返回概览](../README.md) | [查看机器演化协议 →](machine-evolution-protocol.md)

@@ -72,11 +72,13 @@ function checkSchema(taxonomy, schema, errors) {
   const ajv = new Ajv2020({ allErrors: true, strict: true });
   addFormats(ajv);
   const validate = ajv.compile(schema);
-  if (!validate(taxonomy)) {
+  const valid = validate(taxonomy);
+  if (!valid) {
     for (const schemaError of validate.errors ?? []) {
       errors.push(issue("R1", formatAjvError(schemaError)));
     }
   }
+  return valid;
 }
 
 function checkCounts(taxonomy, errors) {
@@ -394,7 +396,19 @@ export function validateTaxonomy({ taxonomy, schema, markdowns = null }) {
       },
     };
   }
-  checkSchema(taxonomy, schema, errors);
+  if (!checkSchema(taxonomy, schema, errors)) {
+    return {
+      errors,
+      warnings,
+      stats: {
+        symptoms: 0,
+        causal_hypotheses: 0,
+        composites: 0,
+        uncertainty_markers: 0,
+        total: 0,
+      },
+    };
+  }
   const semanticResult = validateTaxonomySemantics(taxonomy);
   errors.push(...semanticResult.errors);
   const stats = semanticResult.stats;

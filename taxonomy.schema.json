@@ -11,6 +11,7 @@
     "updated_at",
     "name",
     "description",
+    "diagnostic_guardrail",
     "diagnostic_order",
     "total_items",
     "item_counts",
@@ -29,6 +30,10 @@
     "updated_at": { "type": "string", "format": "date" },
     "name": { "$ref": "#/$defs/non_empty_string" },
     "description": { "$ref": "#/$defs/non_empty_string" },
+    "diagnostic_guardrail": {
+      "$ref": "#/$defs/non_empty_string",
+      "description": "适用于全部症状的基础诊断门槛；标签自身的 discriminating_tests 只记录能够区分该标签及其近邻的特异边界测试。"
+    },
     "diagnostic_order": {
       "type": "array",
       "prefixItems": [
@@ -166,9 +171,26 @@
         "observability",
         "minimum_evidence_scope",
         "confusable_with",
+        "discriminating_test_status",
         "discriminating_tests"
       ],
       "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "discriminating_test_status": { "const": "specified" } },
+            "required": ["discriminating_test_status"]
+          },
+          "then": { "properties": { "discriminating_tests": { "type": "array", "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "discriminating_test_status": { "const": "underspecified" } },
+            "required": ["discriminating_test_status"]
+          },
+          "then": { "properties": { "discriminating_tests": { "type": "array", "maxItems": 0 } } }
+        }
+      ],
       "properties": {
         "id": { "$ref": "#/$defs/identifier" },
         "name": { "$ref": "#/$defs/non_empty_string" },
@@ -210,12 +232,16 @@
           "uniqueItems": true,
           "description": "source finding 需要主动排除的 target 近邻症状 ID；边按 source→target 存储，不自动补逆边。空数组表示当前未指定近邻，不表示不存在近邻。"
         },
+        "discriminating_test_status": {
+          "type": "string",
+          "enum": ["specified", "underspecified"],
+          "description": "specified 表示至少一条标签特异边界测试已经冻结；underspecified 表示边界仍待定义，此时 discriminating_tests 必须为空。"
+        },
         "discriminating_tests": {
           "type": "array",
           "items": { "$ref": "#/$defs/non_empty_string" },
-          "minItems": 1,
           "uniqueItems": true,
-          "description": "冻结的边界测试文本。只有同时存在匹配的结构化 test_recipes 时，测试才是 machine-only 可执行证据并可支持 status=present；其余文本仅是非晋升性诊断提示。"
+          "description": "标签特异的冻结边界测试。只有 discriminating_test_status=specified 时才能包含条目；同时存在匹配的结构化 test_recipes 时，测试才是 machine-only 可执行证据并可支持 status=present。"
         },
         "test_recipes": {
           "type": "array",

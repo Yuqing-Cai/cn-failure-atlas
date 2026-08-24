@@ -8,6 +8,7 @@ import {
   validateRepository,
   validateTaxonomy
 } from "../validate.js";
+import { validateTaxonomySemantics } from "../lib/taxonomy-semantic-validator.js";
 
 const taxonomy = JSON.parse(readFileSync(join(REPOSITORY_ROOT, "taxonomy.json"), "utf8"));
 const schema = JSON.parse(readFileSync(join(REPOSITORY_ROOT, "taxonomy.schema.json"), "utf8"));
@@ -21,6 +22,15 @@ function validateMutation(mutate) {
   const candidate = structuredClone(taxonomy);
   mutate(candidate);
   return validateTaxonomy({ taxonomy: candidate, schema });
+}
+
+function inspectMutation(mutate) {
+  const candidate = structuredClone(taxonomy);
+  mutate(candidate);
+  return {
+    schema: validateTaxonomy({ taxonomy: candidate, schema }),
+    semantics: validateTaxonomySemantics(candidate),
+  };
 }
 
 test("repository taxonomy and Markdown heading inventories are synchronized", () => {
@@ -37,6 +47,103 @@ test("full JSON Schema rejects malformed label fields", () => {
   });
   assert.ok(result.errors.some((error) => error.rule === "R1" && error.message.includes("definition")));
   assert.ok(result.errors.some((error) => error.rule === "R1" && error.message.includes("additional properties")));
+});
+
+test("schema-invalid taxonomy data fails closed before semantic traversal", () => {
+  const result = validateMutation((candidate) => {
+    candidate.layers[0].subcategories[0].labels[0].discriminating_tests = {
+      malformed: true,
+    };
+  });
+  assert.ok(result.errors.some((error) => error.rule === "R1"));
+  assert.equal(result.stats.total, 0);
+});
+
+test("taxonomy reports specified and underspecified boundary tests honestly", () => {
+  const symptoms = collectSymptoms(taxonomy);
+  const specified = symptoms.filter(
+    (symptom) => symptom.discriminating_test_status === "specified",
+  );
+  const underspecified = symptoms.filter(
+    (symptom) => symptom.discriminating_test_status === "underspecified",
+  );
+
+  assert.equal(taxonomy.taxonomy_version, "2.0.0-alpha.2");
+  assert.equal(taxonomy.updated_at, "2026-08-25");
+  assert.equal(specified.length, 23);
+  assert.equal(underspecified.length, 47);
+  assert.ok(specified.every((symptom) => symptom.discriminating_tests.length > 0));
+  assert.ok(underspecified.every((symptom) => symptom.discriminating_tests.length === 0));
+  assert.ok(
+    symptoms.every(
+      (symptom) =>
+        !symptom.discriminating_tests.includes(taxonomy.diagnostic_guardrail),
+    ),
+  );
+});
+
+test("boundary-test status and content cannot contradict each other", () => {
+  const emptySpecified = inspectMutation((candidate) => {
+    const symptom = candidate.layers
+      .flatMap((layer) => layer.subcategories)
+      .flatMap((subcategory) => subcategory.labels)
+      .find((label) => label.discriminating_test_status === "specified");
+    symptom.discriminating_tests = [];
+  });
+  assert.ok(emptySpecified.schema.errors.some((error) => error.rule === "R1"));
+  assert.ok(
+    emptySpecified.semantics.errors.some(
+      (error) => error.rule === "R4" && error.message.includes("声明边界测试已指定"),
+    ),
+  );
+
+  const populatedUnderspecified = inspectMutation((candidate) => {
+    const symptom = candidate.layers
+      .flatMap((layer) => layer.subcategories)
+      .flatMap((subcategory) => subcategory.labels)
+      .find((label) => label.discriminating_test_status === "underspecified");
+    symptom.discriminating_tests = ["尚未冻结的占位测试"];
+  });
+  assert.ok(populatedUnderspecified.schema.errors.some((error) => error.rule === "R1"));
+  assert.ok(
+    populatedUnderspecified.semantics.errors.some(
+      (error) => error.rule === "R4" && error.message.includes("仍待定义"),
+    ),
+  );
+});
+
+test("the global diagnostic guardrail cannot masquerade as a label-specific test", () => {
+  const result = validateMutation((candidate) => {
+    const symptom = candidate.layers
+      .flatMap((layer) => layer.subcategories)
+      .flatMap((subcategory) => subcategory.labels)
+      .find((label) => label.discriminating_test_status === "specified");
+    symptom.discriminating_tests.push(candidate.diagnostic_guardrail);
+  });
+  assert.ok(
+    result.errors.some(
+      (error) => error.rule === "R4" && error.message.includes("重复了全局"),
+    ),
+  );
+});
+
+test("underspecified symptoms cannot carry executable test recipes", () => {
+  const result = validateMutation((candidate) => {
+    const symptoms = candidate.layers
+      .flatMap((layer) => layer.subcategories)
+      .flatMap((subcategory) => subcategory.labels);
+    const underspecified = symptoms.find(
+      (label) => label.discriminating_test_status === "underspecified",
+    );
+    const executable = symptoms.find((label) => (label.test_recipes?.length ?? 0) > 0);
+    underspecified.test_recipes = structuredClone(executable.test_recipes);
+  });
+  assert.ok(
+    result.errors.some(
+      (error) =>
+        error.rule === "R4" && error.message.includes("结构化 recipe"),
+    ),
+  );
 });
 
 test("declared per-kind counts cannot drift from the ontology", () => {
@@ -101,9 +208,10 @@ test("causal layer ranges must move forward through diagnostic order", () => {
 
 test("causal support contracts cannot name unknown symptoms", () => {
   const result = validateMutation((candidate) => {
-    candidate.causal_hypotheses[0].support_contract.admissible_symptom_ids.push(
-      "missing_symptom",
+    const hypothesis = candidate.causal_hypotheses.find(
+      (item) => item.support_contract.status === "specified",
     );
+    hypothesis.support_contract.admissible_symptom_ids.push("missing_symptom");
   });
   assert.ok(
     result.errors.some(

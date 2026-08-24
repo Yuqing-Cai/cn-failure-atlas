@@ -6,8 +6,8 @@
   "provenance": {
     "taxonomy": {
       "name": "中文虚构对话失败图谱",
-      "version": "2.0.0-alpha.1",
-      "digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+      "version": "2.0.0-alpha.2",
+      "digest": "3de6c3ff814a2e33914f072ff52a0bec0572c97f52e261b76268e1cf654d779b",
       "uri": "../../taxonomy.json"
     },
     "schema": {
@@ -34,7 +34,7 @@
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
     "schema_version": "2.0.0-alpha.1",
     "uri": "evolution-policy.example.json",
-    "digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
+    "digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c"
   },
   "experiment_ledger": {
     "family_id": "experiment.scene-001.repair",
@@ -69,7 +69,7 @@
       "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
       "schema_version": "2.0.0-alpha.1",
       "uri": "repair-attempt.example.json",
-      "digest": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326"
+      "digest": "d4b300700047185cc4fa90440947445cb0d9631ab6cb7c7fbe4cbb6e1b2b40a6"
     },
     "binding_rule": "artifact_digest_is_sha256_rfc8785_payload",
     "payload": {
@@ -89,7 +89,7 @@
   "evaluation_manifest": {
     "manifest_id": "manifest.scene-001.eval.v1",
     "manifest_version": "1.0.0",
-    "manifest_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+    "manifest_digest": "2effec4c2236ebaf4e0934085f8a24d13fe30ccaebf32d0fbde206a57c9dab7c",
     "frozen_at": "2026-08-24T10:00:30Z",
     "frozen_before_candidate_generation": true,
     "coverage_rule": "exact_set_match",
@@ -147,11 +147,11 @@
       "counterfactual_checks": [
         {
           "item_id": "counterfactual.remove-protective-subtext",
-          "digest": "d4d6717d791eee00d7612a1128de621f31e114d347e1c335554d24cddd00d64f"
+          "digest": "8ce1a55a0cd24dc8af6bff0f2223147aefcfe3ee47660430a35bea0db1ac08cd"
         },
         {
           "item_id": "counterfactual.restore-affective-summary",
-          "digest": "dba13ea362bb962d22dcb577b76365975f119842731df9bb0a8d26286f7198ea"
+          "digest": "f3da0c985a71abf7c6351eeb7ef3b0b4fd9de5336049ba5dc79e5e521487c260"
         }
       ],
       "regression_checks": [
@@ -209,14 +209,14 @@
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
     "schema_version": "2.0.0-alpha.1",
     "uri": "diagnostic-trace.example.json",
-    "digest": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677"
+    "digest": "c431a9a3e90bc94b2d86022816fdab7157ab2ff2e9621178b174c4e503b8e052"
   },
   "repair_attempt_ref": {
     "record_id": "repair.scene-001.v1",
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
     "schema_version": "2.0.0-alpha.1",
     "uri": "repair-attempt.example.json",
-    "digest": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326"
+    "digest": "d4b300700047185cc4fa90440947445cb0d9631ab6cb7c7fbe4cbb6e1b2b40a6"
   },
   "generator": {
     "id": "actor.repairer-01",
@@ -751,7 +751,7 @@
       "invocation_id": "invocation.audit.evidence_checks.evidence-check.judge-01",
       "context_partition": "audit/evidence_checks/evidence-check.judge-01/actor.audit-judge-01",
       "seed": 1185728270,
-      "audit_request_digest": "f19899a2853075d1317aa48cb24fe6410181344cba2521d8a05147aa4c2d0074",
+      "audit_request_digest": "6696bbda20a690adbdb4486785cfaa53428a1a4de13ad696bcdf9d27f48a2310",
       "executed_at": "2026-08-24T10:05:10Z"
     },
     {
@@ -767,7 +767,7 @@
       "invocation_id": "invocation.audit.evidence_checks.evidence-check.judge-02",
       "context_partition": "audit/evidence_checks/evidence-check.judge-02/actor.audit-judge-02",
       "seed": 2259742756,
-      "audit_request_digest": "765bb57f6a398efd8e515143a17213b5f1d51a1979578f2baddcf7ce6fb18a1b",
+      "audit_request_digest": "1f7bec92ac0e49752ac13c860c69b4848b72feb8bd53ec6a3fdb9a6fc01ad785",
       "executed_at": "2026-08-24T10:05:11Z"
     }
   ],
@@ -784,7 +784,7 @@
       "invocation_id": "invocation.audit.target_failure_checks.target-check.judge-01",
       "context_partition": "audit/target_failure_checks/target-check.judge-01/actor.audit-judge-01",
       "seed": 1001954842,
-      "audit_request_digest": "b755f9672d3c61599fe1779f019b11873391bfda5ed6471327a91eb0488152be",
+      "audit_request_digest": "d7cfd29187b5741d5f4642beac2012babb7ad9b1b7f27d44db5fc6c8159e619e",
       "executed_at": "2026-08-24T10:05:12Z"
     },
     {
@@ -799,7 +799,7 @@
       "invocation_id": "invocation.audit.target_failure_checks.target-check.judge-02",
       "context_partition": "audit/target_failure_checks/target-check.judge-02/actor.audit-judge-02",
       "seed": 139949535,
-      "audit_request_digest": "b74ea03cf3328c7254f388b557c2bf0fe29adefaa3cbb64d59f2e36e6cecc767",
+      "audit_request_digest": "049f9475a766096c47a7df7dc53b75731f7fa136e19a749abbd81c539c810841",
       "executed_at": "2026-08-24T10:05:13Z"
     }
   ],
@@ -810,7 +810,7 @@
       "target_turn_id": "turn.assistant-001",
       "recipe_id": "premature_affective_closure_delete_conclusion_v1",
       "source_execution_id": "testexec.affective-closure-001",
-      "source_execution_digest": "65666b86d36334eba495bea98a49c91c1b896d34997b746508d70134911246db",
+      "source_execution_digest": "70a33e5f4a459166d61cbf33d0ee089807e9b0d0619fbf3fb2ea3dcf7b7f9406",
       "intervention": {
         "kind": "delete_span",
         "target_turn_id": "turn.assistant-001",
@@ -823,9 +823,9 @@
         "replacement_text": ""
       },
       "invariant_contract_paths": [
-        "/world_rules/0",
         "/relationship_state",
-        "/style_constraints/0"
+        "/style_constraints/0",
+        "/world_rules/0"
       ],
       "judge_id": "actor.audit-judge-01",
       "observation": "独立复核确认：按已冻结 span 删除情绪结论后，目标症状消失，退婚冲突与场景约束保持。",
@@ -833,7 +833,7 @@
       "invocation_id": "invocation.audit.counterfactual_checks.counterfactual.remove-protective-subtext",
       "context_partition": "audit/counterfactual_checks/counterfactual.remove-protective-subtext/actor.audit-judge-01",
       "seed": 627867257,
-      "audit_request_digest": "f4778821a5a3ee1af5c021a3c2b45e6f8bd740b9c0c0a4e4536bd39ceffc4b77",
+      "audit_request_digest": "6985787ba2afcf4f8154b4d8824d734833a27c40a783d3f6125d090ca6a4e918",
       "executed_at": "2026-08-24T10:05:14Z"
     },
     {
@@ -842,7 +842,7 @@
       "target_turn_id": "turn.assistant-001",
       "recipe_id": "premature_affective_closure_delete_conclusion_v1",
       "source_execution_id": "testexec.affective-closure-001",
-      "source_execution_digest": "65666b86d36334eba495bea98a49c91c1b896d34997b746508d70134911246db",
+      "source_execution_digest": "70a33e5f4a459166d61cbf33d0ee089807e9b0d0619fbf3fb2ea3dcf7b7f9406",
       "intervention": {
         "kind": "delete_span",
         "target_turn_id": "turn.assistant-001",
@@ -855,9 +855,9 @@
         "replacement_text": ""
       },
       "invariant_contract_paths": [
-        "/world_rules/0",
         "/relationship_state",
-        "/style_constraints/0"
+        "/style_constraints/0",
+        "/world_rules/0"
       ],
       "judge_id": "actor.audit-judge-02",
       "observation": "第二个隔离审计 judge 重放同一确定性干预并确认相同状态转移与 invariant。",
@@ -865,7 +865,7 @@
       "invocation_id": "invocation.audit.counterfactual_checks.counterfactual.restore-affective-summary",
       "context_partition": "audit/counterfactual_checks/counterfactual.restore-affective-summary/actor.audit-judge-02",
       "seed": 288370557,
-      "audit_request_digest": "3f4f7e893175626261c371151f0bd986ff3203ef867c513746ad03d6a23978d1",
+      "audit_request_digest": "f5e0488a8c96f6fda3a6412a2106fd60de8e1113444168e120121b43f2a6fd42",
       "executed_at": "2026-08-24T10:05:15Z"
     }
   ],
@@ -948,7 +948,7 @@
       ],
       "resolved_challenge_ids": [],
       "executed_at": "2026-08-24T10:05:05Z",
-      "challenge_request_digest": "29a0bfb80fbaa87264f7799a301d74c33e29ab4234e14dbfce5b3eda59d4e836"
+      "challenge_request_digest": "d1f7c042ca5bb00d8e9b8b76604a888a6b925a8e4942f52c72586cc992083d65"
     },
     {
       "invocation_id": "invocation.challenge-resolution.audit-judge-01.001",
@@ -962,7 +962,7 @@
         "challenge.template-phrase-001"
       ],
       "executed_at": "2026-08-24T10:05:40Z",
-      "resolution_request_digest": "ea4fbd86f2e13a504114cef0dc8ce3c28885448a72918fd4e5d8a4cfd2b196ca"
+      "resolution_request_digest": "9e4f48ce4c1873023a0a4960ba4890fbac07e0d3995c75368c63446761607670"
     }
   ],
   "challenge_round_completed": true,
@@ -991,15 +991,15 @@
     {
       "repeat_id": "repeat-001",
       "seed": 7101,
-      "run_digest": "c2103664de79e6f604b3511ec0c8bf65eaec718c0d05e8d1e93906eae9d515df",
-      "input_digest": "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe",
+      "run_digest": "7325438351f544c9610252c281385d42941167df69035d5681e577d9fb4cdb93",
+      "input_digest": "c10bb39d5d2a7b0893cd3dd34b3d3743c471414b200651666fffd841e27c154e",
       "executed_at": "2026-08-24T10:06:00Z"
     },
     {
       "repeat_id": "repeat-002",
       "seed": 7201,
-      "run_digest": "4cdd6f2f8b6805112f4bba090772194c09410a5218944cc5c90a520e23613fca",
-      "input_digest": "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe",
+      "run_digest": "06025b60950fdb91b60e365b4b016c9c50176d3ea53ae9eb4feb98853e4ca4a1",
+      "input_digest": "c10bb39d5d2a7b0893cd3dd34b3d3743c471414b200651666fffd841e27c154e",
       "executed_at": "2026-08-24T10:07:00Z"
     }
   ],
@@ -1119,16 +1119,16 @@
       },
       "policy_digest": {
         "pass": true,
-        "computed_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
-        "declared_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
-        "referenced_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
+        "computed_digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c",
+        "declared_digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c",
+        "referenced_digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c"
       },
       "policy_trust_root": {
         "pass": true,
         "available": true,
         "trust_root_id": "trust-root.repository-fixture.v2",
-        "pinned_policy_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
-        "pinned_taxonomy_digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+        "pinned_policy_digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c",
+        "pinned_taxonomy_digest": "3de6c3ff814a2e33914f072ff52a0bec0572c97f52e261b76268e1cf654d779b",
         "issues": []
       },
       "run_receipt": {
@@ -1166,10 +1166,10 @@
         "schema_valid": true,
         "issues": [],
         "digests": {
-          "policy": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
-          "taxonomy": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
-          "diagnostic_trace": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677",
-          "repair_attempt": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326"
+          "policy": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c",
+          "taxonomy": "3de6c3ff814a2e33914f072ff52a0bec0572c97f52e261b76268e1cf654d779b",
+          "diagnostic_trace": "c431a9a3e90bc94b2d86022816fdab7157ab2ff2e9621178b174c4e503b8e052",
+          "repair_attempt": "d4b300700047185cc4fa90440947445cb0d9631ab6cb7c7fbe4cbb6e1b2b40a6"
         }
       },
       "promotion_artifact": {
@@ -1183,8 +1183,8 @@
       },
       "evaluation_manifest": {
         "pass": true,
-        "computed_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
-        "declared_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+        "computed_digest": "2effec4c2236ebaf4e0934085f8a24d13fe30ccaebf32d0fbde206a57c9dab7c",
+        "declared_digest": "2effec4c2236ebaf4e0934085f8a24d13fe30ccaebf32d0fbde206a57c9dab7c",
         "issues": []
       },
       "experiment_ledger": {
@@ -1363,9 +1363,9 @@
         "duplicate_run_digests": [],
         "input_digests_match": true,
         "input_digests": [
-          "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe"
+          "c10bb39d5d2a7b0893cd3dd34b3d3743c471414b200651666fffd841e27c154e"
         ],
-        "expected_input_digest": "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe",
+        "expected_input_digest": "c10bb39d5d2a7b0893cd3dd34b3d3743c471414b200651666fffd841e27c154e",
         "run_digest_mismatch_repeat_ids": [],
         "digest_bindings_pass": true
       },

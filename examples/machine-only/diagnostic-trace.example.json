@@ -6,8 +6,8 @@
   "provenance": {
     "taxonomy": {
       "name": "中文虚构对话失败图谱",
-      "version": "2.0.0-alpha.1",
-      "digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+      "version": "2.0.0-alpha.2",
+      "digest": "3de6c3ff814a2e33914f072ff52a0bec0572c97f52e261b76268e1cf654d779b",
       "uri": "../../taxonomy.json"
     },
     "schema": {
@@ -34,7 +34,7 @@
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
     "schema_version": "2.0.0-alpha.1",
     "uri": "evolution-policy.example.json",
-    "digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
+    "digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c"
   },
   "experiment_ledger": {
     "family_id": "experiment.scene-001.repair",
@@ -430,7 +430,7 @@
               "turn.user-001",
               "turn.assistant-001"
             ],
-            "input_digest": "a0d74e5bfadab2e331cedb2f762d782dfbd3caef1539a8245492daefcafffa6b",
+            "input_digest": "12e8d2584382aa51b2b040bf2ef5b0545150f40ae92bb06a6bd99084e840da29",
             "scene_contract_digest": "993d4135601898194cc9befcf9229e21f15704f3a5cf27f8bb3b034a94d18c50",
             "judge_actor_id": "actor.test-judge-01",
             "executed_at": "2026-08-24T10:00:00Z",
@@ -479,7 +479,7 @@
               ],
               "rationale": "确定性删除精确 span 后，目标情绪终结语消失，冻结的外部冲突约束仍保留。"
             },
-            "execution_digest": "65666b86d36334eba495bea98a49c91c1b896d34997b746508d70134911246db"
+            "execution_digest": "70a33e5f4a459166d61cbf33d0ee089807e9b0d0619fbf3fb2ea3dcf7b7f9406"
           }
         }
       ],

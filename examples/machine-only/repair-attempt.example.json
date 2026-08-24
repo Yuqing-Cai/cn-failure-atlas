@@ -6,8 +6,8 @@
   "provenance": {
     "taxonomy": {
       "name": "中文虚构对话失败图谱",
-      "version": "2.0.0-alpha.1",
-      "digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+      "version": "2.0.0-alpha.2",
+      "digest": "3de6c3ff814a2e33914f072ff52a0bec0572c97f52e261b76268e1cf654d779b",
       "uri": "../../taxonomy.json"
     },
     "schema": {
@@ -34,7 +34,7 @@
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
     "schema_version": "2.0.0-alpha.1",
     "uri": "evolution-policy.example.json",
-    "digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
+    "digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c"
   },
   "experiment_ledger": {
     "family_id": "experiment.scene-001.repair",
@@ -62,7 +62,7 @@
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
     "schema_version": "2.0.0-alpha.1",
     "uri": "diagnostic-trace.example.json",
-    "digest": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677"
+    "digest": "c431a9a3e90bc94b2d86022816fdab7157ab2ff2e9621178b174c4e503b8e052"
   },
   "actors": {
     "baseline_generator": {
@@ -272,7 +272,7 @@
     "evaluation_manifest_commitment": {
       "manifest_id": "manifest.scene-001.eval.v1",
       "manifest_version": "1.0.0",
-      "manifest_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+      "manifest_digest": "2effec4c2236ebaf4e0934085f8a24d13fe30ccaebf32d0fbde206a57c9dab7c",
       "frozen_at": "2026-08-24T10:00:30Z",
       "frozen_before_candidate_generation": true,
       "coverage_rule": "exact_set_match",

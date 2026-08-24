@@ -4,10 +4,10 @@
   "trust_root_id": "trust-root.repository-fixture.v2",
   "policy_id": "policy.machine-only.v1",
   "policy_version": "2.0.0-alpha.1",
-  "policy_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+  "policy_digest": "ef930658085797b3a5ac4944c3b50b75f97fb8598225169f04f488c1c2b3fc1c",
   "taxonomy_name": "中文虚构对话失败图谱",
-  "taxonomy_version": "2.0.0-alpha.1",
-  "taxonomy_digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+  "taxonomy_version": "2.0.0-alpha.2",
+  "taxonomy_digest": "3de6c3ff814a2e33914f072ff52a0bec0572c97f52e261b76268e1cf654d779b",
   "trusted_runners": [
     {
       "name": "atlas-machine-loop",
@@ -140,7 +140,7 @@
       "key_id": "key.repository-fixture.ed25519.v3",
       "issuer_id": "orchestrator.repository-fixture.v3",
       "algorithm": "Ed25519",
-      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAjhPKKMwftMlLWWg61aIM6PpG2bTyUQckepRNcTyCN9s=\n-----END PUBLIC KEY-----\n"
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAbuFPh3RpfoL85L2JO+gUoMdIHUmeW157pMD5UOVU2/0=\n-----END PUBLIC KEY-----\n"
     }
   ],
   "immutable": true,

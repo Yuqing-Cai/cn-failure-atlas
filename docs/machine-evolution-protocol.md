@@ -1,38 +1,43 @@
 # 纯机器演化协议
 
-本协议定义 CN Failure Atlas 如何在**不把人类放进必经链路**的前提下，让机器发现失败、提出修复、验证修复，并逐步积累可供后续演化的证据。
+本协议规定一条完整的机器运行链：发现失败，提出修复，验证结果，留下可供下一轮使用的证据。人类可以旁观、抽查、否决或提供新场景；一次运行本身无需等待人工标注。
 
-纯机器模式是第一等公民，不是“缺少人工时的降级模式”。人类可以旁观、抽查、否决或提供新的场景，但这些动作都不是一次演化运行成立的必要条件。
-
-这里的“演化”指以下可审计对象的版本变化：
+这里的“演化”落在可审计、可版本化的对象上：
 
 - 单次输出的修复方案与对照案例；
 - 生成、诊断、验证所使用的提示与策略；
 - 可检索的经验规则和回归测试；
 - Atlas 分类法的边界、关系与版本。
 
-它**不等于模型权重在线自动更新**。如果未来用晋升记录训练或微调模型，那是独立的训练流水线；本协议只负责生成可信的训练候选、策略版本和验证证据。
+若把晋升记录用于训练或微调，训练流水线负责模型权重的变化；本协议交付训练候选、策略版本和验证证据。
 
-当前仓库已经实现四类运行记录、内容寻址证据包、冻结测试承诺、跨记录校验和确定性晋升门；当前门只会晋升**这一案例的修复工件**，不会从单例推出通用策略。通用策略必须先增加未参与修复的独立案例清单及逐案例应用证据，当前明确返回未实现。仓库也尚未实现绑定具体模型服务的全链编排器。正式 `adopted` 必须同时提供 policy、taxonomy、diagnostic、repair、verification、候选不可写的 trust root，以及受信编排器签发的**五阶段证明链**：生成前、诊断前、修复前、验证试验前、运行完成后各有明确承诺。只有 policy/run 的两文件模式仅供诊断。下文步骤是编排器必须执行的协议，不表示仓库会自行调用模型。policy 的 lifecycle 图由 Schema 精确冻结，Gate 校验当前结果与 `lifecycle_state` 的映射；真正迁移状态或执行 rollback 仍由外部编排器负责。
+### 运行边界
+
+| 范围 | 当前状态 |
+|---|---|
+| 仓库内已实现 | 四类运行记录、内容寻址证据包、冻结测试承诺、跨记录校验、确定性 Gate，以及案例级 `repair_case` 晋升 |
+| 外部编排器负责 | 模型调用、五阶段签发、nonce 消费、状态持久化、lifecycle 迁移与 rollback 执行 |
+| 尚未实现 | 绑定具体模型服务的全链编排、模型权重更新，以及需要独立留出案例清单和逐案例应用证据的通用 `repair_strategy` 晋升 |
+
+一次正式 `adopted` 需要 policy、taxonomy、diagnostic、repair、verification、候选不可写的 trust root，以及受信编排器签发的五阶段证明链。只有 policy/run 的两文件模式可用于诊断，不能晋升。
+
+policy 的 lifecycle 图由 Schema 精确冻结。Gate 核对返回值与 `lifecycle_state`，外部编排器再执行真实迁移。
 
 ---
 
-## 一、基本原则
+## 一、判定原则
 
-1. **修复必须赢过原版，而不只是看起来更会解释。** 诊断理由不能充当修复有效的证明。
-2. **生成、诊断、反驳和裁决相互隔离。** 偏好通道只见匿名候选；目标/证据审计由另一组 actor 在新上下文中执行。上游诊断或修复 actor 不得换名复用为偏好 judge。
-3. **所有结论都落到可观察证据。** 标签必须指向原文、轮次、场景契约或对照样本；“更自然”“更高级”不能单独构成证据。
-4. **一次只改最少的东西。** 修复需要明确目标标签、允许变化和必须保持不变的内容，避免用整段重写掩盖真正原因。
-5. **晋升依赖反事实和回归，不依赖自我认同。** 一条规则既要修复目标案例，也要在相邻案例上知道何时不该触发。
-6. **允许弃权、隔离和失败。** 系统不得通过不断重采样，直到抽到支持自己的裁决。
-7. **协议和阈值先于结果确定。** 一次运行开始后，不得为了让候选通过而修改评分维度、容差或停止条件。
+标签要指向原文、轮次、场景契约或对照样本；“更自然”“更高级”一类感受不能单独支撑结论。生成、诊断、反驳与裁决分别使用隔离上下文。偏好通道只看匿名候选，目标和证据交给另一组 actor 审计；上游 actor 仅仅换名，不能成为偏好 judge。
+
+每次修复都写清目标标签、允许变化和保留项。反事实检验诊断来源，回归看守旧能力。评分维度、容差、预算和停止条件在运行前冻结，弃权、隔离与失败照常入档；失败后持续重采样以寻找有利结果，按协议违规处理。
 
 ---
 
 ## 二、标准演化链
 
 ```text
-生成 → 证据诊断 → 对抗复核 → 最小修订 → 盲化验证 → 反事实 / 回归 → 晋升或拒绝
+生成 → 证据诊断 → 对抗复核 → 最小修订 → 盲化验证 → 反事实 / 回归
+                                                       → 候选 / 晋升 / 拒绝 / 隔离
 ```
 
 ### 1. 生成
@@ -44,20 +49,24 @@
 - 当前关系、情绪、空间位置与未解决事项；
 - 本轮意图，以及明确不可被提前解决的内容。
 
-原始回答写入不可变记录。`subject.generator_output_turn_ids` 明确列出哪些 assistant turns 可以支撑症状；每个 turn 归属一个 scene，每个 scene 同时携带完整契约和可重算摘要。主输出所属 scene 的内嵌契约必须与顶层 `scene_contract` 完全一致。后续任何修订都产生新版本，不覆盖原文。
+原始回答写入不可变记录。`subject.generator_output_turn_ids` 列出可以支撑症状的 assistant turns。每个 turn 归属一个 scene；每个 scene 携带完整契约和可重算摘要。
+
+主输出所属 scene 的内嵌契约必须与顶层 `scene_contract` 完全一致。后续修订产生新版本，原文留在历史记录中。
 
 ### 2. 证据诊断
 
-诊断器按 Atlas 的检查顺序提出候选失败，但必须同时提交：
+诊断器按 Atlas 的检查顺序提出候选失败，并提交：
 
 - 具体标签、作用范围和证据片段；
-   - 只有 taxonomy 中带结构化 `test_recipes` 且列入 `machine_execution_policy.executable_symptom_ids` 的症状，才可执行并写入 `taxonomy_test_results`；自然语言 `discriminating_tests` 只是设计提示；
+- 已冻结的机器测试结果：症状需带结构化 `test_recipes`，且列入 `machine_execution_policy.executable_symptom_ids`，结果才能写入 `taxonomy_test_results`；
 - 对 `confusable_with` 已声明的近邻逐一提交“为什么不是它”的 `neighboring_label_rebuttals`；未冻结近邻时不得为了承载测试而编造一个邻居；
 - 支持“不构成失败”的反证；
 - `present`、`absent`、`uncertain` 或 `not_applicable`；
 - 如果标签成立，修复应改变什么、必须保留什么。
 
 开放式扫描得到的是候选，不是结论。无法在相邻标签之间稳定区分时，应保留不确定性，不用多贴标签代替判断。
+
+自然语言 `discriminating_tests` 只供人工审阅和 recipe 设计。`discriminating_test_status: underspecified` 表示该症状的逐项区分测试仍空缺；通用证据规则不能冒充它的标签边界。
 
 ### 3. 对抗复核
 
@@ -93,9 +102,21 @@
 
 每一对至少执行 A/B 与 B/A 两种顺序；每个 judge × repeat × order 都有独立 invocation、context partition 和由 repeat seed 确定导出的 trial seed。实际 A/B 映射使用高熵 nonce 加盐承诺，并在候选产生后、第一次试验前签名冻结。
 
-**审计 judge** 可以看到 baseline/candidate 的角色标记、finding、证据与保留约束，用于 `evidence_checks`、`target_failure_checks`、反事实和回归；它看不到候选的 producer/model/provider 身份，因此是目标感知审计，而不是 label-blind 盲评。每项审计都以请求摘要绑定具体候选内容、场景契约、finding/证据或回归锚点、judge、独立 invocation/context/seed，并与偏好通道及上游角色全局隔离。
+**审计 judge** 可以看到 baseline/candidate 的角色标记、finding、证据与保留约束，用于 `evidence_checks`、`target_failure_checks`、反事实和回归。候选的 producer/model/provider 身份对它隐藏；这是目标感知审计，不是 label-blind 盲评。
 
-阻断性挑战也不是一段可事后解释的自由文本。repair critic 必须先声明 `challenge_kind`、目标 findings，以及**确切**的 `required_resolution_check_ids`；verification-stage raiser 在新上下文中接收并逐字交接这份既有挑战，不能静默替换。verification 只能用同一组 ID 解挑战，不得看过结果后换成或追加另一项通过的检查。`target_failure_persists` 只能由确认 baseline 有而 candidate 无的 target-failure check 解决，`evidence_not_reduced` 只能由确认 `evidence_reduced` 的 target-failure check 解决，`diagnostic_counterfactual_invalid` 只能由通过的 counterfactual check 解决。raiser 请求摘要绑定既有挑战和其他输入；resolver 请求摘要绑定挑战及预承诺检查，但不包含 resolver 尚未产出的 `response`。时间线强制满足“交接挑战 < 执行检查 ≤ resolver 完成”。
+每项审计的请求摘要绑定候选内容、场景契约、finding/证据或回归锚点、judge，以及独立 invocation/context/seed。审计通道与偏好通道、上游角色全局隔离。
+
+阻断性挑战在修复阶段就定型。repair critic 先写入 `challenge_kind`、目标 findings 和确切的 `required_resolution_check_ids`；验证阶段的 raiser 在新上下文中逐字接收，不能另换一项更容易通过的检查。verification 只接受这组预承诺 ID。
+
+三种挑战各有固定解法：
+
+| `challenge_kind` | 可接受的解决证据 |
+|---|---|
+| `target_failure_persists` | target-failure check 确认 baseline 有、candidate 无 |
+| `evidence_not_reduced` | target-failure check 确认 `evidence_reduced` |
+| `diagnostic_counterfactual_invalid` | 对应 counterfactual check 通过 |
+
+raiser 的请求摘要绑定既有挑战和其他输入。resolver 的请求摘要绑定挑战及预承诺检查，排除当时尚未产生的 `response`。时间顺序固定为“交接挑战 < 执行检查 ≤ resolver 完成”。
 
 如果同一判断在换序后反转，记为评价器顺序敏感并返回 `inconclusive`，不得把它误记成候选失败，也不得当作一胜一负后简单相抵。当前 policy 的顺序容差为零：任一 judge/repeat 对换序不一致，整批验证即无效。
 
@@ -103,8 +124,8 @@
 
 候选修复要通过三类证据门：
 
-- **目标减少：** `target_failure_checks` 必须先确认原版存在目标失败，再确认候选中的同一机制减少或消失；
-- **诊断来源反事实：** `counterfactual_checks` 只能引用已通过的结构化 taxonomy test execution，精确绑定 recipe、source execution、确定性干预及 scene-contract 不变量路径。它证明诊断来源可重放，并记录独立 audit 判断；当前实现不声称已把任意新变换直接执行在候选上；
+- **目标消失：** `target_failure_checks` 先确认原版存在目标失败，再确认候选中该失败已不成立且证据减少；
+- **诊断来源反事实：** `counterfactual_checks` 只能引用已通过的结构化 taxonomy test execution，精确绑定 recipe、source execution、确定性干预及 scene-contract 不变量路径。它证明诊断来源可重放，并记录独立 audit 判断。当前实现没有把任意新变换直接执行在候选上；
 - **回归测试：** 在受信 registry 固定的旧案例上检查保留约束；每个已执行的注册案例都沿用 registry 的 `hard_veto` 失败语义。
 
 修复器不得看到影子测试的具体内容。验证完成后，影子样本若已泄露给修复器，就标记为已污染，并在下一轮替换。
@@ -120,19 +141,36 @@
 - 案例级修复必须在预承诺的新随机种子上重复；若要晋升通用策略，还必须在未参与修复的新案例上复现；
 - 运行记录、模型版本、提示版本和测试集摘要完整。
 
-当前契约把重复执行收在同一份 `verification_run` 的 repeat manifest 中，并强制每次偏好 invocation 使用不同 context 与确定性派生 seed。它降低上下文串扰，但仍不等同于统计学上的独立样本。repeat 数不足时返回 `candidate`；达到下限且全部门通过时，只能把当前 `repair_case` 返回为 `adopted`。`repair_strategy` 尚未实现，不能用同一候选的重复试验代替跨案例泛化证据。这些只是供外部编排器执行的判定。
+当前契约把重复执行收在同一份 `verification_run` 的 repeat manifest 中。每次偏好 invocation 使用不同 context 和确定性派生 seed，以降低上下文串扰；这些重复仍不是统计学上的独立样本。
 
-Gate 会从 policy、taxonomy、diagnostic、repair、冻结清单、候选内容、盲化映射，以及逐 trial/check 的偏好与审计请求摘要重算所有 repeat 共享的 `input_digest`。每个 repeat 的 `run_digest` 则只绑定该 repeat 的 `repeat_id`、seed、`input_digest`、执行时间，以及属于该 repeat 的 AB/BA `order_trials`；它**不**单独覆盖全局的 evidence、target-failure、counterfactual、regression 或 challenge 集合。这些集合在 verification record、冻结 `evaluation_manifest` 与整体运行凭据层接受另外的完整性检查。因此 `run_digest` 证明的是该 repeat 的配对试验记录没有被静默替换，不应被描述成“每个 repeat 都独立封存了整套验证”。
+repeat 数不足时返回 `candidate`。达到下限且全部门通过时，当前 Gate 只能把这个 `repair_case` 返回为 `adopted`。`repair_strategy` 尚未实现，同一候选的重复试验不能代替跨案例泛化证据。
+
+Gate 会从 policy、taxonomy、diagnostic、repair、冻结清单、候选内容、盲化映射，以及逐 trial/check 的偏好与审计请求摘要，重算所有 repeat 共享的 `input_digest`。
+
+每个 `run_digest` 只绑定该 repeat 的 `repeat_id`、seed、`input_digest`、执行时间及其 AB/BA `order_trials`。
+
+全局 evidence、target-failure、counterfactual、regression 和 challenge 集合另由 verification record、冻结的 `evaluation_manifest` 与整体运行凭据校验。
+
+`run_digest` 证明该 repeat 的配对试验记录没有被替换；它不表示每个 repeat 都独立封存了整套验证。
 
 policy 可以声明稳定退化后的 rollback 条件和目标，Gate 也会检查这些声明是否与冻结 policy 一致；真正恢复上一条策略仍需要仓库之外的策略存储与执行器。
 
 这里的“全部成对判断都胜出”是保守的工程门，不是统计显著性证明。正式实验仍应报告案例级效果量、不确定区间、judge 相关性和适用总体；不得把八次相关判断描述成八份独立证据。
 
-仓库中的确定性晋升门使用更适合单次执行的四个返回值，并校验记录中的生命周期映射：`candidate` 表示当前证据通过但独立重复数不足，记录应声明 `probation`；`adopted` 表示当前案例级工件通过全部阈值，记录可声明 `promoted`；`rejected` 表示已有充分失败证据；`inconclusive` 表示独立性、换序覆盖或测试证据不足，记录应声明 `quarantined` 而不是被学习成失败。返回值由记录事实确定，不由 judge 直接投票指定；是否把声明写入真实状态存储，由外部编排器负责。
+确定性 Gate 返回四种结果，并核对记录中的生命周期映射：
+
+| Gate 返回值 | 记录状态 | 含义 |
+|---|---|---|
+| `candidate` | `probation` | 当前证据通过，独立重复数不足 |
+| `adopted` | `promoted` | 当前案例级工件通过全部阈值 |
+| `rejected` | `rejected` | 已有充分的失败证据 |
+| `inconclusive` | `quarantined` | 独立性、换序覆盖或测试证据不足 |
+
+这些结果由记录事实计算，不由 judge 投票指定。外部编排器负责把声明写入真实状态存储；`inconclusive` 也不能被学习成“修复无效”。
 
 ---
 
-## 三、四类记录
+## 三、记录与信任
 
 记录均为追加式：更正通过新记录的可选 `supersedes_ref` 引用旧记录完成，不原地改写历史。外部编排器若把候选登记为 `probation`，后续用新验证记录补足 repeat 时，也应使用该字段连接前一份验证。
 
@@ -145,21 +183,55 @@ policy 可以声明稳定退化后的 rollback 条件和目标，Gate 也会检�
 | `verification_run` | `verification_id` | 保存匿名候选、AB/BA 试验、证据/反事实/回归检查、挑战轮、重复运行和确定性门输出 | [Schema](../schemas/verification-run.schema.json) / [样例](../examples/machine-only/verification-run.example.json) |
 | `evolution_policy` | `policy.id` + `policy.version` | 冻结角色隔离、五项阈值、必需验证套件、生命周期、停止和回滚条件 | [Schema](../schemas/evolution-policy.schema.json) / [样例](../examples/machine-only/evolution-policy.example.json) |
 
-外部信任边界另见 [trust-root Schema](../schemas/promotion-trust-root.schema.json)、[run-receipt Schema](../schemas/promotion-run-receipt.schema.json) 及其 [样例配置](../config/promotion-trust-root.example.json)。五阶段链依次绑定：场景与生成 actor；输出与诊断/test actor；修复输入与候选无关的验证计划；候选、加盐匿名映射及逐 trial/check 请求；最终诊断、修复、验证证据与候选摘要。完成摘要刻意排除可确定性重算的 `promotion_gate` 派生视图，Gate 会另行核对它。`single_use_nonce` 的消费状态必须由外部签发器持久化，离线 Gate 无法独自证明它从未被重复使用。
+### 记录完整性
 
-这五个签名证明“受信 issuer 对所选请求、时间顺序和结果作了何种承诺”，不证明模型提供方实际上只响应过一次，也不能排除未登记的隐藏重采样。生产环境若要提出后一种强保证，必须增加 provider-signed invocation receipt 或候选不可写的调用账本，并把 request/response digest、时间与 nonce 一同登记。Gate 计算记录中可见模型调用的确定性下界，并强制 `diagnostic ≤ repair ≤ verification` 的累计增量，防止调用数归零、倒退或用分阶段数字掩盖预算超支；本地确定性聚合不计作生成式模型调用。
+四类记录都带 `mode` 和版本 provenance。policy 用 `policy_digest` 固定规则。diagnostic、repair 与 verification 共用 `experiment_ledger`，其中保存实验族、尝试序号、预算和结构化停止规则。
 
-四类记录都要求 `mode` 与版本 provenance。policy 以 `policy_digest` 固定可执行规则；诊断、修复和验证共享 `experiment_ledger`，记录实验族、尝试序号、预算与结构化停止规则；verification 还必须提交类型化 `promotion_artifact` 与冻结的 `evaluation_manifest`。清单不仅冻结 case ID，还冻结执行前字段的规范摘要。跨记录引用、候选内容、Schema、分类法和测试输入均以可重算 digest 绑定。`human_review` 是可选扩展字段，不是任何 Schema 的必填条件。
+verification 还要提交类型化 `promotion_artifact` 与冻结的 `evaluation_manifest`。
 
-`digest_status: example_placeholder` 只允许说明性 fixture 通过结构校验，正式晋升门必须将它隔离为 `inconclusive`；只有 `verified` provenance 才能参与晋升。
+清单同时冻结 case ID 和执行前字段的规范摘要。跨记录引用、候选内容、Schema、分类法及测试输入均由可重算 digest 绑定。`human_review` 只是可选扩展字段。
 
-`verified` 不是单独生效的自报值。Gate 还会重算本地 Schema 摘要，把 runner 与 prompt bundle 对照外部 trust root，验证前置签名是否在候选生成前固定了 policy、taxonomy、账本和 evaluation manifest，并验证完成签名是否绑定最终四类工件。CLI 另外要求部署环境用 `CN_FAILURE_ATLAS_TRUST_ROOT_SHA256` 固定 trust root 的 RFC 8785 规范 JSON 摘要；本次运行不能自行选择另一份根来放宽规则。仅把字符串改成 `verified` 不构成来源证明。
+匿名映射只对确定性聚合器可见。偏好 judge 提交 `raw_choice`，聚合器再根据加盐映射承诺计算 `winner`。修复前冻结候选无关的盲化协议；真实映射等候选产生后才承诺。
 
-匿名映射只对聚合器可见，偏好 judge 只提交 `raw_choice`；`winner` 由加盐映射承诺重算。修复前只冻结候选无关的盲化协议，真实映射在候选产生后才承诺，避免让 repairer 枚举 A/B，也避免看到结果后换 alias。
+验证记录另有三组关键材料：
 
-验证记录还必须保存 `repeat_manifest`（独立 seed、可重算的共同输入摘要，以及只覆盖各 repeat AB/BA 配对试验的运行摘要）、`target_failure_checks`（原版存在、候选减少或消失）以及带 suite/case 版本、digest、污染状态和 `hard_veto` 的回归项。`evaluation_manifest` 必须同时与实际 case ID 全集和执行前字段摘要精确匹配：少报、多报、换壳或重复灌水都会隔离。全局 evidence、target-failure、counterfactual、regression 和 challenge 项不属于单个 repeat 的 `run_digest` 投影，不能把后者误当成整套验证结果的逐 repeat 封印。所有验证 invocation 还必须在 verification precommit 之后、completion 之前留下 `executed_at`。这样“重复过”“目标问题变少了”“跑过冻结回归”都必须分别回到相应记录与完整性检查，而不是一枚无来源的布尔值。
+- `repeat_manifest`：每次 repeat 的独立 seed、共同输入摘要，以及仅覆盖本次 AB/BA 配对试验的运行摘要；
+- `target_failure_checks`：确认原版存在目标失败，并确认候选中该失败已不成立且证据减少；
+- 回归项：记录 suite/case 版本、digest、污染状态和 `hard_veto`。
 
-trust root 的 regression registry 只让 Gate 验证 suite/case 的权威 ID、版本与内容摘要，并强制必跑覆盖和 `hard_veto` 语义；Gate 不会自行取回 URI、验证远端字节可用性或执行测试。生产 resolver/runner 必须按 registry URI 取回规范 JSON、核对 digest 并签发执行回执；仓库样例中的重复数字摘要只是格式 fixture，不是可复用的生产锚点。
+`evaluation_manifest` 必须与实际 case ID 全集及执行前字段摘要精确匹配。少报、多报、换壳或重复灌水都会进入隔离。每次验证 invocation 还须在 verification precommit 之后、completion 之前留下 `executed_at`。
+
+全局 evidence、target-failure、counterfactual、regression 与 challenge 项不在单个 repeat 的 `run_digest` 投影中；它们由上层完整性检查覆盖。
+
+### 信任边界
+
+外部信任文件分别有 [trust-root Schema](../schemas/promotion-trust-root.schema.json) 和 [run-receipt Schema](../schemas/promotion-run-receipt.schema.json)。仓库也提供[样例配置](../config/promotion-trust-root.example.json)。
+
+五阶段证明链依次固定：
+
+| 阶段 | 签名绑定的内容 |
+|---|---|
+| 生成前 | 场景与生成 actor |
+| 输出后、诊断前 | 输出与诊断/test actor |
+| 修复前 | 修复输入和候选无关的验证计划 |
+| 候选后、试验前 | 候选、加盐匿名映射及逐 trial/check 请求 |
+| 运行完成后 | 最终 diagnostic、repair、verification 证据与候选摘要 |
+
+完成摘要排除可确定性重算的 `promotion_gate` 派生视图，Gate 会单独核对它。`single_use_nonce` 的消费状态由外部签发器持久化；离线 Gate 只能检查已提交材料，无法独自证明 nonce 从未复用。
+
+五个签名证明受信 issuer 对请求、时间顺序和结果作过何种承诺。若要进一步证明模型提供方只响应过一次，生产系统还需 provider-signed invocation receipt，或候选不可写的调用账本；其中应登记 request/response digest、时间和 nonce。
+
+Gate 会计算记录中可见模型调用的确定性下界，并强制 `diagnostic ≤ repair ≤ verification` 的累计增量。这样可以发现调用数归零、倒退，或用分阶段数字藏住预算超支。本地确定性聚合不计作生成式模型调用。
+
+provenance 还接受以下硬检查：
+
+- `digest_status: example_placeholder` 只能用于说明性 fixture；正式 Gate 返回 `inconclusive`；
+- `verified` 需有外部证据：Gate 重算本地 Schema 摘要，把 runner 和 prompt bundle 与 trust root 对照，检查前置签名是否及时固定 policy、taxonomy、账本与 `evaluation_manifest`，再核对完成签名是否绑定最终四类工件；
+- CLI 从部署环境读取 `CN_FAILURE_ATLAS_TRUST_ROOT_SHA256`，固定 trust root 的 RFC 8785 规范 JSON 摘要。本次运行提交的材料无权另选一份根。
+
+trust root 中的 regression registry 提供 suite/case 的权威 ID、版本与内容摘要，并规定必跑覆盖和 `hard_veto`。Gate 只检查这些承诺。
+
+生产 resolver/runner 按 registry URI 取回规范 JSON、核对 digest 并签发执行回执。仓库样例中的重复数字摘要只是格式 fixture。
 
 ---
 
@@ -221,7 +293,9 @@ I1  同一模型，不同提示族、上下文隔离与随机种子
 I0  同一上下文或共享推理，结果不可用于晋升
 ```
 
-纯机器模式允许同一基础模型承担生成、诊断或修复等不同逻辑角色，但当前正式晋升门不会把 I1 的多个 judge 计为多个独立来源：它们可以用于开发、对抗复核和发现候选，不能单独满足 `min_independent_judges`。正式晋升至少需要 policy 指定数量的规范化不同来源；相同 provider/model/version 即使具有不同微调摘要，也仍按共享基础谱系处理，相同权重摘要则必然同源。身份来源不同仍不等于统计误差独立，生产校准还应报告 judge 间经验相关性。I1 的重复样本不得在报告中伪装成更高独立性；I0 只能用于调试。
+同一基础模型可以承担生成、诊断或修复等不同逻辑角色，但 I1 的多个 judge 不会被正式 Gate 计成多个独立来源。它们适合开发、对抗复核和发现候选，不能单独满足 `min_independent_judges`。
+
+正式晋升至少需要 policy 指定数量的规范化不同来源。相同 provider/model/version 即使微调摘要不同，也按共享基础谱系处理；权重摘要相同则必然同源。身份来源不同仍不保证统计误差独立，生产校准应报告 judge 间的经验相关性。I1 的重复样本不能写成更高独立性；I0 只用于调试。
 
 ### 3. 顺序与长度偏差
 
@@ -275,7 +349,9 @@ Atlas 诊断的是结构性失败，不是在寻找唯一的“好文风”。�
 
 ## 六、分类法的机器提案（仅保留结构草案）
 
-`verification_run.promotion_artifact` 已为多个未来目标定义类型化 payload，但当前确定性 Gate 只执行案例级 `repair_case`。`repair_strategy` 和 `taxonomy_proposal` 都会明确返回 `PROMOTION_TARGET_NOT_IMPLEMENTED`，不能得到 `adopted`；前者缺少跨独立留出案例的 applicability 证据，后者还缺少应用、迁移和回滚执行器。下面是未来启用分类法目标前仍必须满足的协议要求。
+`verification_run.promotion_artifact` 已为多个未来目标定义类型化 payload，当前确定性 Gate 只执行案例级 `repair_case`。
+
+`repair_strategy` 和 `taxonomy_proposal` 都会返回 `PROMOTION_TARGET_NOT_IMPLEMENTED`。前者缺少跨独立留出案例的 applicability 证据，后者还缺少应用、迁移和回滚执行器。启用分类法目标前，还要满足以下协议要求。
 
 每个提案必须包含：
 
@@ -335,8 +411,6 @@ Atlas 诊断的是结构性失败，不是在寻找唯一的“好文风”。�
 - 新证据证明原晋升依赖位置、长度、同源偏差或泄露；
 - 新版在旧版冻结锚点上发生未声明的语义变化。
 
-停止不是失败管理的附注，而是防止机器自我说服的核心机制。
-
 ---
 
 ## 八、建议的启动配置
@@ -352,4 +426,4 @@ Atlas 诊断的是结构性失败，不是在寻找唯一的“好文风”。�
 - repeat manifest 必须保存不同 seed 与运行摘要；达到 policy 下限前，Gate 只允许记录声明 `probation`，实际状态迁移由外部编排器完成；
 - 每条通用规则应由外部策略存储保留上一稳定版本和回滚目标；当前仓库只校验相关声明，不提供“一键回滚”执行器。
 
-首批运行的目标不是尽快积累“成功规则”，而是先验证记录是否完整、盲化是否真实、失败能否被系统诚实地保留。一个会拒绝错误晋升的机器系统，才具备继续演化的资格。
+首批运行应先检查记录完整性、盲化和失败留存，再扩大晋升范围。

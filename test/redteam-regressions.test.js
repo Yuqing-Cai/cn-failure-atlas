@@ -1926,18 +1926,24 @@ test("the CLI rejects a trust root embedded in the candidate-writable bundle", (
 
 test("ancestor and descendant symptoms count as one causal support group", () => {
   const bundle = sealedBundle();
+  const hypothesis = bundle.taxonomy.causal_hypotheses.find(
+    (item) => item.id === "aesthetic_obedience_bias",
+  );
+  hypothesis.support_contract.admissible_symptom_ids.push(
+    "register_contamination",
+  );
   addTurn(bundle.trace, "turn.test-parent", "甲乙");
   addTurn(bundle.trace, "turn.test-child", "丙丁");
   addTurn(bundle.trace, "turn.test-causal", "戊己");
   const parent = makeSymptomFinding({
     findingId: "finding.test-parent",
-    labelId: "subtext_blindness",
+    labelId: "register_contamination",
     turnId: "turn.test-parent",
     content: "甲乙",
   });
   const child = makeSymptomFinding({
     findingId: "finding.test-child",
-    labelId: "irony_blindness",
+    labelId: "webnovel_register_contamination",
     turnId: "turn.test-child",
     content: "丙丁",
   });
@@ -1946,6 +1952,7 @@ test("ancestor and descendant symptoms count as one causal support group", () =>
     child,
     makeCausalFinding({
       findingId: "finding.test-causal-ancestry",
+      labelId: "aesthetic_obedience_bias",
       supportingFindingIds: [parent.finding_id, child.finding_id],
       turnId: "turn.test-causal",
       content: "戊己",
@@ -1962,13 +1969,13 @@ test("symptoms citing the same source span count as one causal support group", (
   addTurn(bundle.trace, "turn.test-causal", "丙丁");
   const first = makeSymptomFinding({
     findingId: "finding.test-shared-a",
-    labelId: "subtext_blindness",
+    labelId: "therapist_mode_intrusion",
     turnId: "turn.test-shared",
     content: "甲乙",
   });
   const second = makeSymptomFinding({
     findingId: "finding.test-shared-b",
-    labelId: "motivation_misread",
+    labelId: "tension_premature_resolution",
     turnId: "turn.test-shared",
     content: "甲乙",
   });
@@ -1977,6 +1984,7 @@ test("symptoms citing the same source span count as one causal support group", (
     second,
     makeCausalFinding({
       findingId: "finding.test-causal-shared-span",
+      labelId: "affect_manageability_bias",
       supportingFindingIds: [first.finding_id, second.finding_id],
       turnId: "turn.test-causal",
       content: "丙丁",
@@ -2042,13 +2050,13 @@ test("a causal hypothesis rejects unrelated symptoms even when spans are indepen
   addTurn(bundle.trace, "turn.test-causal", "戊己");
   const first = makeSymptomFinding({
     findingId: "finding.test-unrelated-a",
-    labelId: "reference_boundary_failure",
+    labelId: "ambiguity_collapse",
     turnId: "turn.test-unrelated-a",
     content: "甲乙",
   });
   const second = makeSymptomFinding({
     findingId: "finding.test-unrelated-b",
-    labelId: "pronoun_role_confusion",
+    labelId: "overcoherent_characterization",
     turnId: "turn.test-unrelated-b",
     content: "丙丁",
   });
@@ -2165,7 +2173,7 @@ test("duplicate finding IDs and insufficient evidence scope are rejected", () =>
   addTurn(bundle.trace, "turn.test-scope", "甲乙");
   const narrow = makeSymptomFinding({
     findingId: "finding.test-scope",
-    labelId: "microreaction_mechanization",
+    labelId: "rhythm_homogenization",
     turnId: "turn.test-scope",
     content: "甲乙",
   });
@@ -2190,7 +2198,7 @@ test("cross-scene scope must be attested by evidence from two explicit scenes", 
   addTurn(bundle.trace, firstTurnId, "甲乙", "scene.one");
   const finding = makeSymptomFinding({
     findingId: "finding.cross-scene",
-    labelId: "microreaction_mechanization",
+    labelId: "rhythm_homogenization",
     turnId: firstTurnId,
     content: "甲乙",
   });

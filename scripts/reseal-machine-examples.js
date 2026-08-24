@@ -95,6 +95,54 @@ for (const finding of trace.findings ?? []) {
   }
 }
 
+for (const check of run.counterfactual_checks ?? []) {
+  const finding = (trace.findings ?? []).find(
+    (item) => item.finding_id === check.finding_id,
+  );
+  const matchingResults = (finding?.taxonomy_test_results ?? []).filter(
+    (result) =>
+      result.outcome === "passed" &&
+      result.recipe_id === check.recipe_id &&
+      result.execution?.execution_id === check.source_execution_id,
+  );
+  if (matchingResults.length !== 1) {
+    throw new Error(
+      `Counterfactual check ${check.check_id} does not resolve to one passed taxonomy test execution`,
+    );
+  }
+  const sourceResult = matchingResults[0];
+  const sourceExecution = sourceResult.execution;
+  const invariantContractPaths = [
+    ...new Set(
+      (sourceExecution.judgment?.invariants ?? [])
+        .filter(
+          (invariant) =>
+            invariant.source_kind === "scene_contract" &&
+            invariant.status === "passed",
+        )
+        .flatMap((invariant) => invariant.contract_paths ?? []),
+    ),
+  ].sort();
+  if (
+    !repair.target_finding_ids?.includes(finding.finding_id) ||
+    sourceExecution.intervention?.target_turn_id !== repair.target_turn_id ||
+    invariantContractPaths.length === 0
+  ) {
+    throw new Error(
+      `Counterfactual check ${check.check_id} is not bound to the repair target and a passed scene-contract invariant`,
+    );
+  }
+  Object.assign(check, {
+    finding_id: finding.finding_id,
+    target_turn_id: repair.target_turn_id,
+    recipe_id: sourceResult.recipe_id,
+    source_execution_id: sourceExecution.execution_id,
+    source_execution_digest: sourceExecution.execution_digest,
+    intervention: structuredClone(sourceExecution.intervention),
+    invariant_contract_paths: invariantContractPaths,
+  });
+}
+
 for (const record of records) {
   Object.assign(record.provenance.taxonomy, {
     name: taxonomy.name,
