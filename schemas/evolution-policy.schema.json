@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
+  "title": "Machine-only evolution policy",
+  "description": "Versioned policy that turns repeated blind verification into bounded promotion, rejection, or further challenge without requiring a human labeler.",
+  "type": "object",
+  "required": [
+    "record_type",
+    "schema_version",
+    "mode",
+    "provenance",
+    "policy",
+    "actor_isolation",
+    "verification_protocol",
+    "promotion_lifecycle",
+    "rollback_policy",
+    "conformance_examples"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "record_type": { "const": "evolution_policy" },
+    "schema_version": { "const": "1.0.0" },
+    "mode": { "$ref": "common.schema.json#/$defs/mode" },
+    "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
+    "supersedes_ref": {
+      "$ref": "common.schema.json#/$defs/recordRef",
+      "description": "Optional prior policy record superseded by this append-only version."
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "status",
+        "thresholds",
+        "prohibit_generator_as_judge",
+        "require_order_swap",
+        "require_candidate_preferred",
+        "require_blind_candidate_identity",
+        "require_blind_model_identity",
+        "require_no_unresolved_blocking_challenges",
+        "promotion_targets"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/id" },
+        "version": { "type": "string", "minLength": 1 },
+        "status": { "type": "string", "enum": ["draft", "probation", "promoted", "deprecated", "rolled_back"] },
+        "thresholds": {
+          "type": "object",
+          "required": [
+            "min_independent_judges",
+            "min_evidence_coverage",
+            "min_counterfactual_pass_rate",
+            "max_regression_failure_rate",
+            "min_repeat_runs"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_independent_judges": { "type": "integer", "minimum": 2 },
+            "min_evidence_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+            "min_counterfactual_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+            "max_regression_failure_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+            "min_repeat_runs": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "prohibit_generator_as_judge": { "const": true },
+        "require_order_swap": { "const": true },
+        "require_candidate_preferred": { "const": true },
+        "require_blind_candidate_identity": { "const": true },
+        "require_blind_model_identity": { "const": true },
+        "require_no_unresolved_blocking_challenges": { "const": true },
+        "promotion_targets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"]
+          }
+        }
+      }
+    },
+    "actor_isolation": {
+      "type": "object",
+      "required": ["logical_roles", "required_pair_boundaries", "accepted_mechanisms", "same_model_weights_allowed", "origin_diversity_preferred"],
+      "additionalProperties": false,
+      "properties": {
+        "logical_roles": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["generator", "critic", "repairer", "judge", "aggregator", "policy_executor"] }
+        },
+        "required_pair_boundaries": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["generator_critic", "generator_judge", "repairer_judge", "judge_aggregator", "critic_judge"]
+          }
+        },
+        "accepted_mechanisms": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["separate_context", "separate_prompt", "separate_model", "separate_provider", "fresh_seed", "blinded_candidate_identity", "no_shared_scratchpad"]
+          }
+        },
+        "same_model_weights_allowed": { "type": "boolean" },
+        "origin_diversity_preferred": { "type": "boolean" }
+      }
+    },
+    "verification_protocol": {
+      "type": "object",
+      "required": ["pairwise_blind_comparison", "orders", "reset_context_between_orders", "counterfactual_suite_required", "regression_suite_required", "evidence_trace_required", "challenge_round_required", "inconclusive_is_not_promotion"],
+      "additionalProperties": false,
+      "properties": {
+        "pairwise_blind_comparison": { "const": true },
+        "orders": {
+          "type": "array",
+          "const": ["AB", "BA"]
+        },
+        "reset_context_between_orders": { "const": true },
+        "counterfactual_suite_required": { "const": true },
+        "regression_suite_required": { "const": true },
+        "evidence_trace_required": { "const": true },
+        "challenge_round_required": { "const": true },
+        "inconclusive_is_not_promotion": { "const": true }
+      }
+    },
+    "promotion_lifecycle": {
+      "type": "object",
+      "required": ["states", "hard_gates", "transitions", "taxonomy_change_scope"],
+      "additionalProperties": false,
+      "properties": {
+        "states": {
+          "type": "array",
+          "const": ["generated", "diagnosed", "challenged", "repair_proposed", "verifying", "probation", "promoted", "rejected", "quarantined", "deprecated", "rolled_back"]
+        },
+        "hard_gates": {
+          "type": "array",
+          "minItems": 8,
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "const": "generator_not_judge" } },
+            { "contains": { "const": "order_swap_complete" } },
+            { "contains": { "const": "independent_judges_met" } },
+            { "contains": { "const": "evidence_coverage_met" } },
+            { "contains": { "const": "counterfactual_pass_rate_met" } },
+            { "contains": { "const": "regression_failure_rate_met" } },
+            { "contains": { "const": "repeat_runs_met" } },
+            { "contains": { "const": "no_unresolved_blocking_challenges" } },
+            { "contains": { "const": "candidate_wins" } }
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "generator_not_judge",
+              "order_swap_complete",
+              "independent_judges_met",
+              "evidence_coverage_met",
+              "counterfactual_pass_rate_met",
+              "regression_failure_rate_met",
+              "repeat_runs_met",
+              "no_unresolved_blocking_challenges",
+              "candidate_wins"
+            ]
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "condition"],
+            "additionalProperties": false,
+            "properties": {
+              "from": { "type": "string", "enum": ["generated", "diagnosed", "challenged", "repair_proposed", "verifying", "probation", "promoted"] },
+              "to": { "type": "string", "enum": ["diagnosed", "challenged", "repair_proposed", "verifying", "probation", "promoted", "rejected", "quarantined", "deprecated", "rolled_back"] },
+              "condition": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "taxonomy_change_scope": {
+          "type": "object",
+          "required": ["direct_mutation_allowed", "proposal_required", "version_bump_required", "revalidate_prior_anchors"],
+          "additionalProperties": false,
+          "properties": {
+            "direct_mutation_allowed": { "const": false },
+            "proposal_required": { "const": true },
+            "version_bump_required": { "const": true },
+            "revalidate_prior_anchors": { "const": true }
+          }
+        }
+      }
+    },
+    "rollback_policy": {
+      "type": "object",
+      "required": ["retain_all_artifacts", "rollback_on_new_blocking_regression", "rollback_on_gate_recalculation_failure", "quarantine_failed_strategy"],
+      "additionalProperties": false,
+      "properties": {
+        "retain_all_artifacts": { "const": true },
+        "rollback_on_new_blocking_regression": { "const": true },
+        "rollback_on_gate_recalculation_failure": { "const": true },
+        "quarantine_failed_strategy": { "const": true }
+      }
+    },
+    "conformance_examples": {
+      "type": "object",
+      "required": ["diagnostic_trace", "repair_attempt", "verification_run"],
+      "additionalProperties": false,
+      "properties": {
+        "diagnostic_trace": { "$ref": "common.schema.json#/$defs/recordRef" },
+        "repair_attempt": { "$ref": "common.schema.json#/$defs/recordRef" },
+        "verification_run": { "$ref": "common.schema.json#/$defs/recordRef" }
+      }
+    },
+    "human_review": { "$ref": "common.schema.json#/$defs/humanReview" }
+  }
+}

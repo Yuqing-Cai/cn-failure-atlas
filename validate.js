@@ -1,431 +1,316 @@
 #!/usr/bin/env node
 
-/**
- * cn-failure-atlas 分类体系验证脚本
- * 零外部依赖，使用 Node.js 内置模块
- *
- * 规则:
- *   R1 — JSON Schema 必填字段与类型检查
- *   R2 — total_labels 计数一致性
- *   R3 — 标签 ID 全局唯一
- *   R4 — derived_from 引用完整性
- *   R5 — subcategory ID 前缀匹配 layer ID
- *   R6 — Markdown ↔ JSON 标签同步
- *   R7 — tendency.primary_layer 引用有效层
- */
+import { readFileSync, readdirSync } from "node:fs";
+import { basename, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import Ajv2020 from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
+import { validateMachineArtifacts } from "./lib/machine-artifact-validator.js";
 
-import { readFileSync, readdirSync } from "fs";
-import { join, basename } from "path";
+export const REPOSITORY_ROOT = fileURLToPath(new URL(".", import.meta.url));
 
-const ROOT = new URL(".", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
+const LAYER_DOCUMENTS = {
+  I: "layer-1-preconditions.md",
+  II: "layer-2-semantic-reading.md",
+  III: "layer-3-scene-preservation.md",
+  IV: "layer-4-writing-intrusion.md",
+  V: "layer-5-multi-turn.md"
+};
 
-// ─── data loading ──────────────────────────────────────────
-
-function loadTaxonomy() {
-  return JSON.parse(readFileSync(join(ROOT, "taxonomy.json"), "utf-8"));
+function readJson(path) {
+  return JSON.parse(readFileSync(path, "utf8"));
 }
 
-function loadSchema() {
-  return JSON.parse(readFileSync(join(ROOT, "taxonomy.schema.json"), "utf-8"));
+export function collectSymptoms(taxonomy) {
+  const symptoms = [];
+  for (const layer of taxonomy?.layers ?? []) {
+    for (const subcategory of layer?.subcategories ?? []) {
+      for (const symptom of subcategory?.labels ?? []) {
+        symptoms.push({
+          ...symptom,
+          layerId: layer.id,
+          subcategoryId: subcategory.id
+        });
+      }
+    }
+  }
+  return symptoms;
 }
 
-function loadLayerMarkdowns() {
-  const dir = join(ROOT, "layers");
-  const files = readdirSync(dir).filter((f) => f.endsWith(".md"));
-  const result = {};
-  for (const f of files) {
-    result[f] = readFileSync(join(dir, f), "utf-8");
-  }
-  return result;
-}
-
-// ─── helpers ───────────────────────────────────────────────
-
-function collectAllLabels(taxonomy) {
-  const labels = [];
-  for (const layer of taxonomy.layers) {
-    for (const sub of layer.subcategories) {
-      for (const label of sub.labels) {
-        labels.push({ ...label, layerId: layer.id, subcategoryId: sub.id });
-      }
-    }
-  }
-  return labels;
-}
-
-function collectAllIds(taxonomy) {
-  const entries = [];
-  for (const l of collectAllLabels(taxonomy)) {
-    entries.push({ id: l.id, location: `Layer ${l.layerId} > ${l.subcategoryId}` });
-  }
-  for (const t of taxonomy.underlying_tendencies) {
-    entries.push({ id: t.id, location: "underlying_tendencies" });
-  }
-  for (const c of taxonomy.cross_layer_tags) {
-    entries.push({ id: c.id, location: "cross_layer_tags" });
-  }
-  return entries;
-}
-
-// ─── state ─────────────────────────────────────────────────
-
-const errors = [];
-const warnings = [];
-
-function error(rule, msg) {
-  errors.push(`  [${rule}] ${msg}`);
-}
-function warn(rule, msg) {
-  warnings.push(`  [${rule}] ${msg}`);
-}
-
-// ─── R1: required fields & types ───────────────────────────
-
-function checkRequiredFields(taxonomy, schema) {
-  const RULE = "R1";
-
-  // top-level required
-  for (const key of schema.required || []) {
-    if (!(key in taxonomy)) {
-      error(RULE, `缺少顶层必填字段: ${key}`);
-    }
-  }
-
-  // layer required fields
-  const layerDef = schema.$defs?.layer;
-  if (layerDef) {
-    for (const [i, layer] of taxonomy.layers.entries()) {
-      for (const key of layerDef.required || []) {
-        if (!(key in layer)) {
-          error(RULE, `layers[${i}] 缺少必填字段: ${key}`);
-        }
-      }
-      // layer.id pattern
-      if (layer.id && layerDef.properties?.id?.pattern) {
-        const pat = new RegExp(layerDef.properties.id.pattern);
-        if (!pat.test(layer.id)) {
-          error(RULE, `layers[${i}].id "${layer.id}" 不匹配 pattern ${layerDef.properties.id.pattern}`);
-        }
-      }
-    }
-  }
-
-  // label required fields & patterns
-  const labelDef = schema.$defs?.label;
-  if (labelDef) {
-    for (const label of collectAllLabels(taxonomy)) {
-      for (const key of labelDef.required || []) {
-        if (!(key in label) || (key !== "derived_from" && label[key] === null)) {
-          if (key === "derived_from") continue; // null is valid
-          error(RULE, `标签 "${label.id}" (${label.layerId}) 缺少必填字段: ${key}`);
-        }
-      }
-      // id pattern
-      if (label.id && labelDef.properties?.id?.pattern) {
-        const pat = new RegExp(labelDef.properties.id.pattern);
-        if (!pat.test(label.id)) {
-          error(RULE, `标签 ID "${label.id}" 不匹配 snake_case pattern`);
-        }
-      }
-      // confidence_level enum
-      if (labelDef.properties?.confidence_level?.enum) {
-        const valid = labelDef.properties.confidence_level.enum;
-        if (label.confidence_level && !valid.includes(label.confidence_level)) {
-          error(RULE, `标签 "${label.id}" confidence_level "${label.confidence_level}" 不在 [${valid}] 中`);
-        }
-      }
-      // criteria minItems
-      if (label.criteria && label.criteria.length < 1) {
-        error(RULE, `标签 "${label.id}" criteria 不能为空数组`);
-      }
-    }
-  }
-
-  // tendency required fields
-  const tendencyDef = schema.$defs?.tendency;
-  if (tendencyDef) {
-    for (const [i, t] of taxonomy.underlying_tendencies.entries()) {
-      for (const key of tendencyDef.required || []) {
-        if (!(key in t)) {
-          error(RULE, `underlying_tendencies[${i}] 缺少必填字段: ${key}`);
-        }
-      }
-    }
-  }
-
-  // cross_layer_tag required fields
-  const crossDef = schema.$defs?.cross_layer_tag;
-  if (crossDef) {
-    for (const [i, c] of taxonomy.cross_layer_tags.entries()) {
-      for (const key of crossDef.required || []) {
-        if (!(key in c)) {
-          error(RULE, `cross_layer_tags[${i}] 缺少必填字段: ${key}`);
-        }
-      }
-    }
-  }
-
-  // additionalProperties checks
-  function checkExtra(obj, defn, path) {
-    if (!defn || defn.additionalProperties !== false || !defn.properties) return;
-    const allowed = new Set(Object.keys(defn.properties));
-    for (const key of Object.keys(obj)) {
-      if (!allowed.has(key)) {
-        error(RULE, `${path} 存在多余字段: "${key}"（schema 不允许 additionalProperties）`);
-      }
-    }
-  }
-
-  // top-level
-  checkExtra(taxonomy, schema, "taxonomy");
-  // layers
-  for (const [i, layer] of taxonomy.layers.entries()) {
-    checkExtra(layer, layerDef, `layers[${i}]`);
-    const subDef = schema.$defs?.subcategory;
-    for (const [j, sub] of layer.subcategories.entries()) {
-      checkExtra(sub, subDef, `layers[${i}].subcategories[${j}]`);
-      for (const [k, label] of sub.labels.entries()) {
-        // skip extra keys added by collectAllLabels
-        checkExtra(label, labelDef, `标签 "${label.id}"`);
-      }
-    }
-  }
-  // tendencies
-  for (const [i, t] of taxonomy.underlying_tendencies.entries()) {
-    checkExtra(t, tendencyDef, `underlying_tendencies[${i}]`);
-  }
-  // cross_layer_tags
-  for (const [i, c] of taxonomy.cross_layer_tags.entries()) {
-    checkExtra(c, crossDef, `cross_layer_tags[${i}]`);
-  }
-}
-
-// ─── R2: total_labels count ────────────────────────────────
-
-function checkTotalLabels(taxonomy) {
-  const RULE = "R2";
-  const labels = collectAllLabels(taxonomy);
-  const actual =
-    labels.length +
-    taxonomy.underlying_tendencies.length +
-    taxonomy.cross_layer_tags.length;
-
-  if (taxonomy.total_labels !== actual) {
-    error(RULE, `total_labels 声明 ${taxonomy.total_labels}，实际 ${actual} (labels=${labels.length} + tendencies=${taxonomy.underlying_tendencies.length} + cross=${taxonomy.cross_layer_tags.length})`);
-  }
-}
-
-// ─── R3: ID uniqueness ────────────────────────────────────
-
-function checkIdUniqueness(taxonomy) {
-  const RULE = "R3";
-  const entries = collectAllIds(taxonomy);
-  const seen = new Map();
-  for (const { id, location } of entries) {
-    if (seen.has(id)) {
-      error(RULE, `ID 重复: "${id}" 出现在 ${seen.get(id)} 和 ${location}`);
-    } else {
-      seen.set(id, location);
-    }
-  }
-}
-
-// ─── R4: derived_from integrity ────────────────────────────
-
-function checkDerivedFromIntegrity(taxonomy) {
-  const RULE = "R4";
-  const allIds = new Set(collectAllIds(taxonomy).map((e) => e.id));
-  for (const label of collectAllLabels(taxonomy)) {
-    if (label.derived_from === null) continue;
-    if (!Array.isArray(label.derived_from)) {
-      error(RULE, `标签 "${label.id}" derived_from 应为数组或 null，实际类型: ${typeof label.derived_from}`);
-      continue;
-    }
-    if (label.derived_from.length === 0) {
-      error(RULE, `标签 "${label.id}" derived_from 为空数组（应为 null 或非空数组）`);
-      continue;
-    }
-    for (const parentId of label.derived_from) {
-      if (parentId === label.id) {
-        error(RULE, `标签 "${label.id}" derived_from 包含自引用`);
-      } else if (!allIds.has(parentId)) {
-        error(RULE, `标签 "${label.id}" derived_from 引用 "${parentId}" 不存在`);
-      }
-    }
-  }
-}
-
-// ─── R5: subcategory ID prefix ─────────────────────────────
-
-function checkSubcategoryPrefix(taxonomy) {
-  const RULE = "R5";
-  for (const layer of taxonomy.layers) {
-    for (const sub of layer.subcategories) {
-      if (!sub.id.startsWith(layer.id + "-")) {
-        error(RULE, `subcategory "${sub.id}" 不以 "${layer.id}-" 开头（属于 layer "${layer.id}"）`);
-      }
-    }
-  }
-}
-
-// ─── R6: Markdown ↔ JSON sync ──────────────────────────────
-
-function checkMarkdownSync(taxonomy, markdowns) {
-  const RULE = "R6";
-
-  // Build layer number → md file mapping
-  // layer-1-preconditions.md → "I", layer-2-... → "II", etc.
-  const numToRoman = { "1": "I", "2": "II", "3": "III", "4": "IV", "5": "V" };
-
-  for (const [filename, content] of Object.entries(markdowns)) {
-    // skip cross-layer.md for label sync (it has tendencies + cross tags)
-    if (filename === "cross-layer.md") continue;
-
-    const match = filename.match(/^layer-(\d)/);
-    if (!match) continue;
-    const layerId = numToRoman[match[1]];
-    if (!layerId) continue;
-
-    const layer = taxonomy.layers.find((l) => l.id === layerId);
-    if (!layer) {
-      error(RULE, `${filename} 对应 layer "${layerId}" 但 taxonomy.json 中无此层`);
-      continue;
-    }
-
-    // Collect JSON label IDs for this layer
-    const jsonIds = new Set();
-    for (const sub of layer.subcategories) {
-      for (const label of sub.labels) {
-        jsonIds.add(label.id);
-      }
-    }
-
-    // Extract backtick-wrapped snake_case IDs from markdown
-    const mdIds = new Set();
-    const idPattern = /`([a-z][a-z0-9_]*)`/g;
-    let m;
-    while ((m = idPattern.exec(content)) !== null) {
-      mdIds.add(m[1]);
-    }
-
-    // Also collect all known IDs (from all layers + tendencies + cross) for context
-    const allKnownIds = new Set(collectAllIds(taxonomy).map((e) => e.id));
-
-    // JSON has but MD doesn't mention → warning (might be new)
-    for (const id of jsonIds) {
-      if (!mdIds.has(id)) {
-        warn(RULE, `${filename}: JSON 有但 MD 未提及 "${id}"`);
-      }
-    }
-
-    // MD mentions but not in this layer's JSON → check if it's from another layer (ok) or nowhere (error)
-    for (const id of mdIds) {
-      if (!jsonIds.has(id) && !allKnownIds.has(id)) {
-        error(RULE, `${filename}: MD 引用 "${id}" 但 taxonomy.json 中不存在`);
-      }
-    }
-  }
-
-  // Also check cross-layer.md for tendencies and cross_layer_tags
-  const crossMd = markdowns["cross-layer.md"];
-  if (crossMd) {
-    const allKnownIds = new Set(collectAllIds(taxonomy).map((e) => e.id));
-    const mdIds = new Set();
-    const idPattern = /`([a-z][a-z0-9_]*)`/g;
-    let m;
-    while ((m = idPattern.exec(crossMd)) !== null) {
-      mdIds.add(m[1]);
-    }
-
-    const crossJsonIds = new Set([
-      ...taxonomy.underlying_tendencies.map((t) => t.id),
-      ...taxonomy.cross_layer_tags.map((c) => c.id),
-    ]);
-
-    for (const id of crossJsonIds) {
-      if (!mdIds.has(id)) {
-        warn(RULE, `cross-layer.md: JSON 有但 MD 未提及 "${id}"`);
-      }
-    }
-
-    for (const id of mdIds) {
-      if (!allKnownIds.has(id)) {
-        error(RULE, `cross-layer.md: MD 引用 "${id}" 但 taxonomy.json 中不存在`);
-      }
-    }
-  }
-}
-
-// ─── R7: tendency primary_layer validity ───────────────────
-
-function checkTendencyLayers(taxonomy) {
-  const RULE = "R7";
-  const validLayerIds = new Set(taxonomy.layers.map((l) => l.id));
-
-  for (const t of taxonomy.underlying_tendencies) {
-    // primary_layer can be "III" or "II-III" (range)
-    const parts = t.primary_layer.split(/[–\-]/);
-    for (const part of parts) {
-      const trimmed = part.trim();
-      if (!validLayerIds.has(trimmed)) {
-        error(RULE, `tendency "${t.id}" primary_layer "${t.primary_layer}" 中 "${trimmed}" 不是有效层 ID`);
-      }
-    }
-  }
-}
-
-// ─── report ────────────────────────────────────────────────
-
-function report(taxonomy) {
-  const rules = [
-    ["R1", "JSON Schema 合规"],
-    ["R2", `total_labels 计数一致 (${taxonomy.total_labels})`],
-    ["R3", "标签 ID 全局唯一"],
-    ["R4", "derived_from 引用完整"],
-    ["R5", "subcategory ID 前缀匹配"],
-    ["R6", "Markdown ↔ JSON 同步"],
-    ["R7", "tendency primary_layer 有效"],
+export function collectEntries(taxonomy) {
+  return [
+    ...collectSymptoms(taxonomy).map((item) => ({ ...item, kind: "symptom" })),
+    ...(taxonomy?.causal_hypotheses ?? []).map((item) => ({ ...item, kind: "causal_hypothesis" })),
+    ...(taxonomy?.composite_tags ?? []).map((item) => ({ ...item, kind: "composite" })),
+    ...(taxonomy?.uncertainty_markers ?? []).map((item) => ({ ...item, kind: "uncertainty_marker" }))
   ];
+}
 
-  console.log("");
-  for (const [code, name] of rules) {
-    const hasError = errors.some((e) => e.includes(`[${code}]`));
-    const hasWarn = warnings.some((w) => w.includes(`[${code}]`));
-    if (hasError) {
-      console.log(`✗ ${code} ${name}`);
-      errors.filter((e) => e.includes(`[${code}]`)).forEach((e) => console.log(e));
-    } else if (hasWarn) {
-      console.log(`⚠ ${code} ${name}`);
-      warnings.filter((w) => w.includes(`[${code}]`)).forEach((w) => console.log(w));
-    } else {
-      console.log(`✓ ${code} ${name}`);
+function issue(rule, message) {
+  return { rule, message };
+}
+
+function formatAjvError(error) {
+  const location = error.instancePath || "/";
+  return `${location} ${error.message}`;
+}
+
+function checkSchema(taxonomy, schema, errors) {
+  const ajv = new Ajv2020({ allErrors: true, strict: true });
+  addFormats(ajv);
+  const validate = ajv.compile(schema);
+  if (!validate(taxonomy)) {
+    for (const schemaError of validate.errors ?? []) {
+      errors.push(issue("R1", formatAjvError(schemaError)));
+    }
+  }
+}
+
+function checkCounts(taxonomy, errors) {
+  const actual = {
+    symptoms: collectSymptoms(taxonomy).length,
+    causal_hypotheses: taxonomy?.causal_hypotheses?.length ?? 0,
+    composites: taxonomy?.composite_tags?.length ?? 0,
+    uncertainty_markers: taxonomy?.uncertainty_markers?.length ?? 0
+  };
+
+  for (const [kind, count] of Object.entries(actual)) {
+    if (taxonomy?.item_counts?.[kind] !== count) {
+      errors.push(issue("R2", `item_counts.${kind} 声明 ${taxonomy?.item_counts?.[kind]}，实际 ${count}`));
     }
   }
 
-  console.log("");
-  console.log(`结果: ${errors.length} error(s), ${warnings.length} warning(s)${errors.length > 0 ? " — 验证失败" : " — 验证通过"}`);
-  console.log("");
+  const actualTotal = Object.values(actual).reduce((sum, count) => sum + count, 0);
+  if (taxonomy?.total_items !== actualTotal) {
+    errors.push(issue("R2", `total_items 声明 ${taxonomy?.total_items}，实际 ${actualTotal}`));
+  }
 
-  return errors.length > 0 ? 1 : 0;
+  return { ...actual, total: actualTotal };
 }
 
-// ─── main ──────────────────────────────────────────────────
+function checkUniqueIds(taxonomy, errors) {
+  const seen = new Map();
+  for (const entry of collectEntries(taxonomy)) {
+    if (!entry.id) continue;
+    if (seen.has(entry.id)) {
+      errors.push(issue("R3", `ID "${entry.id}" 同时出现在 ${seen.get(entry.id)} 与 ${entry.kind}`));
+    } else {
+      seen.set(entry.id, entry.kind);
+    }
+  }
 
-function main() {
-  const taxonomy = loadTaxonomy();
-  const schema = loadSchema();
-  const markdowns = loadLayerMarkdowns();
-
-  checkRequiredFields(taxonomy, schema);
-  checkTotalLabels(taxonomy);
-  checkIdUniqueness(taxonomy);
-  checkDerivedFromIntegrity(taxonomy);
-  checkSubcategoryPrefix(taxonomy);
-  checkMarkdownSync(taxonomy, markdowns);
-  checkTendencyLayers(taxonomy);
-
-  const exitCode = report(taxonomy);
-  process.exit(exitCode);
+  const subcategories = new Set();
+  for (const layer of taxonomy?.layers ?? []) {
+    for (const subcategory of layer?.subcategories ?? []) {
+      if (subcategories.has(subcategory.id)) {
+        errors.push(issue("R3", `子类 ID "${subcategory.id}" 重复`));
+      }
+      subcategories.add(subcategory.id);
+    }
+  }
 }
 
-main();
+function checkDerivedGraph(taxonomy, errors) {
+  const symptoms = collectSymptoms(taxonomy);
+  const ids = new Set(symptoms.map((item) => item.id));
+  const graph = new Map();
+
+  for (const symptom of symptoms) {
+    const parents = symptom.derived_from ?? [];
+    graph.set(symptom.id, parents);
+    for (const parent of parents) {
+      if (!ids.has(parent)) {
+        errors.push(issue("R4", `"${symptom.id}" 的 derived_from 引用了不存在的症状 "${parent}"`));
+      }
+      if (parent === symptom.id) {
+        errors.push(issue("R4", `"${symptom.id}" 不能衍生自自身`));
+      }
+    }
+  }
+
+  const state = new Map();
+  const stack = [];
+  function visit(id) {
+    const current = state.get(id) ?? 0;
+    if (current === 2) return;
+    if (current === 1) {
+      const start = stack.indexOf(id);
+      const cycle = [...stack.slice(start), id].join(" -> ");
+      errors.push(issue("R4", `derived_from 出现循环：${cycle}`));
+      return;
+    }
+    state.set(id, 1);
+    stack.push(id);
+    for (const parent of graph.get(id) ?? []) {
+      if (graph.has(parent)) visit(parent);
+    }
+    stack.pop();
+    state.set(id, 2);
+  }
+  for (const id of graph.keys()) visit(id);
+}
+
+function checkLayerStructure(taxonomy, errors) {
+  const layerIds = (taxonomy?.layers ?? []).map((layer) => layer.id);
+  const expectedOrder = taxonomy?.diagnostic_order ?? [];
+  if (JSON.stringify(layerIds) !== JSON.stringify(expectedOrder)) {
+    errors.push(issue("R5", `layers 顺序 ${layerIds.join(" → ")} 与 diagnostic_order ${expectedOrder.join(" → ")} 不一致`));
+  }
+
+  for (const layer of taxonomy?.layers ?? []) {
+    for (const subcategory of layer?.subcategories ?? []) {
+      if (!subcategory.id?.startsWith(`${layer.id}-`)) {
+        errors.push(issue("R5", `子类 "${subcategory.id}" 不属于 Layer ${layer.id}`));
+      }
+    }
+  }
+}
+
+function checkDocumentation(taxonomy, markdowns, errors) {
+  if (!markdowns) return;
+  for (const layer of taxonomy?.layers ?? []) {
+    const filename = LAYER_DOCUMENTS[layer.id];
+    const content = markdowns[filename];
+    if (!content) {
+      errors.push(issue("R6", `缺少 Layer ${layer.id} 文档 ${filename}`));
+      continue;
+    }
+
+    const documentedIds = new Set(
+      [...content.matchAll(/^####\s+`([a-z][a-z0-9_]*)`/gm)].map((match) => match[1])
+    );
+    const expectedIds = new Set(
+      layer.subcategories.flatMap((subcategory) => subcategory.labels.map((label) => label.id))
+    );
+
+    for (const id of expectedIds) {
+      if (!documentedIds.has(id)) errors.push(issue("R6", `${filename} 缺少症状标题 \`${id}\``));
+    }
+    for (const id of documentedIds) {
+      if (!expectedIds.has(id)) errors.push(issue("R6", `${filename} 出现 taxonomy.json 未定义的症状标题 \`${id}\``));
+    }
+    for (const subcategory of layer.subcategories) {
+      const heading = new RegExp(`^###\\s+${subcategory.id.replace("-", "\\-")}\\b`, "m");
+      if (!heading.test(content)) errors.push(issue("R6", `${filename} 缺少子类标题 ${subcategory.id}`));
+    }
+  }
+
+  const crossLayer = markdowns["cross-layer.md"];
+  if (!crossLayer) {
+    errors.push(issue("R6", "缺少 cross-layer.md"));
+    return;
+  }
+  const auxiliaryEntries = [
+    ...(taxonomy?.causal_hypotheses ?? []),
+    ...(taxonomy?.composite_tags ?? []),
+    ...(taxonomy?.uncertainty_markers ?? [])
+  ];
+  const documentedAuxiliaryIds = [
+    ...[...crossLayer.matchAll(/^\|\s*`([a-z][a-z0-9_]*)`\s*\|/gm)].map((match) => match[1]),
+    ...[...crossLayer.matchAll(/^#####\s+`([a-z][a-z0-9_]*)`/gm)].map((match) => match[1])
+  ];
+  const expectedAuxiliaryIds = new Set(auxiliaryEntries.map((entry) => entry.id));
+  const seenAuxiliaryIds = new Set();
+  for (const id of documentedAuxiliaryIds) {
+    if (seenAuxiliaryIds.has(id)) errors.push(issue("R6", `cross-layer.md 重复定义条目 \`${id}\``));
+    seenAuxiliaryIds.add(id);
+    if (!expectedAuxiliaryIds.has(id)) errors.push(issue("R6", `cross-layer.md 定义了 taxonomy.json 中不存在的辅助条目 \`${id}\``));
+  }
+  for (const id of expectedAuxiliaryIds) {
+    if (!seenAuxiliaryIds.has(id)) errors.push(issue("R6", `cross-layer.md 缺少规范条目 \`${id}\``));
+  }
+}
+
+function checkCausalRanges(taxonomy, errors) {
+  const order = taxonomy?.diagnostic_order ?? [];
+  const validLayers = new Set(order);
+  for (const hypothesis of taxonomy?.causal_hypotheses ?? []) {
+    const parts = hypothesis.primary_layer?.split("-") ?? [];
+    if (parts.some((part) => !validLayers.has(part))) {
+      errors.push(issue("R7", `因果假设 "${hypothesis.id}" 引用了无效层级 "${hypothesis.primary_layer}"`));
+      continue;
+    }
+    if (parts.length === 2 && order.indexOf(parts[0]) >= order.indexOf(parts[1])) {
+      errors.push(issue("R7", `因果假设 "${hypothesis.id}" 的层级范围必须从前向后："${hypothesis.primary_layer}"`));
+    }
+  }
+}
+
+export function validateTaxonomy({ taxonomy, schema, markdowns = null }) {
+  const errors = [];
+  const warnings = [];
+  checkSchema(taxonomy, schema, errors);
+  const stats = checkCounts(taxonomy, errors);
+  checkUniqueIds(taxonomy, errors);
+  checkDerivedGraph(taxonomy, errors);
+  checkLayerStructure(taxonomy, errors);
+  checkDocumentation(taxonomy, markdowns, errors);
+  checkCausalRanges(taxonomy, errors);
+  return { errors, warnings, stats };
+}
+
+function loadMarkdowns(root) {
+  const directory = join(root, "layers");
+  return Object.fromEntries(
+    readdirSync(directory)
+      .filter((filename) => filename.endsWith(".md"))
+      .map((filename) => [filename, readFileSync(join(directory, filename), "utf8")])
+  );
+}
+
+export function validateRepository(root = REPOSITORY_ROOT) {
+  const taxonomy = readJson(join(root, "taxonomy.json"));
+  const schema = readJson(join(root, "taxonomy.schema.json"));
+  const markdowns = loadMarkdowns(root);
+  const taxonomyResult = validateTaxonomy({ taxonomy, schema, markdowns });
+  const schemas = readdirSync(join(root, "schemas"))
+    .filter((filename) => filename.endsWith(".schema.json"))
+    .map((filename) => ({ filename, data: readJson(join(root, "schemas", filename)) }));
+  const examples = readdirSync(join(root, "examples", "machine-only"))
+    .filter((filename) => filename.endsWith(".json"))
+    .map((filename) => ({ filename, data: readJson(join(root, "examples", "machine-only", filename)) }));
+  const machineResult = validateMachineArtifacts({
+    schemas,
+    examples,
+    taxonomyVersion: taxonomy.taxonomy_version,
+    taxonomy
+  });
+  return {
+    errors: [...taxonomyResult.errors, ...machineResult.errors],
+    warnings: [...taxonomyResult.warnings, ...machineResult.warnings],
+    stats: { ...taxonomyResult.stats, machine_records: machineResult.recordCount }
+  };
+}
+
+function printReport(result) {
+  const { stats, errors, warnings } = result;
+  console.log("CN Failure Atlas v2 validation");
+  console.log(`  entries: ${stats.total} = ${stats.symptoms} symptoms + ${stats.causal_hypotheses} hypotheses + ${stats.composites} composite + ${stats.uncertainty_markers} uncertainty marker`);
+  console.log(`  machine records: ${stats.machine_records} examples validated against linked schemas`);
+
+  if (warnings.length > 0) {
+    console.log("\nWarnings:");
+    for (const warning of warnings) console.log(`  [${warning.rule}] ${warning.message}`);
+  }
+  if (errors.length > 0) {
+    console.error("\nErrors:");
+    for (const error of errors) console.error(`  [${error.rule}] ${error.message}`);
+    console.error(`\nValidation failed with ${errors.length} error(s).`);
+    return;
+  }
+  console.log("  ✓ ontology schema, semantic graph, docs, machine-record schemas, and cross-record links");
+  console.log("\nValidation passed.");
+}
+
+const invokedPath = process.argv[1] ? pathToFileURL(process.argv[1]).href : "";
+if (invokedPath === import.meta.url) {
+  try {
+    const result = validateRepository();
+    printReport(result);
+    if (result.errors.length > 0) process.exitCode = 1;
+  } catch (error) {
+    console.error(`Validation crashed while reading ${basename(error?.path ?? "repository data")}:`);
+    console.error(error instanceof Error ? error.stack : error);
+    process.exitCode = 1;
+  }
+}

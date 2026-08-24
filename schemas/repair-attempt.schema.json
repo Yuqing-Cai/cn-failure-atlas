@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
+  "title": "Repair attempt",
+  "description": "A minimal, trace-linked candidate revision produced and challenged by isolated machine roles.",
+  "type": "object",
+  "required": [
+    "record_type",
+    "schema_version",
+    "repair_id",
+    "mode",
+    "provenance",
+    "policy_ref",
+    "diagnostic_trace_ref",
+    "actors",
+    "identity_isolation",
+    "target_finding_ids",
+    "candidates",
+    "repair_plan",
+    "critic_check",
+    "verification_handoff"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "record_type": { "const": "repair_attempt" },
+    "schema_version": { "const": "1.0.0" },
+    "repair_id": { "$ref": "common.schema.json#/$defs/id" },
+    "mode": { "$ref": "common.schema.json#/$defs/mode" },
+    "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
+    "policy_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "supersedes_ref": {
+      "$ref": "common.schema.json#/$defs/recordRef",
+      "description": "Optional reference to the prior record replaced by this append-only correction."
+    },
+    "diagnostic_trace_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "actors": {
+      "type": "object",
+      "required": ["baseline_generator", "repair_generator", "critic"],
+      "additionalProperties": false,
+      "properties": {
+        "baseline_generator": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "generator" } } }
+          ]
+        },
+        "repair_generator": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "repairer" } } }
+          ]
+        },
+        "critic": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "critic" } } }
+          ]
+        }
+      }
+    },
+    "identity_isolation": { "$ref": "common.schema.json#/$defs/identityIsolation" },
+    "target_finding_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/id" }
+    },
+    "candidates": {
+      "type": "object",
+      "required": ["baseline", "candidate"],
+      "additionalProperties": false,
+      "properties": {
+        "baseline": {
+          "allOf": [
+            { "$ref": "#/$defs/candidate" },
+            { "type": "object", "properties": { "candidate_id": { "const": "baseline" } } }
+          ]
+        },
+        "candidate": {
+          "allOf": [
+            { "$ref": "#/$defs/candidate" },
+            { "type": "object", "properties": { "candidate_id": { "const": "candidate" } } }
+          ]
+        }
+      }
+    },
+    "repair_plan": {
+      "type": "object",
+      "required": ["strategy_id", "hypothesis", "minimality_rule", "edits", "preservation_contract"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy_id": { "$ref": "common.schema.json#/$defs/id" },
+        "hypothesis": { "type": "string", "minLength": 1 },
+        "minimality_rule": { "type": "string", "minLength": 1 },
+        "edits": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["edit_id", "operation", "target_finding_id", "source_evidence_ids", "rationale", "expected_effect"],
+            "additionalProperties": false,
+            "properties": {
+              "edit_id": { "$ref": "common.schema.json#/$defs/id" },
+              "operation": { "type": "string", "enum": ["delete", "replace", "insert", "reorder", "preserve"] },
+              "target_finding_id": { "$ref": "common.schema.json#/$defs/id" },
+              "source_evidence_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "common.schema.json#/$defs/id" }
+              },
+              "rationale": { "type": "string", "minLength": 1 },
+              "expected_effect": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "preservation_contract": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["constraint_id", "description", "check_method"],
+            "additionalProperties": false,
+            "properties": {
+              "constraint_id": { "$ref": "common.schema.json#/$defs/id" },
+              "description": { "type": "string", "minLength": 1 },
+              "check_method": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "critic_check": {
+      "type": "object",
+      "required": ["critic_id", "targeted_failures_reduced", "new_failure_scan", "unresolved_challenges", "ready_for_blind_verification"],
+      "additionalProperties": false,
+      "properties": {
+        "critic_id": { "$ref": "common.schema.json#/$defs/id" },
+        "targeted_failures_reduced": { "type": "boolean" },
+        "new_failure_scan": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label_id", "status", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "label_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+              "status": { "type": "string", "enum": ["absent", "possible", "present"] },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "unresolved_challenges": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "ready_for_blind_verification": { "type": "boolean" }
+      }
+    },
+    "verification_handoff": {
+      "type": "object",
+      "required": ["candidate_mapping_digest", "mapping_visibility", "required_suites"],
+      "additionalProperties": false,
+      "properties": {
+        "candidate_mapping_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "mapping_visibility": { "const": "orchestrator_only" },
+        "required_suites": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "const": "order_swap" } },
+            { "contains": { "const": "evidence" } },
+            { "contains": { "const": "counterfactual" } },
+            { "contains": { "const": "regression" } }
+          ],
+          "items": { "type": "string", "enum": ["order_swap", "evidence", "counterfactual", "regression", "challenge"] }
+        }
+      }
+    },
+    "human_review": { "$ref": "common.schema.json#/$defs/humanReview" }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "required": ["candidate_id", "content", "digest", "producer_actor_id"],
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": { "type": "string", "enum": ["baseline", "candidate"] },
+        "content": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "producer_actor_id": { "$ref": "common.schema.json#/$defs/id" }
+      }
+    }
+  }
+}

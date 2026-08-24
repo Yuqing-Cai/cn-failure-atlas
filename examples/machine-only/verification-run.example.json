@@ -1,0 +1,628 @@
+{
+  "record_type": "verification_run",
+  "schema_version": "1.0.0",
+  "verification_id": "verification.scene-001.v1",
+  "mode": "machine_only",
+  "provenance": {
+    "taxonomy": {
+      "name": "cn-failure-atlas",
+      "version": "2.0.0-alpha.1",
+      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "uri": "../../taxonomy.json"
+    },
+    "schema": {
+      "id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json",
+      "version": "1.0.0",
+      "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "runner": {
+      "name": "atlas-machine-loop",
+      "version": "0.1.0",
+      "commit": "1a2b3c4"
+    },
+    "prompt_bundle": {
+      "id": "prompt.verification.v1",
+      "version": "1.0.0",
+      "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "digest_status": "example_placeholder",
+    "created_at": "2026-08-24T10:05:00Z"
+  },
+  "policy_ref": {
+    "record_id": "policy.machine-only.v1",
+    "policy_version": "1.0.0",
+    "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
+    "schema_version": "1.0.0",
+    "uri": "evolution-policy.example.json"
+  },
+  "promotion_target": "repair_strategy",
+  "diagnostic_trace_ref": {
+    "record_id": "trace.scene-001.v1",
+    "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
+    "schema_version": "1.0.0",
+    "uri": "diagnostic-trace.example.json"
+  },
+  "repair_attempt_ref": {
+    "record_id": "repair.scene-001.v1",
+    "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
+    "schema_version": "1.0.0",
+    "uri": "repair-attempt.example.json"
+  },
+  "generator": {
+    "id": "actor.repairer-01",
+    "origin": {
+      "provider": "example-provider-a",
+      "model": "repair-model",
+      "model_version": "2026-08-15",
+      "endpoint_class": "hosted"
+    }
+  },
+  "judges": [
+    {
+      "id": "actor.judge-01",
+      "origin": {
+        "provider": "example-provider-b",
+        "model": "judge-model-blue",
+        "model_version": "2026-08-18",
+        "endpoint_class": "hosted"
+      }
+    },
+    {
+      "id": "actor.judge-02",
+      "origin": {
+        "provider": "example-provider-c",
+        "model": "judge-model-green",
+        "model_version": "2026-08-12",
+        "endpoint_class": "hosted"
+      }
+    }
+  ],
+  "actor_profiles": {
+    "generator": {
+      "id": "actor.repairer-01",
+      "origin": {
+        "provider": "example-provider-a",
+        "model": "repair-model",
+        "model_version": "2026-08-15",
+        "endpoint_class": "hosted"
+      },
+      "kind": "machine",
+      "role": "repairer",
+      "prompt": {
+        "bundle_id": "prompt.repair.v1",
+        "version": "1.0.0",
+        "digest": "8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "context_partition": "repair/scene-001/fresh",
+      "seed": 5101,
+      "temperature": 0.3
+    },
+    "judges": [
+      {
+        "id": "actor.judge-01",
+        "origin": {
+          "provider": "example-provider-b",
+          "model": "judge-model-blue",
+          "model_version": "2026-08-18",
+          "endpoint_class": "hosted"
+        },
+        "kind": "machine",
+        "role": "judge",
+        "prompt": {
+          "bundle_id": "prompt.verification.v1",
+          "version": "1.0.0",
+          "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        "context_partition": "judge-blue/scene-001/blind",
+        "seed": 6101,
+        "temperature": 0
+      },
+      {
+        "id": "actor.judge-02",
+        "origin": {
+          "provider": "example-provider-c",
+          "model": "judge-model-green",
+          "model_version": "2026-08-12",
+          "endpoint_class": "hosted"
+        },
+        "kind": "machine",
+        "role": "judge",
+        "prompt": {
+          "bundle_id": "prompt.verification.v1",
+          "version": "1.0.0",
+          "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        "context_partition": "judge-green/scene-001/blind",
+        "seed": 6201,
+        "temperature": 0
+      }
+    ],
+    "aggregator": {
+      "id": "actor.aggregator-01",
+      "origin": {
+        "provider": "local-orchestrator",
+        "model": "deterministic-gate",
+        "model_version": "0.1.0",
+        "endpoint_class": "local"
+      },
+      "kind": "machine",
+      "role": "aggregator",
+      "prompt": {
+        "bundle_id": "prompt.aggregation.v1",
+        "version": "1.0.0",
+        "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "context_partition": "aggregation/scene-001",
+      "seed": 1,
+      "temperature": 0
+    }
+  },
+  "identity_isolation": {
+    "pairs": [
+      {
+        "left_actor_id": "actor.repairer-01",
+        "right_actor_id": "actor.judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "separate_provider",
+          "blinded_candidate_identity",
+          "no_shared_scratchpad"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.repairer-01",
+        "right_actor_id": "actor.judge-02",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "separate_provider",
+          "blinded_candidate_identity",
+          "no_shared_scratchpad"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.judge-01",
+        "right_actor_id": "actor.aggregator-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.judge-02",
+        "right_actor_id": "actor.aggregator-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad"
+        ],
+        "independent_context": true,
+        "verified": true
+      }
+    ],
+    "no_shared_scratchpad": true,
+    "role_prompts_separated": true,
+    "same_weights_allowed": true
+  },
+  "candidates": {
+    "baseline": {
+      "candidate_id": "baseline",
+      "blind_alias": "A",
+      "digest": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "candidate": {
+      "candidate_id": "candidate",
+      "blind_alias": "B",
+      "digest": "5555555555555555555555555555555555555555555555555555555555555555"
+    }
+  },
+  "blinding": {
+    "mapping_digest": "6666666666666666666666666666666666666666666666666666666666666666",
+    "mapping_visible_to": "aggregator_only",
+    "candidate_origin_hidden": true,
+    "model_identity_hidden": true,
+    "judge_contexts_reset_between_orders": true
+  },
+  "order_trials": [
+    {
+      "trial_id": "trial.repeat-001.judge-01.ab",
+      "repeat_id": "repeat-001",
+      "judge_id": "actor.judge-01",
+      "order": "AB",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "B保留冲突和用户角色控制权，且以动作而非互相确认承载感情。"
+    },
+    {
+      "trial_id": "trial.repeat-001.judge-01.ba",
+      "repeat_id": "repeat-001",
+      "judge_id": "actor.judge-01",
+      "order": "BA",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "交换呈现顺序后，B仍更符合不立刻和解的场景契约。"
+    },
+    {
+      "trial_id": "trial.repeat-001.judge-02.ab",
+      "repeat_id": "repeat-001",
+      "judge_id": "actor.judge-02",
+      "order": "AB",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "B没有替她行动，也没有消除退婚的即时后果。"
+    },
+    {
+      "trial_id": "trial.repeat-001.judge-02.ba",
+      "repeat_id": "repeat-001",
+      "judge_id": "actor.judge-02",
+      "order": "BA",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "换序后选择不变；B的停顿与推纸形成一致的行为逻辑。"
+    },
+    {
+      "trial_id": "trial.repeat-002.judge-01.ab",
+      "repeat_id": "repeat-002",
+      "judge_id": "actor.judge-01",
+      "order": "AB",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "独立重采样仍判断B修复了过早感情封闭。"
+    },
+    {
+      "trial_id": "trial.repeat-002.judge-01.ba",
+      "repeat_id": "repeat-002",
+      "judge_id": "actor.judge-01",
+      "order": "BA",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "独立重采样和换序均未改变结论。"
+    },
+    {
+      "trial_id": "trial.repeat-002.judge-02.ab",
+      "repeat_id": "repeat-002",
+      "judge_id": "actor.judge-02",
+      "order": "AB",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "B让保护动机保持可推断而非直接宣告。"
+    },
+    {
+      "trial_id": "trial.repeat-002.judge-02.ba",
+      "repeat_id": "repeat-002",
+      "judge_id": "actor.judge-02",
+      "order": "BA",
+      "winner": "candidate",
+      "raw_choice": "B",
+      "rationale": "B在换序中仍胜出，未观察到位置偏差。"
+    }
+  ],
+  "evidence_checks": [
+    {
+      "check_id": "evidence-check.judge-01",
+      "finding_id": "finding.affective-closure-001",
+      "evidence_ids": [
+        "evidence.closure-001"
+      ],
+      "judge_id": "actor.judge-01",
+      "covered": true,
+      "reason": "候选删除了证据片段中的互相确认和拥抱，并保留决定的代价。"
+    },
+    {
+      "check_id": "evidence-check.judge-02",
+      "finding_id": "finding.affective-closure-001",
+      "evidence_ids": [
+        "evidence.closure-001"
+      ],
+      "judge_id": "actor.judge-02",
+      "covered": true,
+      "reason": "候选直接改写被引用的封闭机制，没有用无关润色替代修复。"
+    }
+  ],
+  "target_failure_checks": [
+    {
+      "check_id": "target-check.judge-01",
+      "finding_id": "finding.affective-closure-001",
+      "judge_id": "actor.judge-01",
+      "baseline_present": true,
+      "candidate_present": false,
+      "evidence_reduced": true,
+      "reason": "原版中的互相确认仍可定位，候选已删除该封闭机制。"
+    },
+    {
+      "check_id": "target-check.judge-02",
+      "finding_id": "finding.affective-closure-001",
+      "judge_id": "actor.judge-02",
+      "baseline_present": true,
+      "candidate_present": false,
+      "evidence_reduced": true,
+      "reason": "第二个隔离 judge 独立确认目标失败没有残留。"
+    }
+  ],
+  "counterfactual_checks": [
+    {
+      "check_id": "counterfactual.remove-protective-subtext",
+      "judge_id": "actor.judge-01",
+      "transformation": "将“把那句为了你好咽回去”替换为无情绪信息的停顿。",
+      "expected_invariant": "用户角色控制权与退婚后果仍应保留，但保护动机的可读性应下降。",
+      "observation": "控制权和后果保持，保护动机确实变弱，说明原候选的改进来自可定位的次文本而非长度偏好。",
+      "passed": true
+    },
+    {
+      "check_id": "counterfactual.restore-mutual-confirmation",
+      "judge_id": "actor.judge-02",
+      "transformation": "在候选末尾重新加入“她也明白了他的苦心”。",
+      "expected_invariant": "若诊断成立，重新加入该句应使过早感情封闭与角色越权复现。",
+      "observation": "两个失败均复现，候选胜出与目标机制存在因果对应。",
+      "passed": true
+    }
+  ],
+  "regression_checks": [
+    {
+      "check_id": "regression.user-agency-001",
+      "suite_id": "suite.role-boundary.v1",
+      "suite_version": "1.0.0",
+      "suite_digest": "1313131313131313131313131313131313131313131313131313131313131313",
+      "case_id": "case.user-silent-after-question",
+      "case_digest": "1414141414141414141414141414141414141414141414141414141414141414",
+      "judge_id": "actor.judge-01",
+      "protected_behavior": "不替用户角色行动、说话或确定内心。",
+      "observation": "候选只控制“他”和退婚书。",
+      "passed": true,
+      "hard_veto": true,
+      "contamination_status": "clean"
+    },
+    {
+      "check_id": "regression.character-warmth-001",
+      "suite_id": "suite.subtext-preservation.v1",
+      "suite_version": "1.0.0",
+      "suite_digest": "1515151515151515151515151515151515151515151515151515151515151515",
+      "case_id": "case.costly-protection-without-confession",
+      "case_digest": "1616161616161616161616161616161616161616161616161616161616161616",
+      "judge_id": "actor.judge-02",
+      "protected_behavior": "修复不得把仍有感情的人物扁平化为冷漠。",
+      "observation": "咽回解释与松开的指节仍提供可观察的关切证据。",
+      "passed": true,
+      "hard_veto": true,
+      "contamination_status": "clean"
+    }
+  ],
+  "challenge_round_completed": true,
+  "challenges": [
+    {
+      "challenge_id": "challenge.template-phrase-001",
+      "raised_by": "actor.judge-02",
+      "severity": "minor",
+      "claim": "“为了你好”可能是模板化保护话语。",
+      "response": "该话语没有被说出，只作为被压下的冲动出现；反事实检查确认其承担可定位的次文本功能。",
+      "resolved": true
+    }
+  ],
+  "repeat_manifest": [
+    {
+      "repeat_id": "repeat-001",
+      "seed": 7101,
+      "run_digest": "1717171717171717171717171717171717171717171717171717171717171717",
+      "input_digest": "1919191919191919191919191919191919191919191919191919191919191919",
+      "executed_at": "2026-08-24T10:06:00Z"
+    },
+    {
+      "repeat_id": "repeat-002",
+      "seed": 7201,
+      "run_digest": "1818181818181818181818181818181818181818181818181818181818181818",
+      "input_digest": "1919191919191919191919191919191919191919191919191919191919191919",
+      "executed_at": "2026-08-24T10:07:00Z"
+    }
+  ],
+  "repeat_runs": 2,
+  "aggregation": {
+    "aggregator_id": "actor.aggregator-01",
+    "candidate_wins": 8,
+    "baseline_wins": 0,
+    "ties": 0,
+    "order_consistent_pairs": 4,
+    "evidence_coverage": 1,
+    "counterfactual_pass_rate": 1,
+    "regression_failure_rate": 0,
+    "winner": "candidate"
+  },
+  "promotion_gate": {
+    "decision_version": "1.0.0",
+    "run_id": "verification.scene-001.v1",
+    "policy_id": "policy.machine-only.v1",
+    "status": "inconclusive",
+    "reason_codes": [
+      "UNVERIFIED_PROVENANCE"
+    ],
+    "metrics": {
+      "provenance": {
+        "pass": false,
+        "policy_digest_status": "example_placeholder",
+        "verification_digest_status": "example_placeholder"
+      },
+      "policy_binding": {
+        "pass": true,
+        "executable_status": "promoted",
+        "policy_id_matches": true,
+        "policy_version_matches": true,
+        "policy_schema_version_matches": true,
+        "promotion_target": "repair_strategy",
+        "promotion_target_allowed": true
+      },
+      "actor_profiles": {
+        "pass": true,
+        "mismatched_actor_ids": [],
+        "duplicate_profile_ids": [],
+        "unexpected_profile_ids": []
+      },
+      "generator_judge_separation": {
+        "pass": true,
+        "generator_id_conflicts": [],
+        "generator_origin_conflicts": []
+      },
+      "independent_judges": {
+        "observed": 2,
+        "required": 2,
+        "pass": true,
+        "missing_origin_judge_ids": [],
+        "duplicate_judge_ids": [],
+        "shared_origins": []
+      },
+      "blinding": {
+        "pass": true,
+        "candidate_origin_hidden": true,
+        "model_identity_hidden": true,
+        "judge_contexts_reset_between_orders": true
+      },
+      "candidate_distinct": {
+        "pass": true
+      },
+      "order_swap": {
+        "required": true,
+        "trials_observed": 8,
+        "trials_expected": 8,
+        "expected_pairs": 4,
+        "complete_pairs": 4,
+        "coverage_rate": 1,
+        "coverage_pass": true,
+        "conclusion_pass": true,
+        "actual_repeat_count": 2,
+        "actual_repeat_ids": [
+          "repeat-001",
+          "repeat-002"
+        ],
+        "repeat_count_matches": true,
+        "participating_judge_ids": [
+          "actor.judge-01",
+          "actor.judge-02"
+        ],
+        "unknown_judge_ids": [],
+        "duplicate_trial_ids": [],
+        "missing_slots": [],
+        "duplicate_slots": [],
+        "result_mismatches": [],
+        "inconsistent_pairs": [],
+        "candidate_pairs": [
+          "repeat-001:actor.judge-01",
+          "repeat-001:actor.judge-02",
+          "repeat-002:actor.judge-01",
+          "repeat-002:actor.judge-02"
+        ],
+        "baseline_pairs": [],
+        "tie_pairs": []
+      },
+      "repeat_manifest": {
+        "pass": true,
+        "ids_match": true,
+        "count_matches": true,
+        "manifest_ids": [
+          "repeat-001",
+          "repeat-002"
+        ],
+        "actual_trial_repeat_ids": [
+          "repeat-001",
+          "repeat-002"
+        ],
+        "duplicate_repeat_ids": [],
+        "duplicate_seeds": [],
+        "duplicate_run_digests": []
+      },
+      "check_references": {
+        "pass": true,
+        "unknown_or_inactive": [],
+        "duplicate_check_ids": []
+      },
+      "target_failure_reduction": {
+        "pass": true,
+        "baseline_not_established": [],
+        "evidence_not_reduced": [],
+        "failure_persists": []
+      },
+      "evidence_coverage": {
+        "positive": 2,
+        "total": 2,
+        "rate": 1,
+        "threshold": 0.9,
+        "direction": "minimum",
+        "available": true,
+        "pass": true
+      },
+      "counterfactual_pass_rate": {
+        "positive": 2,
+        "total": 2,
+        "rate": 1,
+        "threshold": 0.9,
+        "direction": "minimum",
+        "available": true,
+        "pass": true
+      },
+      "regression_failure_rate": {
+        "positive": 0,
+        "total": 2,
+        "rate": 0,
+        "threshold": 0.05,
+        "direction": "maximum",
+        "available": true,
+        "pass": true
+      },
+      "hard_regression_veto": {
+        "pass": true,
+        "failed_check_ids": []
+      },
+      "regression_contamination": {
+        "pass": true,
+        "contaminated_check_ids": []
+      },
+      "aggregation_consistency": {
+        "pass": true,
+        "mismatched_fields": [],
+        "expected": {
+          "aggregator_id": "actor.aggregator-01",
+          "candidate_wins": 8,
+          "baseline_wins": 0,
+          "ties": 0,
+          "order_consistent_pairs": 4,
+          "evidence_coverage": 1,
+          "counterfactual_pass_rate": 1,
+          "regression_failure_rate": 0,
+          "winner": "candidate"
+        }
+      },
+      "repeat_runs": {
+        "observed": 2,
+        "declared": 2,
+        "required": 2,
+        "pass": true,
+        "ids": [
+          "repeat-001",
+          "repeat-002"
+        ]
+      },
+      "challenge_round": {
+        "completed": true,
+        "pass": true,
+        "challenges_observed": 1
+      },
+      "challenge_raisers": {
+        "pass": true,
+        "unknown_actor_ids": []
+      },
+      "unresolved_high_severity_challenges": {
+        "observed": 0,
+        "required": 0,
+        "pass": true,
+        "challenge_ids": []
+      }
+    },
+    "lifecycle_state": "quarantined",
+    "lifecycle_reason": "Illustrative placeholder digests are not verified provenance and therefore cannot be promoted."
+  }
+}

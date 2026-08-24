@@ -1,4 +1,4 @@
-[← 返回概览](../README.md) | [上一层：写作侵入](layer-4-writing-intrusion.md) | [底层倾向与跨层标签 →](cross-layer.md)
+[← 返回概览](../README.md) | [上一层：写作侵入](layer-4-writing-intrusion.md) | [因果假设、复合现象与不确定性 →](cross-layer.md)
 
 ### 第五层：多轮失败
 
@@ -7,6 +7,8 @@
 本层的标签有两种性质：一类是失败本身依赖跨轮次积累才能构成（`error_accumulation`、`drift_without_correction`、`voice_drift`、`escalation_miscalibration`、`spatial_blocking_error`、`context_overdeployment`、`emotional_state_reset`）；另一类是单次失败可在单轮内完整发生，但需要多轮上下文才能判断是否确实发生了（`scene_signal_blindness`、`topic_persistence_error`、`turn_continuity_error`）。
 
 > **和 Layer I–IV 的关系：** Layer V 的大多数失败可以被还原为某个早期层的失败在时间维度上的累积（如 `error_accumulation` 是多次 Layer II/III 失败叠加）。Layer V 是诊断视角的分层，不是一套独立的失败机制。
+
+### V-A. 多轮失败
 
 #### `error_accumulation`（错误积累）
 
@@ -260,4 +262,4 @@
 > **和 `escalation_miscalibration` 的边界：** `escalation_miscalibration` 聚焦于单一情绪线的升级节奏（升得太快或太慢）；`arc_pacing_error` 聚焦于多场景/多线叙事弧的宏观节奏分配。前者是微观的情绪校准，后者是宏观的叙事结构。
 
 ---
-[← 返回概览](../README.md) | [上一层：写作侵入](layer-4-writing-intrusion.md) | [底层倾向与跨层标签 →](cross-layer.md)
+[← 返回概览](../README.md) | [上一层：写作侵入](layer-4-writing-intrusion.md) | [因果假设、复合现象与不确定性 →](cross-layer.md)

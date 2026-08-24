@@ -1,5 +1,7 @@
 {
   "name": "cn-failure-atlas",
+  "version": "2.0.0-alpha.1",
+  "private": true,
   "description": "面向大语言模型虚构和角色扮演对话的失败模式分类体系",
   "author": "Yuqing-Cai",
   "license": "CC-BY-4.0",
@@ -9,7 +11,16 @@
   },
   "keywords": ["llm", "taxonomy", "dialogue", "roleplay", "chinese", "failure-analysis"],
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "validate": "node validate.js"
+    "validate": "node validate.js",
+    "test": "node --test",
+    "check": "npm run validate && npm test"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
   }
 }
