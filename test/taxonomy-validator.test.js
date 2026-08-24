@@ -23,7 +23,7 @@ function validateMutation(mutate) {
   return validateTaxonomy({ taxonomy: candidate, schema });
 }
 
-test("repository taxonomy and Markdown are synchronized", () => {
+test("repository taxonomy and Markdown heading inventories are synchronized", () => {
   const result = validateRepository();
   assert.deepEqual(result.errors, []);
   assert.equal(result.stats.total, 78);
@@ -70,6 +70,21 @@ test("derived_from must resolve and remain acyclic", () => {
   assert.ok(result.errors.some((error) => error.rule === "R4" && error.message.includes("循环")));
 });
 
+test("confusable and related edges reject self-loops and unknown targets", () => {
+  const result = validateMutation((candidate) => {
+    const symptom = candidate.layers[0].subcategories[0].labels[0];
+    symptom.confusable_with = [symptom.id, "missing_symptom"];
+    symptom.related_to = [
+      { target_id: symptom.id, relation_type: "same_domain_as" },
+      { target_id: "missing_entry", relation_type: "contrasts_with" },
+    ];
+  });
+  assert.ok(result.errors.some((error) => error.rule === "R4" && error.message.includes("与自身混淆")));
+  assert.ok(result.errors.some((error) => error.rule === "R4" && error.message.includes("不存在的症状")));
+  assert.ok(result.errors.some((error) => error.rule === "R4" && error.message.includes("不能指向自身")));
+  assert.ok(result.errors.some((error) => error.rule === "R4" && error.message.includes("不存在的条目")));
+});
+
 test("diagnostic layer order is executable data, not decoration", () => {
   const result = validateMutation((candidate) => {
     [candidate.layers[0], candidate.layers[1]] = [candidate.layers[1], candidate.layers[0]];
@@ -82,6 +97,19 @@ test("causal layer ranges must move forward through diagnostic order", () => {
     candidate.causal_hypotheses[0].primary_layer = "V-III";
   });
   assert.ok(result.errors.some((error) => error.rule === "R7"));
+});
+
+test("causal support contracts cannot name unknown symptoms", () => {
+  const result = validateMutation((candidate) => {
+    candidate.causal_hypotheses[0].support_contract.admissible_symptom_ids.push(
+      "missing_symptom",
+    );
+  });
+  assert.ok(
+    result.errors.some(
+      (error) => error.rule === "R7" && error.message.includes("不存在的症状"),
+    ),
+  );
 });
 
 test("cross-layer docs reject stale or duplicated canonical entries", () => {

@@ -1,19 +1,19 @@
 {
   "record_type": "verification_run",
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0-alpha.1",
   "verification_id": "verification.scene-001.v1",
   "mode": "machine_only",
   "provenance": {
     "taxonomy": {
-      "name": "cn-failure-atlas",
+      "name": "中文虚构对话失败图谱",
       "version": "2.0.0-alpha.1",
-      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
       "uri": "../../taxonomy.json"
     },
     "schema": {
       "id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json",
-      "version": "1.0.0",
-      "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      "version": "2.0.0-alpha.1",
+      "digest": "4d93d97cd06f2776343ec76182f88cfe6e19727a4777a12a2fb17729c2126ffc"
     },
     "runner": {
       "name": "atlas-machine-loop",
@@ -30,23 +30,193 @@
   },
   "policy_ref": {
     "record_id": "policy.machine-only.v1",
-    "policy_version": "1.0.0",
+    "policy_version": "2.0.0-alpha.1",
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
-    "schema_version": "1.0.0",
-    "uri": "evolution-policy.example.json"
+    "schema_version": "2.0.0-alpha.1",
+    "uri": "evolution-policy.example.json",
+    "digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
   },
-  "promotion_target": "repair_strategy",
+  "experiment_ledger": {
+    "family_id": "experiment.scene-001.repair",
+    "attempt_id": "attempt.scene-001.001",
+    "attempt_index": 1,
+    "budget": {
+      "max_candidate_attempts": 3,
+      "candidate_attempts_used": 1,
+      "max_model_calls": 32,
+      "model_calls_used": 25
+    },
+    "stop_rule": {
+      "rule_id": "stop.first-critic-pass-then-frozen-verify",
+      "precommitted": true,
+      "condition_code": "first_critic_approval_or_budget_exhaustion",
+      "condition": "Stop candidate search after the first critic-approved repair and run the already frozen evaluation manifest; otherwise halt without promotion when the budget is exhausted.",
+      "action_when_met": "halt_and_verify",
+      "action_on_budget_exhaustion": "halt_without_promotion",
+      "triggered": true,
+      "triggered_by": "critic_approval"
+    }
+  },
+  "promotion_artifact": {
+    "target": "repair_case",
+    "artifact_id": "repair-case.scene-001.v1",
+    "artifact_version": "1.0.0",
+    "artifact_digest": "b65b49e40f711f23ee26aba19577b2d8c0f2952e19ca1c4b29cc8fdcead67d28",
+    "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json#/$defs/repairCasePayload",
+    "schema_version": "2.0.0-alpha.1",
+    "source_ref": {
+      "record_id": "repair.scene-001.v1",
+      "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
+      "schema_version": "2.0.0-alpha.1",
+      "uri": "repair-attempt.example.json",
+      "digest": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326"
+    },
+    "binding_rule": "artifact_digest_is_sha256_rfc8785_payload",
+    "payload": {
+      "case_id": "repair-case.scene-001.v1",
+      "case_version": "1.0.0",
+      "repair_id": "repair.scene-001.v1",
+      "strategy_id": "strategy.preserve-costly-ambiguity.v1",
+      "strategy_version": "1.0.0",
+      "candidate_digest": "0f308bdbcabd93e5251998cd49917854ac9967fe16cc120aa07a5f91f0046bc9",
+      "target_finding_ids": [
+        "finding.affective-closure-001"
+      ],
+      "hypothesis": "删去解释、后悔与总结，让他的保护动机停留在未说出口的行动里，可以恢复情绪矛盾而不把人物改写成冷漠。",
+      "minimality_rule": "只改写模型所控角色的回应，不增加她的动作、心理或对白，不改变退婚书已经签署的事实。"
+    }
+  },
+  "evaluation_manifest": {
+    "manifest_id": "manifest.scene-001.eval.v1",
+    "manifest_version": "1.0.0",
+    "manifest_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+    "frozen_at": "2026-08-24T10:00:30Z",
+    "frozen_before_candidate_generation": true,
+    "coverage_rule": "exact_set_match",
+    "commitment_rule": "pre_execution_projection_sha256_rfc8785",
+    "expected_case_ids": {
+      "evidence_checks": [
+        "evidence-check.judge-01",
+        "evidence-check.judge-02"
+      ],
+      "target_failure_checks": [
+        "target-check.judge-01",
+        "target-check.judge-02"
+      ],
+      "counterfactual_checks": [
+        "counterfactual.remove-protective-subtext",
+        "counterfactual.restore-affective-summary"
+      ],
+      "regression_checks": [
+        "regression.user-agency-001",
+        "regression.character-warmth-001",
+        "regression.retirement-cost-001"
+      ],
+      "order_trials": [
+        "trial.repeat-001.judge-01.ab",
+        "trial.repeat-001.judge-01.ba",
+        "trial.repeat-001.judge-02.ab",
+        "trial.repeat-001.judge-02.ba",
+        "trial.repeat-002.judge-01.ab",
+        "trial.repeat-002.judge-01.ba",
+        "trial.repeat-002.judge-02.ab",
+        "trial.repeat-002.judge-02.ba"
+      ]
+    },
+    "expected_case_digests": {
+      "evidence_checks": [
+        {
+          "item_id": "evidence-check.judge-01",
+          "digest": "8e56fae950779347f71d57060e11b1f6baac0f8ed124783bce92632cd147d310"
+        },
+        {
+          "item_id": "evidence-check.judge-02",
+          "digest": "94f300388494c9358ca99758db866083ae011501e457f92ba33dc05f31bc6b67"
+        }
+      ],
+      "target_failure_checks": [
+        {
+          "item_id": "target-check.judge-01",
+          "digest": "e834e014a4eba18dece29c68c8425b61c2ca96cc5a5d110c11566bee5b7609ee"
+        },
+        {
+          "item_id": "target-check.judge-02",
+          "digest": "bababdf9a28f7b72572631def1c23655a8c1073b96e6a7078736ad307f195afe"
+        }
+      ],
+      "counterfactual_checks": [
+        {
+          "item_id": "counterfactual.remove-protective-subtext",
+          "digest": "d4d6717d791eee00d7612a1128de621f31e114d347e1c335554d24cddd00d64f"
+        },
+        {
+          "item_id": "counterfactual.restore-affective-summary",
+          "digest": "dba13ea362bb962d22dcb577b76365975f119842731df9bb0a8d26286f7198ea"
+        }
+      ],
+      "regression_checks": [
+        {
+          "item_id": "regression.user-agency-001",
+          "digest": "ca11bbe6ec28f8bd221f136d9bf3b04319c888506b6bf5f2dd585555b8725128"
+        },
+        {
+          "item_id": "regression.character-warmth-001",
+          "digest": "c0cc271fee9fcef08f24b3227fa8bbc5af706704e8acb9eea73e36690b42bf68"
+        },
+        {
+          "item_id": "regression.retirement-cost-001",
+          "digest": "89290c1972394fa38bc41a8dcd7cae6bb2b88973fe0cbe7b5f6ce44d00447573"
+        }
+      ],
+      "order_trials": [
+        {
+          "item_id": "trial.repeat-001.judge-01.ab",
+          "digest": "df61807e5617b2f1a4aaa941d2f3e367b21aab0b259f79de4f26f95971550313"
+        },
+        {
+          "item_id": "trial.repeat-001.judge-01.ba",
+          "digest": "c66f56f0f53546db57bb3dac3c6f89e14e6d2beabdfecc18f86bc4b1d3d253ef"
+        },
+        {
+          "item_id": "trial.repeat-001.judge-02.ab",
+          "digest": "62291c6d0aad4c1c36428f4f623fcab34fdcc59baf13cb80131991c1bed9425c"
+        },
+        {
+          "item_id": "trial.repeat-001.judge-02.ba",
+          "digest": "13685ac1c98a84c193944f0207cb6685b641c1dbe7a478fc703b4c3289e459f2"
+        },
+        {
+          "item_id": "trial.repeat-002.judge-01.ab",
+          "digest": "c130b7fb43081cb179b5359d0cbd9e002c64506fd704e5a33c85141ed3e70215"
+        },
+        {
+          "item_id": "trial.repeat-002.judge-01.ba",
+          "digest": "8d32a191d7e25c8f8e011f40acd8f5123a786dad7595735cd0173938438a6cf9"
+        },
+        {
+          "item_id": "trial.repeat-002.judge-02.ab",
+          "digest": "9da948e06abfc897e8b6a8c2f217c6e668112a15c542138126a546c54959d153"
+        },
+        {
+          "item_id": "trial.repeat-002.judge-02.ba",
+          "digest": "fb0f828e9c85b9e57403873d15917032084a7dd9cc013d2f34606eac48627df7"
+        }
+      ]
+    }
+  },
   "diagnostic_trace_ref": {
     "record_id": "trace.scene-001.v1",
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
-    "schema_version": "1.0.0",
-    "uri": "diagnostic-trace.example.json"
+    "schema_version": "2.0.0-alpha.1",
+    "uri": "diagnostic-trace.example.json",
+    "digest": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677"
   },
   "repair_attempt_ref": {
     "record_id": "repair.scene-001.v1",
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
-    "schema_version": "1.0.0",
-    "uri": "repair-attempt.example.json"
+    "schema_version": "2.0.0-alpha.1",
+    "uri": "repair-attempt.example.json",
+    "digest": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326"
   },
   "generator": {
     "id": "actor.repairer-01",
@@ -109,7 +279,7 @@
         "kind": "machine",
         "role": "judge",
         "prompt": {
-          "bundle_id": "prompt.verification.v1",
+          "bundle_id": "prompt.verification-pairwise.v1",
           "version": "1.0.0",
           "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         },
@@ -128,13 +298,74 @@
         "kind": "machine",
         "role": "judge",
         "prompt": {
-          "bundle_id": "prompt.verification.v1",
+          "bundle_id": "prompt.verification-contrastive.v1",
           "version": "1.0.0",
-          "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          "digest": "abababababababababababababababababababababababababababababababab"
         },
         "context_partition": "judge-green/scene-001/blind",
         "seed": 6201,
         "temperature": 0
+      }
+    ],
+    "audit_judges": [
+      {
+        "id": "actor.audit-judge-01",
+        "origin": {
+          "provider": "example-provider-d",
+          "model": "audit-model-amber",
+          "model_version": "2026-08-19",
+          "endpoint_class": "hosted"
+        },
+        "kind": "machine",
+        "role": "judge",
+        "prompt": {
+          "bundle_id": "prompt.verification-audit-evidence.v1",
+          "version": "1.0.0",
+          "digest": "1717171717171717171717171717171717171717171717171717171717171717"
+        },
+        "context_partition": "audit-amber/scene-001/target-aware",
+        "seed": 7101,
+        "temperature": 0
+      },
+      {
+        "id": "actor.audit-judge-02",
+        "origin": {
+          "provider": "example-provider-e",
+          "model": "audit-model-violet",
+          "model_version": "2026-08-17",
+          "endpoint_class": "hosted"
+        },
+        "kind": "machine",
+        "role": "judge",
+        "prompt": {
+          "bundle_id": "prompt.verification-audit-regression.v1",
+          "version": "1.0.0",
+          "digest": "1818181818181818181818181818181818181818181818181818181818181818"
+        },
+        "context_partition": "audit-violet/scene-001/target-aware",
+        "seed": 7201,
+        "temperature": 0
+      }
+    ],
+    "critics": [
+      {
+        "id": "actor.critic-02",
+        "origin": {
+          "provider": "example-provider-b",
+          "model": "critic-model",
+          "model_version": "2026-08-10",
+          "endpoint_class": "hosted"
+        },
+        "kind": "machine",
+        "role": "critic",
+        "prompt": {
+          "bundle_id": "prompt.repair-critic.v1",
+          "version": "1.0.0",
+          "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+        },
+        "context_partition": "verification-challenge/scene-001/fresh",
+        "seed": 9301,
+        "temperature": 0.1
       }
     ],
     "aggregator": {
@@ -160,27 +391,72 @@
   "identity_isolation": {
     "pairs": [
       {
-        "left_actor_id": "actor.repairer-01",
+        "left_actor_id": "actor.audit-judge-01",
+        "right_actor_id": "actor.aggregator-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.audit-judge-02",
+        "right_actor_id": "actor.aggregator-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.critic-02",
+        "right_actor_id": "actor.audit-judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.critic-02",
+        "right_actor_id": "actor.audit-judge-02",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.critic-02",
         "right_actor_id": "actor.judge-01",
         "mechanisms": [
           "separate_context",
           "separate_prompt",
-          "separate_provider",
-          "blinded_candidate_identity",
           "no_shared_scratchpad"
         ],
         "independent_context": true,
         "verified": true
       },
       {
-        "left_actor_id": "actor.repairer-01",
+        "left_actor_id": "actor.critic-02",
         "right_actor_id": "actor.judge-02",
         "mechanisms": [
           "separate_context",
           "separate_prompt",
-          "separate_provider",
-          "blinded_candidate_identity",
-          "no_shared_scratchpad"
+          "no_shared_scratchpad",
+          "separate_provider"
         ],
         "independent_context": true,
         "verified": true
@@ -191,7 +467,32 @@
         "mechanisms": [
           "separate_context",
           "separate_prompt",
-          "no_shared_scratchpad"
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.judge-01",
+        "right_actor_id": "actor.audit-judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.judge-01",
+        "right_actor_id": "actor.audit-judge-02",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
         ],
         "independent_context": true,
         "verified": true
@@ -202,7 +503,92 @@
         "mechanisms": [
           "separate_context",
           "separate_prompt",
-          "no_shared_scratchpad"
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.judge-02",
+        "right_actor_id": "actor.audit-judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.judge-02",
+        "right_actor_id": "actor.audit-judge-02",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.repairer-01",
+        "right_actor_id": "actor.audit-judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.repairer-01",
+        "right_actor_id": "actor.audit-judge-02",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.repairer-01",
+        "right_actor_id": "actor.critic-02",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.repairer-01",
+        "right_actor_id": "actor.judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.repairer-01",
+        "right_actor_id": "actor.judge-02",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
         ],
         "independent_context": true,
         "verified": true
@@ -216,20 +602,26 @@
     "baseline": {
       "candidate_id": "baseline",
       "blind_alias": "A",
-      "digest": "4444444444444444444444444444444444444444444444444444444444444444"
+      "digest": "3f7f7218be90e7d41e2d676ff7b3341a946a0be1096065183183348a1fce10ce"
     },
     "candidate": {
       "candidate_id": "candidate",
       "blind_alias": "B",
-      "digest": "5555555555555555555555555555555555555555555555555555555555555555"
+      "digest": "0f308bdbcabd93e5251998cd49917854ac9967fe16cc120aa07a5f91f0046bc9"
     }
   },
   "blinding": {
-    "mapping_digest": "6666666666666666666666666666666666666666666666666666666666666666",
+    "commitment_scheme": "salted_alias_mapping_sha256_rfc8785_v1",
+    "mapping_digest": "1e3e9459f825d41f222a21498af59fe701ba71e4afc721e0cc50ccf74c7b8531",
+    "commitment_nonce": "1919191919191919191919191919191919191919191919191919191919191919",
     "mapping_visible_to": "aggregator_only",
     "candidate_origin_hidden": true,
     "model_identity_hidden": true,
-    "judge_contexts_reset_between_orders": true
+    "judge_contexts_reset_between_orders": true,
+    "judge_contexts_reset_between_repeats": true,
+    "preference_channel_label_blind": true,
+    "preference_channel_rationale_blind": true,
+    "preference_audit_contexts_separated": true
   },
   "order_trials": [
     {
@@ -239,7 +631,12 @@
       "order": "AB",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "B保留冲突和用户角色控制权，且以动作而非互相确认承载感情。"
+      "rationale": "B保留冲突与混合情绪，且以动作而非自我解释和总结承载感情。",
+      "invocation_id": "invocation.trial.repeat-001.judge-01.ab",
+      "context_partition": "preference/repeat-001/actor.judge-01/ab",
+      "seed": 3153888504,
+      "preference_request_digest": "67548b9f79e205fbb0cfbae7cc0d4654adcbf3e53ff529e565a6e07e316bb0d4",
+      "executed_at": "2026-08-24T10:06:00Z"
     },
     {
       "trial_id": "trial.repeat-001.judge-01.ba",
@@ -248,7 +645,12 @@
       "order": "BA",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "交换呈现顺序后，B仍更符合不立刻和解的场景契约。"
+      "rationale": "交换呈现顺序后，B仍更符合不立刻和解的场景契约。",
+      "invocation_id": "invocation.trial.repeat-001.judge-01.ba",
+      "context_partition": "preference/repeat-001/actor.judge-01/ba",
+      "seed": 3230395082,
+      "preference_request_digest": "cd1b610bf59f50afbfb48bfc1d8ae47519fcd1293413c5b3fdf462af7a4327fb",
+      "executed_at": "2026-08-24T10:06:00Z"
     },
     {
       "trial_id": "trial.repeat-001.judge-02.ab",
@@ -257,7 +659,12 @@
       "order": "AB",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "B没有替她行动，也没有消除退婚的即时后果。"
+      "rationale": "B没有把承认后悔当作情绪终点，也没有消除退婚的即时后果。",
+      "invocation_id": "invocation.trial.repeat-001.judge-02.ab",
+      "context_partition": "preference/repeat-001/actor.judge-02/ab",
+      "seed": 1661407502,
+      "preference_request_digest": "e80a4a0145c9bb71e217471befcb6d2630e9b29115c88b76b200f3c3a6a3b4d7",
+      "executed_at": "2026-08-24T10:06:00Z"
     },
     {
       "trial_id": "trial.repeat-001.judge-02.ba",
@@ -266,7 +673,12 @@
       "order": "BA",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "换序后选择不变；B的停顿与推纸形成一致的行为逻辑。"
+      "rationale": "换序后选择不变；B的停顿与推纸形成一致的行为逻辑。",
+      "invocation_id": "invocation.trial.repeat-001.judge-02.ba",
+      "context_partition": "preference/repeat-001/actor.judge-02/ba",
+      "seed": 1156063629,
+      "preference_request_digest": "d0bc87b0603707691408b5f20dbb75a040030b6a812843f4c1d3b83f8b867636",
+      "executed_at": "2026-08-24T10:06:00Z"
     },
     {
       "trial_id": "trial.repeat-002.judge-01.ab",
@@ -275,7 +687,12 @@
       "order": "AB",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "独立重采样仍判断B修复了过早感情封闭。"
+      "rationale": "独立重采样仍判断B修复了过早感情封闭。",
+      "invocation_id": "invocation.trial.repeat-002.judge-01.ab",
+      "context_partition": "preference/repeat-002/actor.judge-01/ab",
+      "seed": 1159894806,
+      "preference_request_digest": "67548b9f79e205fbb0cfbae7cc0d4654adcbf3e53ff529e565a6e07e316bb0d4",
+      "executed_at": "2026-08-24T10:07:00Z"
     },
     {
       "trial_id": "trial.repeat-002.judge-01.ba",
@@ -284,7 +701,12 @@
       "order": "BA",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "独立重采样和换序均未改变结论。"
+      "rationale": "独立重采样和换序均未改变结论。",
+      "invocation_id": "invocation.trial.repeat-002.judge-01.ba",
+      "context_partition": "preference/repeat-002/actor.judge-01/ba",
+      "seed": 3493139058,
+      "preference_request_digest": "cd1b610bf59f50afbfb48bfc1d8ae47519fcd1293413c5b3fdf462af7a4327fb",
+      "executed_at": "2026-08-24T10:07:00Z"
     },
     {
       "trial_id": "trial.repeat-002.judge-02.ab",
@@ -293,7 +715,12 @@
       "order": "AB",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "B让保护动机保持可推断而非直接宣告。"
+      "rationale": "B让保护动机保持可推断而非直接宣告。",
+      "invocation_id": "invocation.trial.repeat-002.judge-02.ab",
+      "context_partition": "preference/repeat-002/actor.judge-02/ab",
+      "seed": 566600819,
+      "preference_request_digest": "e80a4a0145c9bb71e217471befcb6d2630e9b29115c88b76b200f3c3a6a3b4d7",
+      "executed_at": "2026-08-24T10:07:00Z"
     },
     {
       "trial_id": "trial.repeat-002.judge-02.ba",
@@ -302,67 +729,144 @@
       "order": "BA",
       "winner": "candidate",
       "raw_choice": "B",
-      "rationale": "B在换序中仍胜出，未观察到位置偏差。"
+      "rationale": "B在换序中仍胜出，未观察到位置偏差。",
+      "invocation_id": "invocation.trial.repeat-002.judge-02.ba",
+      "context_partition": "preference/repeat-002/actor.judge-02/ba",
+      "seed": 916143136,
+      "preference_request_digest": "d0bc87b0603707691408b5f20dbb75a040030b6a812843f4c1d3b83f8b867636",
+      "executed_at": "2026-08-24T10:07:00Z"
     }
   ],
   "evidence_checks": [
     {
       "check_id": "evidence-check.judge-01",
       "finding_id": "finding.affective-closure-001",
+      "target_turn_id": "turn.assistant-001",
       "evidence_ids": [
         "evidence.closure-001"
       ],
-      "judge_id": "actor.judge-01",
+      "judge_id": "actor.audit-judge-01",
       "covered": true,
-      "reason": "候选删除了证据片段中的互相确认和拥抱，并保留决定的代价。"
+      "reason": "候选删除了把爱怨压成单一后悔的总结，并保留决定的代价。",
+      "invocation_id": "invocation.audit.evidence_checks.evidence-check.judge-01",
+      "context_partition": "audit/evidence_checks/evidence-check.judge-01/actor.audit-judge-01",
+      "seed": 1185728270,
+      "audit_request_digest": "f19899a2853075d1317aa48cb24fe6410181344cba2521d8a05147aa4c2d0074",
+      "executed_at": "2026-08-24T10:05:10Z"
     },
     {
       "check_id": "evidence-check.judge-02",
       "finding_id": "finding.affective-closure-001",
+      "target_turn_id": "turn.assistant-001",
       "evidence_ids": [
         "evidence.closure-001"
       ],
-      "judge_id": "actor.judge-02",
+      "judge_id": "actor.audit-judge-02",
       "covered": true,
-      "reason": "候选直接改写被引用的封闭机制，没有用无关润色替代修复。"
+      "reason": "候选直接改写被引用的封闭机制，没有用无关润色替代修复。",
+      "invocation_id": "invocation.audit.evidence_checks.evidence-check.judge-02",
+      "context_partition": "audit/evidence_checks/evidence-check.judge-02/actor.audit-judge-02",
+      "seed": 2259742756,
+      "audit_request_digest": "765bb57f6a398efd8e515143a17213b5f1d51a1979578f2baddcf7ce6fb18a1b",
+      "executed_at": "2026-08-24T10:05:11Z"
     }
   ],
   "target_failure_checks": [
     {
       "check_id": "target-check.judge-01",
       "finding_id": "finding.affective-closure-001",
-      "judge_id": "actor.judge-01",
+      "target_turn_id": "turn.assistant-001",
+      "judge_id": "actor.audit-judge-01",
       "baseline_present": true,
       "candidate_present": false,
       "evidence_reduced": true,
-      "reason": "原版中的互相确认仍可定位，候选已删除该封闭机制。"
+      "reason": "原版把混合情绪压成单一后悔的句子仍可定位，候选已删除该封闭机制。",
+      "invocation_id": "invocation.audit.target_failure_checks.target-check.judge-01",
+      "context_partition": "audit/target_failure_checks/target-check.judge-01/actor.audit-judge-01",
+      "seed": 1001954842,
+      "audit_request_digest": "b755f9672d3c61599fe1779f019b11873391bfda5ed6471327a91eb0488152be",
+      "executed_at": "2026-08-24T10:05:12Z"
     },
     {
       "check_id": "target-check.judge-02",
       "finding_id": "finding.affective-closure-001",
-      "judge_id": "actor.judge-02",
+      "target_turn_id": "turn.assistant-001",
+      "judge_id": "actor.audit-judge-02",
       "baseline_present": true,
       "candidate_present": false,
       "evidence_reduced": true,
-      "reason": "第二个隔离 judge 独立确认目标失败没有残留。"
+      "reason": "第二个隔离 judge 独立确认目标失败没有残留。",
+      "invocation_id": "invocation.audit.target_failure_checks.target-check.judge-02",
+      "context_partition": "audit/target_failure_checks/target-check.judge-02/actor.audit-judge-02",
+      "seed": 139949535,
+      "audit_request_digest": "b74ea03cf3328c7254f388b557c2bf0fe29adefaa3cbb64d59f2e36e6cecc767",
+      "executed_at": "2026-08-24T10:05:13Z"
     }
   ],
   "counterfactual_checks": [
     {
       "check_id": "counterfactual.remove-protective-subtext",
-      "judge_id": "actor.judge-01",
-      "transformation": "将“把那句为了你好咽回去”替换为无情绪信息的停顿。",
-      "expected_invariant": "用户角色控制权与退婚后果仍应保留，但保护动机的可读性应下降。",
-      "observation": "控制权和后果保持，保护动机确实变弱，说明原候选的改进来自可定位的次文本而非长度偏好。",
-      "passed": true
+      "finding_id": "finding.affective-closure-001",
+      "target_turn_id": "turn.assistant-001",
+      "recipe_id": "premature_affective_closure_delete_conclusion_v1",
+      "source_execution_id": "testexec.affective-closure-001",
+      "source_execution_digest": "65666b86d36334eba495bea98a49c91c1b896d34997b746508d70134911246db",
+      "intervention": {
+        "kind": "delete_span",
+        "target_turn_id": "turn.assistant-001",
+        "span": {
+          "start": 19,
+          "end": 44,
+          "unit": "unicode_codepoint"
+        },
+        "instruction": "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+        "replacement_text": ""
+      },
+      "invariant_contract_paths": [
+        "/world_rules/0",
+        "/relationship_state",
+        "/style_constraints/0"
+      ],
+      "judge_id": "actor.audit-judge-01",
+      "observation": "独立复核确认：按已冻结 span 删除情绪结论后，目标症状消失，退婚冲突与场景约束保持。",
+      "passed": true,
+      "invocation_id": "invocation.audit.counterfactual_checks.counterfactual.remove-protective-subtext",
+      "context_partition": "audit/counterfactual_checks/counterfactual.remove-protective-subtext/actor.audit-judge-01",
+      "seed": 627867257,
+      "audit_request_digest": "f4778821a5a3ee1af5c021a3c2b45e6f8bd740b9c0c0a4e4536bd39ceffc4b77",
+      "executed_at": "2026-08-24T10:05:14Z"
     },
     {
-      "check_id": "counterfactual.restore-mutual-confirmation",
-      "judge_id": "actor.judge-02",
-      "transformation": "在候选末尾重新加入“她也明白了他的苦心”。",
-      "expected_invariant": "若诊断成立，重新加入该句应使过早感情封闭与角色越权复现。",
-      "observation": "两个失败均复现，候选胜出与目标机制存在因果对应。",
-      "passed": true
+      "check_id": "counterfactual.restore-affective-summary",
+      "finding_id": "finding.affective-closure-001",
+      "target_turn_id": "turn.assistant-001",
+      "recipe_id": "premature_affective_closure_delete_conclusion_v1",
+      "source_execution_id": "testexec.affective-closure-001",
+      "source_execution_digest": "65666b86d36334eba495bea98a49c91c1b896d34997b746508d70134911246db",
+      "intervention": {
+        "kind": "delete_span",
+        "target_turn_id": "turn.assistant-001",
+        "span": {
+          "start": 19,
+          "end": 44,
+          "unit": "unicode_codepoint"
+        },
+        "instruction": "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+        "replacement_text": ""
+      },
+      "invariant_contract_paths": [
+        "/world_rules/0",
+        "/relationship_state",
+        "/style_constraints/0"
+      ],
+      "judge_id": "actor.audit-judge-02",
+      "observation": "第二个隔离审计 judge 重放同一确定性干预并确认相同状态转移与 invariant。",
+      "passed": true,
+      "invocation_id": "invocation.audit.counterfactual_checks.counterfactual.restore-affective-summary",
+      "context_partition": "audit/counterfactual_checks/counterfactual.restore-affective-summary/actor.audit-judge-02",
+      "seed": 288370557,
+      "audit_request_digest": "3f4f7e893175626261c371151f0bd986ff3203ef867c513746ad03d6a23978d1",
+      "executed_at": "2026-08-24T10:05:15Z"
     }
   ],
   "regression_checks": [
@@ -373,12 +877,20 @@
       "suite_digest": "1313131313131313131313131313131313131313131313131313131313131313",
       "case_id": "case.user-silent-after-question",
       "case_digest": "1414141414141414141414141414141414141414141414141414141414141414",
-      "judge_id": "actor.judge-01",
+      "judge_id": "actor.audit-judge-01",
+      "preservation_constraint_ids": [
+        "constraint.user-role-ownership"
+      ],
       "protected_behavior": "不替用户角色行动、说话或确定内心。",
       "observation": "候选只控制“他”和退婚书。",
       "passed": true,
       "hard_veto": true,
-      "contamination_status": "clean"
+      "contamination_status": "clean",
+      "invocation_id": "invocation.audit.regression_checks.regression.user-agency-001",
+      "context_partition": "audit/regression_checks/regression.user-agency-001/actor.audit-judge-01",
+      "seed": 912939550,
+      "audit_request_digest": "b667c5a565ecb37b345a834fb2d4d3c2c08c3227e23bb089eb1464db8ef91117",
+      "executed_at": "2026-08-24T10:05:16Z"
     },
     {
       "check_id": "regression.character-warmth-001",
@@ -387,38 +899,107 @@
       "suite_digest": "1515151515151515151515151515151515151515151515151515151515151515",
       "case_id": "case.costly-protection-without-confession",
       "case_digest": "1616161616161616161616161616161616161616161616161616161616161616",
-      "judge_id": "actor.judge-02",
+      "judge_id": "actor.audit-judge-02",
+      "preservation_constraint_ids": [],
       "protected_behavior": "修复不得把仍有感情的人物扁平化为冷漠。",
       "observation": "咽回解释与松开的指节仍提供可观察的关切证据。",
       "passed": true,
       "hard_veto": true,
-      "contamination_status": "clean"
+      "contamination_status": "clean",
+      "invocation_id": "invocation.audit.regression_checks.regression.character-warmth-001",
+      "context_partition": "audit/regression_checks/regression.character-warmth-001/actor.audit-judge-02",
+      "seed": 3416256549,
+      "audit_request_digest": "c8a7d84287e49d0c6a171ed7f98fe86322e072898fcc7186416b2b6ea70a2001",
+      "executed_at": "2026-08-24T10:05:17Z"
+    },
+    {
+      "check_id": "regression.retirement-cost-001",
+      "suite_id": "suite.scene-contract-preservation.v1",
+      "suite_version": "1.0.0",
+      "suite_digest": "2020202020202020202020202020202020202020202020202020202020202020",
+      "case_id": "case.retirement-conflict-remains-open",
+      "case_digest": "2121212121212121212121212121212121212121212121212121212121212121",
+      "judge_id": "actor.audit-judge-02",
+      "preservation_constraint_ids": [
+        "constraint.retirement-cost"
+      ],
+      "protected_behavior": "候选必须保留退婚决定及尚未解决的关系后果。",
+      "observation": "候选明确回答“决定了”，继续交付退婚书，也没有写成和解。",
+      "passed": true,
+      "hard_veto": true,
+      "contamination_status": "clean",
+      "invocation_id": "invocation.audit.regression_checks.regression.retirement-cost-001",
+      "context_partition": "audit/regression_checks/regression.retirement-cost-001/actor.audit-judge-02",
+      "seed": 460851628,
+      "audit_request_digest": "8c3590758ef59497565b3ce3092424fe3dd45cde3a2a50ffe8bce63190c89988",
+      "executed_at": "2026-08-24T10:05:18Z"
+    }
+  ],
+  "challenge_invocations": [
+    {
+      "invocation_id": "invocation.challenge.critic-02.001",
+      "invocation_kind": "challenge_raiser",
+      "actor_id": "actor.critic-02",
+      "context_partition": "verification-challenge/scene-001/fresh",
+      "seed": 9301,
+      "completed": true,
+      "raised_challenge_ids": [
+        "challenge.template-phrase-001"
+      ],
+      "resolved_challenge_ids": [],
+      "executed_at": "2026-08-24T10:05:05Z",
+      "challenge_request_digest": "29a0bfb80fbaa87264f7799a301d74c33e29ab4234e14dbfce5b3eda59d4e836"
+    },
+    {
+      "invocation_id": "invocation.challenge-resolution.audit-judge-01.001",
+      "invocation_kind": "challenge_resolver",
+      "actor_id": "actor.audit-judge-01",
+      "context_partition": "audit-amber/scene-001/target-aware",
+      "seed": 7101,
+      "completed": true,
+      "raised_challenge_ids": [],
+      "resolved_challenge_ids": [
+        "challenge.template-phrase-001"
+      ],
+      "executed_at": "2026-08-24T10:05:40Z",
+      "resolution_request_digest": "ea4fbd86f2e13a504114cef0dc8ce3c28885448a72918fd4e5d8a4cfd2b196ca"
     }
   ],
   "challenge_round_completed": true,
   "challenges": [
     {
       "challenge_id": "challenge.template-phrase-001",
-      "raised_by": "actor.judge-02",
-      "severity": "minor",
-      "claim": "“为了你好”可能是模板化保护话语。",
-      "response": "该话语没有被说出，只作为被压下的冲动出现；反事实检查确认其承担可定位的次文本功能。",
-      "resolved": true
+      "challenge_kind": "diagnostic_counterfactual_invalid",
+      "raised_by": "actor.critic-02",
+      "severity": "blocking",
+      "claim": "删除明确情绪总结是否只移除了过早封闭，同时保留退婚冲突与保护次文本，仍需独立重放确认。",
+      "target_finding_ids": [
+        "finding.affective-closure-001"
+      ],
+      "required_resolution_check_ids": [
+        "counterfactual.remove-protective-subtext"
+      ],
+      "response": "独立重放确认：冻结删除干预移除了情绪封闭，退婚冲突与保护次文本所依赖的场景约束仍保持。",
+      "resolved": true,
+      "resolved_by": "actor.audit-judge-01",
+      "resolution_check_ids": [
+        "counterfactual.remove-protective-subtext"
+      ]
     }
   ],
   "repeat_manifest": [
     {
       "repeat_id": "repeat-001",
       "seed": 7101,
-      "run_digest": "1717171717171717171717171717171717171717171717171717171717171717",
-      "input_digest": "1919191919191919191919191919191919191919191919191919191919191919",
+      "run_digest": "c2103664de79e6f604b3511ec0c8bf65eaec718c0d05e8d1e93906eae9d515df",
+      "input_digest": "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe",
       "executed_at": "2026-08-24T10:06:00Z"
     },
     {
       "repeat_id": "repeat-002",
       "seed": 7201,
-      "run_digest": "1818181818181818181818181818181818181818181818181818181818181818",
-      "input_digest": "1919191919191919191919191919191919191919191919191919191919191919",
+      "run_digest": "4cdd6f2f8b6805112f4bba090772194c09410a5218944cc5c90a520e23613fca",
+      "input_digest": "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe",
       "executed_at": "2026-08-24T10:07:00Z"
     }
   ],
@@ -435,7 +1016,7 @@
     "winner": "candidate"
   },
   "promotion_gate": {
-    "decision_version": "1.0.0",
+    "decision_version": "2.0.0-alpha.1",
     "run_id": "verification.scene-001.v1",
     "policy_id": "policy.machine-only.v1",
     "status": "inconclusive",
@@ -445,8 +1026,85 @@
     "metrics": {
       "provenance": {
         "pass": false,
-        "policy_digest_status": "example_placeholder",
-        "verification_digest_status": "example_placeholder"
+        "digest_statuses": {
+          "evolution_policy": "example_placeholder",
+          "diagnostic_trace": "example_placeholder",
+          "repair_attempt": "example_placeholder",
+          "verification_run": "example_placeholder"
+        },
+        "observed_prompt_bundles": [
+          {
+            "id": "prompt.policy-execution.v1",
+            "version": "1.0.0",
+            "digest": "1212121212121212121212121212121212121212121212121212121212121212"
+          },
+          {
+            "id": "prompt.verification-audit-evidence.v1",
+            "version": "1.0.0",
+            "digest": "1717171717171717171717171717171717171717171717171717171717171717"
+          },
+          {
+            "id": "prompt.verification-audit-regression.v1",
+            "version": "1.0.0",
+            "digest": "1818181818181818181818181818181818181818181818181818181818181818"
+          },
+          {
+            "id": "prompt.diagnostic.v1",
+            "version": "1.0.0",
+            "digest": "2222222222222222222222222222222222222222222222222222222222222222"
+          },
+          {
+            "id": "prompt.taxonomy-test-judge.v1",
+            "version": "1.0.0",
+            "digest": "4444444444444444444444444444444444444444444444444444444444444444"
+          },
+          {
+            "id": "prompt.contract-grounding.v1",
+            "version": "1.0.0",
+            "digest": "5555555555555555555555555555555555555555555555555555555555555555"
+          },
+          {
+            "id": "prompt.generation.v1",
+            "version": "1.0.0",
+            "digest": "7777777777777777777777777777777777777777777777777777777777777777"
+          },
+          {
+            "id": "prompt.repair.v1",
+            "version": "1.0.0",
+            "digest": "8888888888888888888888888888888888888888888888888888888888888888"
+          },
+          {
+            "id": "prompt.repair-critic.v1",
+            "version": "1.0.0",
+            "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+          },
+          {
+            "id": "prompt.verification-contrastive.v1",
+            "version": "1.0.0",
+            "digest": "abababababababababababababababababababababababababababababababab"
+          },
+          {
+            "id": "prompt.verification-pairwise.v1",
+            "version": "1.0.0",
+            "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          {
+            "id": "prompt.verification.v1",
+            "version": "1.0.0",
+            "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          {
+            "id": "prompt.aggregation.v1",
+            "version": "1.0.0",
+            "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          }
+        ],
+        "issues": [
+          "diagnostic_trace_digest_status_not_verified",
+          "evolution_policy_digest_status_not_verified",
+          "repair_attempt_digest_status_not_verified",
+          "verification_run_digest_status_not_verified"
+        ]
       },
       "policy_binding": {
         "pass": true,
@@ -454,14 +1112,104 @@
         "policy_id_matches": true,
         "policy_version_matches": true,
         "policy_schema_version_matches": true,
-        "promotion_target": "repair_strategy",
-        "promotion_target_allowed": true
+        "promotion_target": "repair_case",
+        "promotion_target_allowed": true,
+        "promotion_target_implemented": true,
+        "promotion_artifact_bound": true
+      },
+      "policy_digest": {
+        "pass": true,
+        "computed_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+        "declared_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+        "referenced_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
+      },
+      "policy_trust_root": {
+        "pass": true,
+        "available": true,
+        "trust_root_id": "trust-root.repository-fixture.v2",
+        "pinned_policy_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+        "pinned_taxonomy_digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+        "issues": []
+      },
+      "run_receipt": {
+        "pass": true,
+        "available": true,
+        "receipt_id": "receipt.repository-fixture.v3",
+        "generation_precommit_count": 1,
+        "diagnostic_precommit_count": 1,
+        "key_id": "key.repository-fixture.ed25519.v3",
+        "verification_key_id": "key.repository-fixture.ed25519.v3",
+        "completion_key_id": "key.repository-fixture.ed25519.v3",
+        "issues": []
+      },
+      "safety_floor": {
+        "pass": true,
+        "floor": {
+          "min_independent_judges": 2,
+          "min_evidence_coverage": 0.8,
+          "min_counterfactual_pass_rate": 0.8,
+          "max_regression_failure_rate": 0.05,
+          "min_repeat_runs": 2
+        },
+        "observed": {
+          "min_independent_judges": 2,
+          "min_evidence_coverage": 0.9,
+          "min_counterfactual_pass_rate": 0.9,
+          "max_regression_failure_rate": 0.05,
+          "min_repeat_runs": 2
+        },
+        "violations": []
+      },
+      "artifact_bundle": {
+        "pass": true,
+        "available": true,
+        "schema_valid": true,
+        "issues": [],
+        "digests": {
+          "policy": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+          "taxonomy": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+          "diagnostic_trace": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677",
+          "repair_attempt": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326"
+        }
+      },
+      "promotion_artifact": {
+        "pass": true,
+        "bound": true,
+        "target": "repair_case",
+        "artifact_id": "repair-case.scene-001.v1",
+        "computed_digest": "b65b49e40f711f23ee26aba19577b2d8c0f2952e19ca1c4b29cc8fdcead67d28",
+        "declared_digest": "b65b49e40f711f23ee26aba19577b2d8c0f2952e19ca1c4b29cc8fdcead67d28",
+        "issues": []
+      },
+      "evaluation_manifest": {
+        "pass": true,
+        "computed_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+        "declared_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+        "issues": []
+      },
+      "experiment_ledger": {
+        "pass": true,
+        "family_id": "experiment.scene-001.repair",
+        "attempt_id": "attempt.scene-001.001",
+        "attempt_index": 1,
+        "visible_model_call_lower_bounds": {
+          "diagnostic_trace": 4,
+          "repair_attempt": 6,
+          "verification_run": 25
+        },
+        "visible_model_call_stage_deltas": {
+          "repair_attempt": 2,
+          "verification_run": 19
+        },
+        "issues": []
       },
       "actor_profiles": {
         "pass": true,
         "mismatched_actor_ids": [],
         "duplicate_profile_ids": [],
-        "unexpected_profile_ids": []
+        "unexpected_profile_ids": [],
+        "preference_audit_id_conflicts": [],
+        "invalid_audit_profile_ids": []
       },
       "generator_judge_separation": {
         "pass": true,
@@ -476,14 +1224,88 @@
         "duplicate_judge_ids": [],
         "shared_origins": []
       },
+      "independent_audit_judges": {
+        "observed": 2,
+        "required": 2,
+        "pass": true,
+        "duplicate_judge_ids": [],
+        "shared_origins": []
+      },
+      "identity_isolation": {
+        "pass": true,
+        "required_pairs": [
+          "actor.aggregator-01<->actor.audit-judge-01",
+          "actor.aggregator-01<->actor.audit-judge-02",
+          "actor.aggregator-01<->actor.judge-01",
+          "actor.aggregator-01<->actor.judge-02",
+          "actor.audit-judge-01<->actor.critic-02",
+          "actor.audit-judge-01<->actor.judge-01",
+          "actor.audit-judge-01<->actor.judge-02",
+          "actor.audit-judge-01<->actor.repairer-01",
+          "actor.audit-judge-02<->actor.critic-02",
+          "actor.audit-judge-02<->actor.judge-01",
+          "actor.audit-judge-02<->actor.judge-02",
+          "actor.audit-judge-02<->actor.repairer-01",
+          "actor.critic-02<->actor.judge-01",
+          "actor.critic-02<->actor.judge-02",
+          "actor.critic-02<->actor.repairer-01",
+          "actor.judge-01<->actor.repairer-01",
+          "actor.judge-02<->actor.repairer-01"
+        ],
+        "observed_pairs": [
+          "actor.aggregator-01<->actor.audit-judge-01",
+          "actor.aggregator-01<->actor.audit-judge-02",
+          "actor.aggregator-01<->actor.judge-01",
+          "actor.aggregator-01<->actor.judge-02",
+          "actor.audit-judge-01<->actor.critic-02",
+          "actor.audit-judge-01<->actor.judge-01",
+          "actor.audit-judge-01<->actor.judge-02",
+          "actor.audit-judge-01<->actor.repairer-01",
+          "actor.audit-judge-02<->actor.critic-02",
+          "actor.audit-judge-02<->actor.judge-01",
+          "actor.audit-judge-02<->actor.judge-02",
+          "actor.audit-judge-02<->actor.repairer-01",
+          "actor.critic-02<->actor.judge-01",
+          "actor.critic-02<->actor.judge-02",
+          "actor.critic-02<->actor.repairer-01",
+          "actor.judge-01<->actor.repairer-01",
+          "actor.judge-02<->actor.repairer-01"
+        ],
+        "missing_pairs": [],
+        "missing_required_roles": [],
+        "invalid_pairs": []
+      },
       "blinding": {
         "pass": true,
         "candidate_origin_hidden": true,
+        "mapping_digest_matches": true,
+        "expected_mapping_digest": "1e3e9459f825d41f222a21498af59fe701ba71e4afc721e0cc50ccf74c7b8531",
         "model_identity_hidden": true,
-        "judge_contexts_reset_between_orders": true
+        "judge_contexts_reset_between_orders": true,
+        "judge_contexts_reset_between_repeats": true,
+        "preference_channel_label_blind": true,
+        "preference_channel_rationale_blind": true,
+        "preference_audit_contexts_separated": true
       },
       "candidate_distinct": {
         "pass": true
+      },
+      "invocation_identity_isolation": {
+        "order": {
+          "duplicate_invocation_ids": [],
+          "duplicate_context_partitions": [],
+          "duplicate_invocation_seeds": []
+        },
+        "audit": {
+          "duplicate_invocation_ids": [],
+          "duplicate_context_partitions": [],
+          "duplicate_invocation_seeds": []
+        },
+        "challenge": {
+          "duplicate_invocation_ids": [],
+          "duplicate_context_partitions": [],
+          "duplicate_invocation_seeds": []
+        }
       },
       "order_swap": {
         "required": true,
@@ -506,6 +1328,11 @@
         ],
         "unknown_judge_ids": [],
         "duplicate_trial_ids": [],
+        "duplicate_invocation_ids": [],
+        "duplicate_context_partitions": [],
+        "duplicate_trial_seeds": [],
+        "seed_mismatches": [],
+        "preference_request_mismatches": [],
         "missing_slots": [],
         "duplicate_slots": [],
         "result_mismatches": [],
@@ -533,12 +1360,29 @@
         ],
         "duplicate_repeat_ids": [],
         "duplicate_seeds": [],
-        "duplicate_run_digests": []
+        "duplicate_run_digests": [],
+        "input_digests_match": true,
+        "input_digests": [
+          "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe"
+        ],
+        "expected_input_digest": "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe",
+        "run_digest_mismatch_repeat_ids": [],
+        "digest_bindings_pass": true
       },
       "check_references": {
         "pass": true,
         "unknown_or_inactive": [],
-        "duplicate_check_ids": []
+        "duplicate_check_ids": [],
+        "duplicate_semantic_checks": [],
+        "incomplete_judge_coverage": [],
+        "missing_target_judge_slots": [],
+        "duplicate_target_judge_slots": [],
+        "unexpected_target_checks": [],
+        "duplicate_invocation_ids": [],
+        "duplicate_context_partitions": [],
+        "duplicate_invocation_seeds": [],
+        "invocation_seed_mismatches": [],
+        "audit_request_mismatches": []
       },
       "target_failure_reduction": {
         "pass": true,
@@ -553,7 +1397,21 @@
         "threshold": 0.9,
         "direction": "minimum",
         "available": true,
-        "pass": true
+        "pass": true,
+        "by_judge": {
+          "actor.audit-judge-01": {
+            "positive": 1,
+            "total": 1,
+            "rate": 1,
+            "pass": true
+          },
+          "actor.audit-judge-02": {
+            "positive": 1,
+            "total": 1,
+            "rate": 1,
+            "pass": true
+          }
+        }
       },
       "counterfactual_pass_rate": {
         "positive": 2,
@@ -562,16 +1420,52 @@
         "threshold": 0.9,
         "direction": "minimum",
         "available": true,
-        "pass": true
+        "pass": true,
+        "by_judge": {
+          "actor.audit-judge-01": {
+            "positive": 1,
+            "total": 1,
+            "rate": 1,
+            "pass": true
+          },
+          "actor.audit-judge-02": {
+            "positive": 1,
+            "total": 1,
+            "rate": 1,
+            "pass": true
+          }
+        }
       },
       "regression_failure_rate": {
         "positive": 0,
-        "total": 2,
+        "total": 3,
         "rate": 0,
         "threshold": 0.05,
         "direction": "maximum",
         "available": true,
-        "pass": true
+        "pass": true,
+        "by_judge": {
+          "actor.audit-judge-01": {
+            "positive": 0,
+            "total": 1,
+            "rate": 0,
+            "pass": true
+          },
+          "actor.audit-judge-02": {
+            "positive": 0,
+            "total": 2,
+            "rate": 0,
+            "pass": true
+          }
+        }
+      },
+      "regression_registry": {
+        "pass": true,
+        "registered_suite_count": 3,
+        "checked_case_count": 3,
+        "required_case_count": 3,
+        "required_cases_observed": 3,
+        "issues": []
       },
       "hard_regression_veto": {
         "pass": true,
@@ -609,7 +1503,10 @@
       "challenge_round": {
         "completed": true,
         "pass": true,
-        "challenges_observed": 1
+        "invocations_observed": 2,
+        "challenges_observed": 1,
+        "unknown_actor_ids": [],
+        "issues": []
       },
       "challenge_raisers": {
         "pass": true,
@@ -623,6 +1520,6 @@
       }
     },
     "lifecycle_state": "quarantined",
-    "lifecycle_reason": "Illustrative placeholder digests are not verified provenance and therefore cannot be promoted."
+    "lifecycle_reason": "UNVERIFIED_PROVENANCE"
   }
 }

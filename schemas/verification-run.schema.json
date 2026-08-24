@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json",
   "title": "Verification run",
-  "description": "Canonical blind machine-verification contract for a baseline/candidate repair pair.",
+  "description": "Canonical machine-verification contract with a label-blind preference channel and a separately isolated, target-aware audit channel.",
   "type": "object",
   "required": [
     "record_type",
@@ -11,7 +11,9 @@
     "mode",
     "provenance",
     "policy_ref",
-    "promotion_target",
+    "experiment_ledger",
+    "promotion_artifact",
+    "evaluation_manifest",
     "diagnostic_trace_ref",
     "repair_attempt_ref",
     "generator",
@@ -25,6 +27,7 @@
     "target_failure_checks",
     "counterfactual_checks",
     "regression_checks",
+    "challenge_invocations",
     "challenge_round_completed",
     "challenges",
     "repeat_manifest",
@@ -34,22 +37,67 @@
   "additionalProperties": false,
   "properties": {
     "record_type": { "const": "verification_run" },
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "2.0.0-alpha.1" },
     "verification_id": { "$ref": "common.schema.json#/$defs/id" },
     "mode": { "$ref": "common.schema.json#/$defs/mode" },
     "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
-    "policy_ref": { "$ref": "#/$defs/policyRef" },
+    "policy_ref": { "$ref": "common.schema.json#/$defs/policyRef" },
+    "experiment_ledger": { "$ref": "common.schema.json#/$defs/experimentLedger" },
     "supersedes_ref": {
-      "$ref": "common.schema.json#/$defs/recordRef",
+      "$ref": "common.schema.json#/$defs/contentAddressedRecordRef",
       "description": "Optional prior verification record superseded by this append-only rerun."
     },
-    "promotion_target": {
-      "type": "string",
-      "enum": ["repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"],
-      "description": "Artifact class whose promotion is requested by this verification run."
+    "promotion_artifact": { "$ref": "#/$defs/promotionArtifact" },
+    "evaluation_manifest": {
+      "type": "object",
+      "required": ["manifest_id", "manifest_version", "manifest_digest", "frozen_at", "frozen_before_candidate_generation", "coverage_rule", "commitment_rule", "expected_case_ids", "expected_case_digests"],
+      "additionalProperties": false,
+      "properties": {
+        "manifest_id": { "$ref": "common.schema.json#/$defs/id" },
+        "manifest_version": { "type": "string", "minLength": 1 },
+        "manifest_digest": {
+          "$ref": "common.schema.json#/$defs/sha256",
+          "description": "SHA-256 of the RFC 8785 canonicalized frozen manifest with manifest_digest removed."
+        },
+        "frozen_at": { "type": "string", "format": "date-time" },
+        "frozen_before_candidate_generation": { "const": true },
+        "coverage_rule": {
+          "const": "exact_set_match",
+          "description": "Observed case IDs must be an exact set match: no omitted, additional, or repeated identities."
+        },
+        "commitment_rule": {
+          "const": "pre_execution_projection_sha256_rfc8785",
+          "description": "Each case digest seals its pre-execution specification while excluding result fields that do not exist at freeze time."
+        },
+        "expected_case_ids": {
+          "type": "object",
+          "required": ["evidence_checks", "target_failure_checks", "counterfactual_checks", "regression_checks", "order_trials"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_checks": { "$ref": "#/$defs/nonEmptyIdSet" },
+            "target_failure_checks": { "$ref": "#/$defs/nonEmptyIdSet" },
+            "counterfactual_checks": { "$ref": "#/$defs/nonEmptyIdSet" },
+            "regression_checks": { "$ref": "#/$defs/nonEmptyIdSet" },
+            "order_trials": { "$ref": "#/$defs/nonEmptyIdSet" }
+          }
+        },
+        "expected_case_digests": {
+          "type": "object",
+          "required": ["evidence_checks", "target_failure_checks", "counterfactual_checks", "regression_checks", "order_trials"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_checks": { "$ref": "#/$defs/nonEmptyCaseDigestSet" },
+            "target_failure_checks": { "$ref": "#/$defs/nonEmptyCaseDigestSet" },
+            "counterfactual_checks": { "$ref": "#/$defs/nonEmptyCaseDigestSet" },
+            "regression_checks": { "$ref": "#/$defs/nonEmptyCaseDigestSet" },
+            "order_trials": { "$ref": "#/$defs/nonEmptyCaseDigestSet" }
+          }
+        }
+      },
+      "description": "The precommitted candidate-independent test universe. Semantic validation compares each expected ID set with the corresponding observed array. Challenge outputs are deliberately excluded because they do not exist until the repair critic or verification audit runs; their actor invocations are frozen in actor_profiles, repair-critic outputs are bound by verification_precommit, and all challenge outputs are bound by completion."
     },
-    "diagnostic_trace_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
-    "repair_attempt_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "diagnostic_trace_ref": { "$ref": "common.schema.json#/$defs/contentAddressedRecordRef" },
+    "repair_attempt_ref": { "$ref": "common.schema.json#/$defs/contentAddressedRecordRef" },
     "generator": {
       "$ref": "common.schema.json#/$defs/canonicalActor",
       "description": "Canonical gate field: the actor that generated the candidate repair."
@@ -59,11 +107,11 @@
       "minItems": 2,
       "uniqueItems": true,
       "items": { "$ref": "common.schema.json#/$defs/canonicalActor" },
-      "description": "Canonical gate field: independent machine judges."
+      "description": "Canonical gate field: independent preference judges that see only anonymized candidates in order trials."
     },
     "actor_profiles": {
       "type": "object",
-      "required": ["generator", "judges", "aggregator"],
+      "required": ["generator", "judges", "audit_judges", "critics", "aggregator"],
       "additionalProperties": false,
       "properties": {
         "generator": {
@@ -80,10 +128,24 @@
               { "$ref": "common.schema.json#/$defs/machineActor" },
               { "type": "object", "properties": { "role": { "const": "judge" } } }
             ]
-          }
+          },
+          "description": "Preference-channel judges. They may only appear in order_trials."
+        },
+        "audit_judges": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              { "$ref": "common.schema.json#/$defs/machineActor" },
+              { "type": "object", "properties": { "role": { "const": "judge" } } }
+            ]
+          },
+          "description": "Target-aware audit-channel judges. They may inspect finding IDs and evidence but must be isolated from preference judges."
         },
         "critics": {
           "type": "array",
+          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "allOf": [
@@ -138,14 +200,30 @@
     },
     "blinding": {
       "type": "object",
-      "required": ["mapping_digest", "mapping_visible_to", "candidate_origin_hidden", "model_identity_hidden", "judge_contexts_reset_between_orders"],
+      "required": ["commitment_scheme", "mapping_digest", "commitment_nonce", "mapping_visible_to", "candidate_origin_hidden", "model_identity_hidden", "judge_contexts_reset_between_orders", "judge_contexts_reset_between_repeats", "preference_channel_label_blind", "preference_channel_rationale_blind", "preference_audit_contexts_separated"],
       "additionalProperties": false,
       "properties": {
-        "mapping_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "commitment_scheme": { "const": "salted_alias_mapping_sha256_rfc8785_v1" },
+        "mapping_digest": {
+          "$ref": "common.schema.json#/$defs/sha256",
+          "description": "Recomputed salted SHA-256 commitment over commitment_nonce plus the sorted blind_alias, candidate_id, and candidate digest mapping."
+        },
+        "commitment_nonce": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "High-entropy verifier-held salt revealed only after candidate generation; it must never be copied into the repair record."
+        },
         "mapping_visible_to": { "const": "aggregator_only" },
-        "candidate_origin_hidden": { "const": true },
+        "candidate_origin_hidden": {
+          "const": true,
+          "description": "The preference channel never receives baseline/candidate role or producer identity. The separate target-aware audit channel sees baseline/candidate roles but still omits producer/model/provider identity from its bound request."
+        },
         "model_identity_hidden": { "const": true },
-        "judge_contexts_reset_between_orders": { "const": true }
+        "judge_contexts_reset_between_orders": { "const": true },
+        "judge_contexts_reset_between_repeats": { "const": true },
+        "preference_channel_label_blind": { "const": true },
+        "preference_channel_rationale_blind": { "const": true },
+        "preference_audit_contexts_separated": { "const": true }
       }
     },
     "order_trials": {
@@ -157,18 +235,20 @@
         { "contains": { "type": "object", "properties": { "order": { "const": "AB" } }, "required": ["order"] }, "minContains": 1 },
         { "contains": { "type": "object", "properties": { "order": { "const": "BA" } }, "required": ["order"] }, "minContains": 1 }
       ],
-      "description": "Canonical gate field. Every judge/repeat pair should have both AB and BA trials; cross-item pairing is checked by the validator."
+      "description": "Canonical label- and rationale-blind preference channel. Every preference judge/repeat pair must have both AB and BA trials; cross-item pairing is checked by the validator."
     },
     "evidence_checks": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "object",
-        "required": ["check_id", "finding_id", "evidence_ids", "judge_id", "covered", "reason"],
+        "required": ["check_id", "finding_id", "target_turn_id", "evidence_ids", "judge_id", "invocation_id", "context_partition", "seed", "audit_request_digest", "executed_at", "covered", "reason"],
         "additionalProperties": false,
         "properties": {
           "check_id": { "$ref": "common.schema.json#/$defs/id" },
           "finding_id": { "$ref": "common.schema.json#/$defs/id" },
+          "target_turn_id": { "$ref": "common.schema.json#/$defs/id" },
           "evidence_ids": {
             "type": "array",
             "minItems": 1,
@@ -176,52 +256,84 @@
             "items": { "$ref": "common.schema.json#/$defs/id" }
           },
           "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "invocation_id": { "$ref": "common.schema.json#/$defs/id" },
+          "context_partition": { "type": "string", "minLength": 1 },
+          "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+          "audit_request_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "executed_at": { "type": "string", "format": "date-time" },
           "covered": { "type": "boolean" },
           "reason": { "type": "string", "minLength": 1 }
         }
-      }
+      },
+      "description": "Target-aware audit-channel checks. judge_id must reference actor_profiles.audit_judges."
     },
     "target_failure_checks": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "object",
-        "required": ["check_id", "finding_id", "judge_id", "baseline_present", "candidate_present", "evidence_reduced", "reason"],
+        "required": ["check_id", "finding_id", "target_turn_id", "judge_id", "invocation_id", "context_partition", "seed", "audit_request_digest", "executed_at", "baseline_present", "candidate_present", "evidence_reduced", "reason"],
         "additionalProperties": false,
         "properties": {
           "check_id": { "$ref": "common.schema.json#/$defs/id" },
           "finding_id": { "$ref": "common.schema.json#/$defs/id" },
+          "target_turn_id": { "$ref": "common.schema.json#/$defs/id" },
           "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "invocation_id": { "$ref": "common.schema.json#/$defs/id" },
+          "context_partition": { "type": "string", "minLength": 1 },
+          "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+          "audit_request_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "executed_at": { "type": "string", "format": "date-time" },
           "baseline_present": { "type": "boolean" },
           "candidate_present": { "type": "boolean" },
           "evidence_reduced": { "type": "boolean" },
           "reason": { "type": "string", "minLength": 1 }
         }
-      }
+      },
+      "description": "Target-aware audit-channel checks. judge_id must reference actor_profiles.audit_judges."
     },
     "counterfactual_checks": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "object",
-        "required": ["check_id", "judge_id", "transformation", "expected_invariant", "observation", "passed"],
+        "required": ["check_id", "finding_id", "target_turn_id", "recipe_id", "source_execution_id", "source_execution_digest", "intervention", "invariant_contract_paths", "judge_id", "invocation_id", "context_partition", "seed", "audit_request_digest", "executed_at", "observation", "passed"],
         "additionalProperties": false,
         "properties": {
           "check_id": { "$ref": "common.schema.json#/$defs/id" },
+          "finding_id": { "$ref": "common.schema.json#/$defs/id" },
+          "target_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+          "recipe_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "source_execution_id": { "$ref": "common.schema.json#/$defs/id" },
+          "source_execution_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "intervention": { "$ref": "diagnostic-trace.schema.json#/$defs/taxonomyTestExecution/properties/intervention" },
+          "invariant_contract_paths": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^/(?:[^/~]|~0|~1)+(?:/(?:[^/~]|~0|~1)+)*$" }
+          },
           "judge_id": { "$ref": "common.schema.json#/$defs/id" },
-          "transformation": { "type": "string", "minLength": 1 },
-          "expected_invariant": { "type": "string", "minLength": 1 },
+          "invocation_id": { "$ref": "common.schema.json#/$defs/id" },
+          "context_partition": { "type": "string", "minLength": 1 },
+          "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+          "audit_request_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "executed_at": { "type": "string", "format": "date-time" },
           "observation": { "type": "string", "minLength": 1 },
           "passed": { "type": "boolean" }
         }
-      }
+      },
+      "description": "Audit-channel replay of an executable diagnostic taxonomy test. Every repair target × audit judge pair must bind the exact source execution, deterministic intervention, target turn, and scene-contract invariant paths."
     },
     "regression_checks": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "object",
-        "required": ["check_id", "suite_id", "suite_version", "suite_digest", "case_id", "case_digest", "judge_id", "protected_behavior", "observation", "passed", "hard_veto", "contamination_status"],
+        "required": ["check_id", "suite_id", "suite_version", "suite_digest", "case_id", "case_digest", "judge_id", "invocation_id", "context_partition", "seed", "audit_request_digest", "executed_at", "preservation_constraint_ids", "protected_behavior", "observation", "passed", "hard_veto", "contamination_status"],
         "additionalProperties": false,
         "properties": {
           "check_id": { "$ref": "common.schema.json#/$defs/id" },
@@ -231,6 +343,17 @@
           "case_id": { "$ref": "common.schema.json#/$defs/id" },
           "case_digest": { "$ref": "common.schema.json#/$defs/sha256" },
           "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "invocation_id": { "$ref": "common.schema.json#/$defs/id" },
+          "context_partition": { "type": "string", "minLength": 1 },
+          "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+          "audit_request_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "executed_at": { "type": "string", "format": "date-time" },
+          "preservation_constraint_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "$ref": "common.schema.json#/$defs/id" },
+            "description": "Exact repair preservation constraints this frozen regression specification verifies; empty means it is an unrelated general regression."
+          },
           "protected_behavior": { "type": "string", "minLength": 1 },
           "observation": { "type": "string", "minLength": 1 },
           "passed": { "type": "boolean" },
@@ -243,27 +366,129 @@
             "enum": ["clean", "contaminated"]
           }
         }
-      }
+      },
+      "description": "Audit-channel regression checks. judge_id must reference actor_profiles.audit_judges."
+    },
+    "challenge_invocations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["invocation_id", "invocation_kind", "actor_id", "context_partition", "seed", "executed_at", "completed", "raised_challenge_ids", "resolved_challenge_ids"],
+        "additionalProperties": false,
+        "properties": {
+          "invocation_id": { "$ref": "common.schema.json#/$defs/id" },
+          "invocation_kind": { "type": "string", "enum": ["challenge_raiser", "challenge_resolver"] },
+          "actor_id": { "$ref": "common.schema.json#/$defs/id" },
+          "context_partition": { "type": "string", "minLength": 1 },
+          "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+          "executed_at": { "type": "string", "format": "date-time" },
+          "challenge_request_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "resolution_request_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "completed": { "type": "boolean" },
+          "raised_challenge_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "$ref": "common.schema.json#/$defs/id" }
+          },
+          "resolved_challenge_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "$ref": "common.schema.json#/$defs/id" }
+          }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "invocation_kind": { "const": "challenge_raiser" } }, "required": ["invocation_kind"] },
+            "then": {
+              "required": ["challenge_request_digest"],
+              "properties": {
+                "challenge_request_digest": {},
+                "resolved_challenge_ids": { "type": "array", "maxItems": 0 },
+                "resolution_request_digest": false
+              }
+            }
+          },
+          {
+            "if": { "properties": { "invocation_kind": { "const": "challenge_resolver" } }, "required": ["invocation_kind"] },
+            "then": {
+              "required": ["resolution_request_digest"],
+              "properties": {
+                "resolution_request_digest": {},
+                "raised_challenge_ids": { "type": "array", "maxItems": 0 },
+                "resolved_challenge_ids": { "type": "array", "minItems": 1 },
+                "challenge_request_digest": false
+              }
+            }
+          }
+        ]
+      },
+      "description": "Per-actor challenge executions. Raiser identity/context/seed are frozen before candidate generation and its candidate-aware request digest is bound by verification_precommit. Resolver requests later bind the exact structured challenge and semantically compatible resolution-check results; completion signs both outputs. Every declared critic must have exactly one completed raiser invocation."
     },
     "challenge_round_completed": {
       "type": "boolean",
-      "description": "Machine-verifiable orchestration attestation that the required challenge round ran. An empty challenges array is valid only when this is true."
+      "description": "Derived attestation that every required critic invocation completed and every reported challenge is linked exactly once. An empty challenges array is valid when completed invocations raised no challenge."
     },
     "challenges": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "object",
-        "required": ["challenge_id", "raised_by", "severity", "claim", "response", "resolved"],
+        "required": ["challenge_id", "challenge_kind", "raised_by", "severity", "claim", "target_finding_ids", "required_resolution_check_ids", "response", "resolved"],
         "additionalProperties": false,
         "properties": {
           "challenge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "challenge_kind": {
+            "type": "string",
+            "enum": ["target_failure_persists", "evidence_not_reduced", "diagnostic_counterfactual_invalid"]
+          },
           "raised_by": { "$ref": "common.schema.json#/$defs/id" },
           "severity": { "type": "string", "enum": ["blocking", "major", "minor", "informational"] },
           "claim": { "type": "string", "minLength": 1 },
+          "target_finding_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "$ref": "common.schema.json#/$defs/id" }
+          },
+          "required_resolution_check_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "$ref": "common.schema.json#/$defs/id" },
+            "description": "The exact precommitted check-ID set required to resolve this challenge. resolution_check_ids must match it exactly."
+          },
           "response": { "type": "string", "minLength": 1 },
-          "resolved": { "type": "boolean" }
-        }
-      }
+          "resolved": { "type": "boolean" },
+          "resolved_by": { "$ref": "common.schema.json#/$defs/id" },
+          "resolution_check_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "$ref": "common.schema.json#/$defs/id" }
+          }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "resolved": { "const": true } }, "required": ["resolved"] },
+            "then": {
+              "properties": {
+                "resolved_by": {},
+                "resolution_check_ids": {}
+              },
+              "required": ["resolved_by", "resolution_check_ids"]
+            },
+            "else": {
+              "properties": {
+                "resolved_by": false,
+                "resolution_check_ids": false
+              }
+            }
+          }
+        ]
+      },
+      "description": "Structured verification challenges. Every repair critic unresolved_challenge must appear exactly once with the same raiser, kind, severity, claim, target findings, and required resolution-check set. A resolved challenge must cite exactly that set, and every check must satisfy the collection and pass semantics prescribed by challenge_kind."
     },
     "repeat_manifest": {
       "type": "array",
@@ -309,7 +534,7 @@
       "required": ["decision_version", "run_id", "policy_id", "status", "reason_codes", "metrics", "lifecycle_state", "lifecycle_reason"],
       "additionalProperties": false,
       "properties": {
-        "decision_version": { "const": "1.0.0" },
+        "decision_version": { "const": "2.0.0-alpha.1" },
         "run_id": { "$ref": "common.schema.json#/$defs/id" },
         "policy_id": { "$ref": "common.schema.json#/$defs/id" },
         "status": { "type": "string", "enum": ["adopted", "candidate", "rejected", "inconclusive"] },
@@ -325,7 +550,11 @@
           "description": "Versioned deterministic-gate metrics. Their exact shape is governed by decision_version."
         },
         "lifecycle_state": { "type": "string", "enum": ["promoted", "probation", "rejected", "quarantined"] },
-        "lifecycle_reason": { "type": "string", "minLength": 1 }
+        "lifecycle_reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Deterministically derived by joining reason_codes in order with |; it is not free-form commentary."
+        }
       },
       "allOf": [
         {
@@ -349,17 +578,183 @@
     "human_review": { "$ref": "common.schema.json#/$defs/humanReview" }
   },
   "$defs": {
-    "policyRef": {
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/id" }
+    },
+    "nonEmptyIdSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/id" }
+    },
+    "caseDigestSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/caseDigest" }
+    },
+    "nonEmptyCaseDigestSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/caseDigest" }
+    },
+    "caseDigest": {
       "type": "object",
-      "required": ["record_id", "policy_version", "schema_id", "schema_version", "uri"],
+      "required": ["item_id", "digest"],
       "additionalProperties": false,
       "properties": {
-        "record_id": { "$ref": "common.schema.json#/$defs/id" },
-        "policy_version": { "type": "string", "minLength": 1 },
-        "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json" },
-        "schema_version": { "type": "string", "minLength": 1 },
-        "uri": { "$ref": "common.schema.json#/$defs/uriReference" },
+        "item_id": { "$ref": "common.schema.json#/$defs/id" },
         "digest": { "$ref": "common.schema.json#/$defs/sha256" }
+      }
+    },
+    "promotionArtifact": {
+      "type": "object",
+      "required": ["target", "artifact_id", "artifact_version", "artifact_digest", "schema_id", "schema_version", "source_ref", "binding_rule", "payload"],
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "type": "string",
+          "enum": ["repair_case", "repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"]
+        },
+        "artifact_id": { "$ref": "common.schema.json#/$defs/id" },
+        "artifact_version": { "type": "string", "minLength": 1 },
+        "artifact_digest": {
+          "$ref": "common.schema.json#/$defs/sha256",
+          "description": "SHA-256 of the RFC 8785 canonicalized payload."
+        },
+        "schema_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "source_ref": { "$ref": "common.schema.json#/$defs/contentAddressedRecordRef" },
+        "binding_rule": { "const": "artifact_digest_is_sha256_rfc8785_payload" },
+        "payload": { "type": "object" }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "target": { "const": "repair_case" },
+            "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json#/$defs/repairCasePayload" },
+            "schema_version": { "const": "2.0.0-alpha.1" },
+            "payload": { "$ref": "#/$defs/repairCasePayload" }
+          }
+        },
+        {
+          "properties": {
+            "target": { "const": "repair_strategy" },
+            "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json#/$defs/repairStrategyPayload" },
+            "schema_version": { "const": "2.0.0-alpha.1" },
+            "payload": { "$ref": "#/$defs/repairStrategyPayload" }
+          }
+        },
+        {
+          "properties": {
+            "target": { "const": "critic_rule" },
+            "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json#/$defs/criticRulePayload" },
+            "schema_version": { "const": "2.0.0-alpha.1" },
+            "payload": { "$ref": "#/$defs/criticRulePayload" }
+          }
+        },
+        {
+          "properties": {
+            "target": { "const": "prompt_bundle" },
+            "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json#/$defs/promptBundlePayload" },
+            "schema_version": { "const": "2.0.0-alpha.1" },
+            "payload": { "$ref": "#/$defs/promptBundlePayload" }
+          }
+        },
+        {
+          "properties": {
+            "target": { "const": "regression_case" },
+            "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json#/$defs/regressionCasePayload" },
+            "schema_version": { "const": "2.0.0-alpha.1" },
+            "payload": { "$ref": "#/$defs/regressionCasePayload" }
+          }
+        },
+        {
+          "properties": {
+            "target": { "const": "taxonomy_proposal" },
+            "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json#/$defs/taxonomyProposalPayload" },
+            "schema_version": { "const": "2.0.0-alpha.1" },
+            "payload": { "$ref": "#/$defs/taxonomyProposalPayload" }
+          }
+        }
+      ],
+      "description": "The exact content-addressed artifact being evaluated. Semantic validation must also match source_ref to the run's source record and target-specific IDs/digests to the tested candidate."
+    },
+    "repairCasePayload": {
+      "type": "object",
+      "required": ["case_id", "case_version", "repair_id", "strategy_id", "strategy_version", "candidate_digest", "target_finding_ids", "hypothesis", "minimality_rule"],
+      "additionalProperties": false,
+      "properties": {
+        "case_id": { "$ref": "common.schema.json#/$defs/id" },
+        "case_version": { "type": "string", "minLength": 1 },
+        "repair_id": { "$ref": "common.schema.json#/$defs/id" },
+        "strategy_id": { "$ref": "common.schema.json#/$defs/id" },
+        "strategy_version": { "type": "string", "minLength": 1 },
+        "candidate_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "target_finding_ids": { "$ref": "#/$defs/nonEmptyIdSet" },
+        "hypothesis": { "type": "string", "minLength": 1 },
+        "minimality_rule": { "type": "string", "minLength": 1 }
+      },
+      "description": "A case-scoped repair artifact. Passing the Gate validates this exact repair record and candidate only; it is not evidence that strategy_id generalizes to unseen cases."
+    },
+    "repairStrategyPayload": {
+      "type": "object",
+      "required": ["strategy_id", "candidate_digest", "target_finding_ids", "hypothesis", "minimality_rule"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy_id": { "$ref": "common.schema.json#/$defs/id" },
+        "candidate_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "target_finding_ids": { "$ref": "#/$defs/nonEmptyIdSet" },
+        "hypothesis": { "type": "string", "minLength": 1 },
+        "minimality_rule": { "type": "string", "minLength": 1 }
+      }
+    },
+    "criticRulePayload": {
+      "type": "object",
+      "required": ["rule_id", "rule_version", "rule_text", "trigger_label_ids", "source_finding_ids"],
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": { "$ref": "common.schema.json#/$defs/id" },
+        "rule_version": { "type": "string", "minLength": 1 },
+        "rule_text": { "type": "string", "minLength": 1 },
+        "trigger_label_ids": { "$ref": "#/$defs/nonEmptyIdSet" },
+        "source_finding_ids": { "$ref": "#/$defs/nonEmptyIdSet" }
+      }
+    },
+    "promptBundlePayload": {
+      "type": "object",
+      "required": ["bundle_id", "bundle_version", "prompt_digest"],
+      "additionalProperties": false,
+      "properties": {
+        "bundle_id": { "$ref": "common.schema.json#/$defs/id" },
+        "bundle_version": { "type": "string", "minLength": 1 },
+        "prompt_digest": { "$ref": "common.schema.json#/$defs/sha256" }
+      }
+    },
+    "regressionCasePayload": {
+      "type": "object",
+      "required": ["suite_id", "suite_version", "case_ids", "case_manifest_digest"],
+      "additionalProperties": false,
+      "properties": {
+        "suite_id": { "$ref": "common.schema.json#/$defs/id" },
+        "suite_version": { "type": "string", "minLength": 1 },
+        "case_ids": { "$ref": "#/$defs/nonEmptyIdSet" },
+        "case_manifest_digest": { "$ref": "common.schema.json#/$defs/sha256" }
+      }
+    },
+    "taxonomyProposalPayload": {
+      "type": "object",
+      "required": ["proposal_id", "base_taxonomy_version", "operation", "affected_item_ids", "migration_manifest_digest", "anchor_manifest_digest"],
+      "additionalProperties": false,
+      "properties": {
+        "proposal_id": { "$ref": "common.schema.json#/$defs/id" },
+        "base_taxonomy_version": { "type": "string", "minLength": 1 },
+        "operation": { "type": "string", "enum": ["add", "update", "deprecate", "merge", "split"] },
+        "affected_item_ids": { "$ref": "#/$defs/nonEmptyIdSet" },
+        "migration_manifest_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "anchor_manifest_digest": { "$ref": "common.schema.json#/$defs/sha256" }
       }
     },
     "blindCandidate": {
@@ -374,12 +769,20 @@
     },
     "orderTrial": {
       "type": "object",
-      "required": ["trial_id", "repeat_id", "judge_id", "order", "winner", "raw_choice", "rationale"],
+      "required": ["trial_id", "repeat_id", "judge_id", "invocation_id", "context_partition", "seed", "preference_request_digest", "executed_at", "order", "winner", "raw_choice", "rationale"],
       "additionalProperties": false,
       "properties": {
         "trial_id": { "$ref": "common.schema.json#/$defs/id" },
         "repeat_id": { "$ref": "common.schema.json#/$defs/id" },
         "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+        "invocation_id": { "$ref": "common.schema.json#/$defs/id" },
+        "context_partition": { "type": "string", "minLength": 1 },
+        "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "preference_request_digest": {
+          "$ref": "common.schema.json#/$defs/sha256",
+          "description": "Digest of the exact label- and rationale-blind request: pre-target conversation context, trusted neutral rubric prompt descriptor, and ordered alias+content pairs only."
+        },
+        "executed_at": { "type": "string", "format": "date-time" },
         "order": { "type": "string", "enum": ["AB", "BA"] },
         "winner": { "type": "string", "enum": ["candidate", "baseline", "tie"] },
         "raw_choice": { "type": "string", "enum": ["A", "B", "tie"] },

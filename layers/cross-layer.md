@@ -10,7 +10,22 @@
 
 > **认识论地位：** 层级标签描述的是**可观察的失败模式**（输出中发生了什么），因果假设描述的是**尚待证伪的解释**（为什么模型可能这样做）。两者属于不同的分析层次。诊断时应注意区分“我观察到了什么”和“我推测原因是什么”。
 >
-> **使用约束：** 只应在至少两个观察性标签共同指向同一方向时提出因果假设，以防止循环论证——先假设原因存在，再用原因解释观察。例如，当一段输出同时触发了 `tension_premature_resolution` 和 `defensive_positive_drift`，且两者的方向一致（都指向“让场景变得不那么难受”），才适合提出 `affect_manageability_bias`。单独一个标签不足以支撑归因。
+> **使用约束：** 只有 `support_contract.status` 为 `specified` 的假设，才能在至少两个**独立、且位于该假设白名单内的症状证据组**共同指向同一方向时被机器记录为 `present`。这里的 `present` 只表示“达到受支持假设的提案门槛”，不表示原因已经被证明。`derived_from` 的祖先—后代只算一组；复用同一条或相互重叠的正向证据 span 也只算一组，因此 `tension_premature_resolution` 与其子型 `defensive_positive_drift` 不能单独满足门槛。可接受的例子是：在不同证据片段中分别观察到 `therapist_mode_intrusion` 的咨询式调解和 `tension_premature_resolution` 的过早收束，再把 `affect_manageability_bias` 作为待反事实检验的解释。语义上“理由相同但 span 不重叠”尚无机器可验证字段，不能声称 Gate 已自动合并。全局计数规则见 `taxonomy.json.causal_support_policy`，逐项边界见下表。
+
+#### 机器支持边界
+
+`admissible_symptom_ids` 是可计票的症状白名单；`match_mode: descendants_included` 表示白名单症状的严格子型也可进入同一支持家族，但祖先和后代仍只算一组。`underspecified` 的空白名单表示当前尚无可执行边界，不是“任何症状都可以支持”。
+
+| # | 因果假设 | `support_contract.status` | `admissible_symptom_ids` | `match_mode` | 机器能否标为 `present` |
+|---|---|---|---|---|---|
+| 1 | `reader_comfort_alignment` | `underspecified` | — | `descendants_included` | 否 |
+| 2 | `affect_manageability_bias` | `specified` | `therapist_mode_intrusion`、`tension_premature_resolution` | `descendants_included` | 满足至少两组后，仅作为受支持提案 |
+| 3 | `darkness_intolerance` | `underspecified` | — | `descendants_included` | 否 |
+| 4 | `aesthetic_obedience_bias` | `specified` | `texture_substituting_for_substance`、`over_stylized_line_breaking`、`cinematic_time_dilation`、`over_narrated_silence`、`tonal_whiplash` | `descendants_included` | 满足至少两组后，仅作为受支持提案 |
+| 5 | `complexity_avoidance` | `specified` | `ambiguity_collapse`、`premature_affective_closure`、`overcoherent_characterization` | `descendants_included` | 满足至少两组后，仅作为受支持提案 |
+| 6 | `closure_drive` | `specified` | `tension_premature_resolution`、`dialogue_overfunctionalization`、`premature_affective_closure` | `descendants_included` | 满足至少两组后，仅作为受支持提案 |
+
+白名单只声明“哪些可观察症状允许进入提案门槛”，不声明这些症状对原因具有特异性。特别是 `tonal_whiplash` 或 `ambiguity_collapse` 仍可能有别的解释；要把某个因果提案写进报告，仍需保存反证、替代解释和后续反事实结果。
 
 | 因果假设 | 层级关联 | 说明 |
 |------|---------|------|
@@ -21,9 +36,9 @@
 | `complexity_avoidance` | III–IV | 模型倾向于将复杂的、多线程的情感或叙事状态简化为更容易处理的版本。不是读不出复杂性（那是 Layer II），而是读出来之后在生成时选择了更简单的路径。常见关联标签：`ambiguity_collapse`（当从 III 层驱动时）、`premature_affective_closure`、`overcoherent_characterization` |
 | `closure_drive` | III–V | 模型有强烈的倾向要把事情"说完""收住""给一个交代"——即使场景此刻需要的是悬而未决。这不是某个具体标签的问题，而是一种贯穿多层的驱动力：在 III 层表现为过早收束，在 IV 层表现为每句台词都太有用，在 V 层表现为跨轮次的弧线被加速推向终点。常见关联标签：`tension_premature_resolution`、`dialogue_overfunctionalization`、`premature_affective_closure` |
 
-`darkness_intolerance` 和 `aesthetic_obedience_bias` 有时共同起作用：模型既不愿意让不适持续（III 层动机），也不愿意让输出显得难看（IV 层动机），两者叠加后场景的真实重量会加速流失。
+`darkness_intolerance` 和 `aesthetic_obedience_bias` 可以作为联合解释被提出：前者假设模型不愿让不适持续，后者假设模型不愿让输出显得难看。只有各自满足相应支持边界时，才应讨论二者是否同时成立；当前 `darkness_intolerance` 仍为 `underspecified`，不能由机器标为 `present`。
 
-`complexity_avoidance` 和 `closure_drive` 也常互相强化：模型既不愿意让复杂状态保持复杂，又想要把事情收住——两者叠加后，复杂的、开放的场景会被快速简化并推向一个"说得通"的终点。
+`complexity_avoidance` 和 `closure_drive` 也可能形成互相强化的解释：一个指向复杂状态被简化，另一个指向开放状态被推向终点。二者拥有不同白名单，必须分别达到提案门槛，不能凭同一条症状把两个原因一起写成事实。
 
 ---
 

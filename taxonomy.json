@@ -5,13 +5,26 @@
   "updated_at": "2026-08-24",
   "name": "中文虚构对话失败图谱",
   "description": "面向中文虚构和角色扮演对话的机器可读失败诊断本体。诊断顺序、可观察症状、因果假设、复合现象与不确定性记录彼此分离。",
-  "diagnostic_order": ["I", "II", "III", "IV", "V"],
+  "diagnostic_order": [
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V"
+  ],
   "total_items": 78,
   "item_counts": {
     "symptoms": 70,
     "causal_hypotheses": 6,
     "composites": 1,
     "uncertainty_markers": 1
+  },
+  "machine_execution_policy": {
+    "present_requires_structured_recipe": true,
+    "prose_only_tests_are_non_promoting": true,
+    "executable_symptom_ids": [
+      "premature_affective_closure"
+    ]
   },
   "layers": [
     {
@@ -29,11 +42,19 @@
               "name": "指涉边界失败",
               "definition": "越权书写用户角色的行为或内心",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "模型未经授权书写了用户角色的动作、心理或对白",
                 "多个角色的内心状态被同时描写，导致视角归属模糊"
               ],
               "observability": "high",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "pronoun_role_confusion"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "宫斗场景中模型未经授权书写了用户扮演的淑妃的内心活动和情感反应"
             },
             {
@@ -41,12 +62,18 @@
               "name": "人称角色混淆",
               "definition": "NPC 之间的属性、行为归属贴错",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "某个角色说出了逻辑上属于另一角色的属性",
                 "代词的实际指向与场景逻辑不符",
                 "两个角色的属性被部分融合，产生事实上不可能成立的陈述"
               ],
               "observability": "high",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "曹丕台词中说出了「我比他小十岁」，实为女主属性被错误贴到曹丕身上"
             },
             {
@@ -54,12 +81,18 @@
               "name": "全知泄露",
               "definition": "角色行为泄露了不应拥有的系统设定信息",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色的微反应、措辞或行为模式与系统设定高度吻合",
                 "隐藏的背景故事在角色首次出场时就通过细节被铺垫",
                 "角色之间的信息差通过行为被消解"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "悬疑场景中张明的每个微反应都在透明表演系统设定中的秘密，悬念被剧透"
             },
             {
@@ -67,12 +100,20 @@
               "name": "视角滑动",
               "definition": "叙事视角从角色内部滑向全知或回溯叙述者",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "在坚持当下体验的场景中出现全知短语",
                 "角色内部的感官细节转向外部的临床或历史评论",
                 "叙述者采用了回溯或预知的时态立场"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "omniscience_leak"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "长平公主接剑场景中叙述者突然跳至「后世史书」的全知回溯视角"
             },
             {
@@ -80,12 +121,20 @@
               "name": "不可靠叙述者失败",
               "definition": "场景需要有偏见的叙述者，但模型给出了可靠叙述",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "用户设定了带有偏见或隐瞒的叙述者，但模型的叙述语言呈现出中立、完整、可信赖的品质",
                 "叙述者本应对自身动机有盲区，但模型让叙述中泄露出完整的自我认知",
                 "叙述策略上需要读者透过叙述者看到真相，但模型直接呈现了真相"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "perspective_slippage"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "自欺型日记体叙述者对自己做出了精确的心理诊断而非自我美化"
             }
           ]
@@ -99,39 +148,67 @@
               "name": "世界观约束错误",
               "definition": "用现代推理框架替代场景世界的概念体系",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色使用其世界中不存在的推理框架",
                 "社会互动遵循现代规范，尽管场景是非现代背景",
                 "时代错误是概念层面的而非词汇层面的"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "唐朝大臣用「公平的机会」「各展所长」等能力主义逻辑论证太子之位"
             },
             {
               "id": "safety_alignment_interference",
-              "name": "安全对齐干扰",
-              "definition": "安全训练导致反派被去势，威胁感削弱",
+              "name": "威胁性角色软化",
+              "legacy_name": "安全对齐干扰",
+              "legacy_note": "为兼容既有数据保留历史 ID；现名和定义只描述输出症状，不断言安全训练是原因。",
+              "definition": "输出在缺少场景依据时为威胁性角色新增道德底线、自我辩护或救赎框架，使场景契约已明确的威胁等级、残酷性或对抗性被削弱",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
-                "反派的残忍被重新包装为哲学项目或必要之恶",
-                "反面角色主动添加道德底线",
-                "威胁性角色提供使自己显得合理的辩护",
-                "角色的锋芒通过未被要求的内在复杂度被软化"
+                "场景契约已明确角色应保持较高威胁等级、残酷性或对抗性",
+                "输出新增了场景设定中没有的道德底线、自我辩护或救赎框架",
+                "新增内容使角色在当前场景中的危险性或对抗压力可观察地降低",
+                "判断不依赖对训练、对齐策略或模型内部动机的推测"
               ],
               "observability": "medium",
-              "example": "魔尊被赋予救赎框架和道德底线，残忍被洗白为被误解的理想主义"
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "ooc_modernization",
+                "therapist_mode_intrusion",
+                "overcoherent_characterization"
+              ],
+              "discriminating_tests": [
+                "先从场景契约提取角色应保持的威胁等级、道德边界和对抗性；契约未明确时，不得仅因反派复杂或有原则而触发。",
+                "定位输出新增的道德底线、自我辩护或救赎框架，并检查删除该新增内容后是否会恢复契约要求的威胁参数；若不会，不触发。"
+              ],
+              "example": "设定明确魔尊无意自辩且把凡人视作耗材，输出却新增「我不伤无辜」和拯救苍生的理由，使既定威胁参数被软化"
             },
             {
               "id": "character_capability_boundary_error",
               "name": "角色能力边界错误",
               "definition": "角色展现超出其背景所允许的知识或分析能力",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色使用其背景中不可能掌握的系统性分析方法",
                 "资源匮乏条件下的角色展现出临床级别的诊断思维",
                 "角色使用来自更晚时代或不同训练背景的概念工具"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "omniscience_leak",
+                "worldview_constraint_error"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "宋朝私塾先生用系统性农业科学分析框架回答庄稼歉收问题"
             },
             {
@@ -139,13 +216,19 @@
               "name": "版本混淆",
               "definition": "混入不同改编版本的标志性台词或人物特征",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色引用来自不同改编版本的标志性时刻",
                 "情感处理方式属于不同版本的人物塑造",
                 "同一角色在不同改编版本中的属性被部分融合"
               ],
               "observability": "high",
-              "example": "MCU 版蜘蛛侠说出了托比·马奎尔版的「能力越大责任越大」台词"
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
+              "example": "MCU 版彼得把「能力越大，责任越大」归为本叔叔的教导；现有 MCU 电影中该格言由梅姨说出，并未建立这一版本的本叔叔传授关系"
             }
           ]
         }
@@ -165,12 +248,20 @@
               "name": "潜台词盲视",
               "definition": "将对话按字面解读，未识别隐含含义",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "间接请求被当作字面陈述处理",
                 "防御性或惩罚性语言被解读为真诚沟通",
                 "试探性话语被当作中性提问处理"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "relationship_logic_blindness"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "冷战中「我自己一个人挺好的」被字面接受，模型顺势离开而非识别试探"
             },
             {
@@ -178,11 +269,20 @@
               "name": "模糊性塌缩",
               "definition": "多层意义被过早解决为单一解释",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "混合动机被压成一个动机",
                 "不稳定情绪被过早命名"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "premature_affective_closure"
+              ],
+              "discriminating_tests": [
+                "保持事件、情绪强度与结局不变，恢复至少两个仍有文本依据的解释；若损害随多义性恢复而消失，才触发。",
+                "若问题是把混合情绪讲成终点而非把解释压成一个，改用 premature_affective_closure。"
+              ],
               "example": "战后重逢「我以为你死了」被立刻解码为「爱让他活下来」的单一叙事"
             },
             {
@@ -190,12 +290,18 @@
               "name": "关系逻辑盲视",
               "definition": "未识别特定关系如何改变对话含义",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "同一句话被解释为相同，不考虑关系背景",
                 "关系历史未被纳入解释",
                 "权力动态、亲密度或未解决的紧张被忽略"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "皇帝对功臣说「辛苦了」的权力划线被写成暖心君臣佳话"
             },
             {
@@ -203,12 +309,20 @@
               "name": "情绪误读",
               "definition": "分配错误的情绪类型或强度",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "主要情绪被误认",
                 "次要情绪被遗漏",
                 "情绪强度被显著高估或低估"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "premature_affective_closure"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "长期照护者至亲去世后的空洞茫然被浪漫化为隐忍独自落泪的美丽悲伤"
             },
             {
@@ -216,12 +330,20 @@
               "name": "动机误读",
               "definition": "情绪大致对但误认角色真正的目标",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色的目标被误认",
                 "防御功能被遗漏",
                 "回应模式不适合实际动机"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "emotion_misread"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "分手两年后的试探性电话被直接当成互诉衷肠的怀念来接收"
             }
           ]
@@ -237,11 +359,19 @@
               "derived_from": [
                 "subtext_blindness"
               ],
+              "related_to": [],
               "criteria": [
                 "讽刺陈述被字面解释",
                 "带玩笑性质的调侃被解释为真诚批评"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "deflection_blindness"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "搭档谈崩合同后「你可真大方啊」的讽刺被接受，对方立刻诚恳道歉"
             },
             {
@@ -249,11 +379,18 @@
               "name": "语调突变",
               "definition": "引入与场景基调不一致的语调元素",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "轻松元素出现在沉重场景中且无理由",
                 "沉重说明出现在轻松场景中"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "保持事件与角色意图不变，只移除突然改变基调的措辞或动作；若断裂消失且原调性连续，才触发。",
+                "若变化有明确叙事触发或只是语域不匹配而非基调断裂，不触发。"
+              ],
               "example": "母亲刚开口说年轻时的遗憾，模型立刻用「现在挺好的」收尾为暖心小品"
             },
             {
@@ -264,12 +401,18 @@
                 "subtext_blindness",
                 "motivation_misread"
               ],
+              "related_to": [],
               "criteria": [
                 "角色用幽默或自我收回避免被认真对待，模型顺势撤退",
                 "角色用表演性轻松占满空间，模型帮着维持表演",
                 "回避的功能被错过，模型对表面做出反应"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "第一次谈未来时「我不是那种人别当真」的自我收回被顺势撤退接受"
             }
           ]
@@ -290,6 +433,7 @@
               "name": "关系扁平化",
               "definition": "特殊关系被改写为普通版本",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "上下位关系被写成平等朋友",
                 "危险亲密被写成普通温柔",
@@ -297,6 +441,11 @@
                 "独特关系被写成泛化的情感连接"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "主仆关系中仆人说出「我会担心你的」平等关怀，等级感被抹掉"
             },
             {
@@ -306,12 +455,18 @@
               "derived_from": [
                 "relationship_flattening"
               ],
+              "related_to": [],
               "criteria": [
                 "一边倒的依附被对方补了一句，变成了互惠",
                 "不该回应情感的一方被写出了同等分量的情感",
                 "长期关系里的斜度被悄悄磨平，没有任何叙事理由"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "单方依恋中 B 补了一句「我也离不开你」，把单向依附变成互相依赖"
             },
             {
@@ -321,12 +476,18 @@
               "derived_from": [
                 "relationship_flattening"
               ],
+              "related_to": [],
               "criteria": [
                 "不可替代性被写成普通的好感",
                 "独占性危机被冲淡成一般的安抚",
                 "独一无二的占有被稀释成广泛的关心"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "A 对 B 说「她对我来说也很重要，就像你一样」，独特性被稀释为一个类别"
             },
             {
@@ -334,12 +495,21 @@
               "name": "治疗师模式侵入",
               "definition": "角色突然用咨询式语言做情绪调解",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "泛化的情绪认可替代了角色化表达",
                 "本不该像咨询师的角色突然在做心理梳理",
                 "冲突被写成情绪卫生练习"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "ooc_modernization"
+              ],
+              "discriminating_tests": [
+                "保留角色立场与冲突事实，只删除情绪认可、复述和协商模板；若角色重新像其自身而非咨询师说话，才触发。",
+                "若措辞只是时代或语域不符而没有承担情绪调解功能，改用 ooc_modernization。"
+              ],
               "example": "积怨多年的兄妹对峙中 B 突然说「我理解你现在很愤怒，这很正常」"
             },
             {
@@ -347,12 +517,20 @@
               "name": "人物现代化出戏",
               "definition": "引入现代情感教育话语框架",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "历史场景里突然出现现代沟通伦理",
                 "角色说话像接受过现代情绪训练的人",
                 "本应受限的表达被写得过于加工"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "worldview_constraint_error"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "古代宫廷侧室辞别时说出「在这段关系里我没有被看见」等现代情感话语"
             },
             {
@@ -360,6 +538,7 @@
               "name": "勾引逻辑错误",
               "definition": "追逐关系的结构性不对称被破坏",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "渴望过早收束，张力还没积累起来就消散了",
                 "追逐的结构性不对称被翻转（本该保持距离的角色变得可接近）",
@@ -367,6 +546,13 @@
                 "场景所依赖的摩擦、迂回和模棱两可被抹平"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "desire_overlegibility"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "本该保持距离的 B 用「就今天吗」主动回击调情，追逐不对称消失"
             },
             {
@@ -374,6 +560,7 @@
               "name": "操控接受",
               "definition": "算计性行为被当作真诚来回应",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "算计出来的眼泪被当成真实痛苦来回应",
                 "设计用来激怒对方的冷淡被当作单纯退缩",
@@ -381,14 +568,25 @@
                 "对方对本应识破的战术动作给出体贴回应"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "relationship_logic_blindness"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "情感操控者的算计性眼泪被当作真实痛苦接收，模型写 B 心里一软"
             },
             {
               "id": "consent_flattening",
               "name": "同意扁平化",
               "definition": "权力不平衡被简化为清晰的同意/拒绝",
-              "derived_from": [
-                "relationship_flattening"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "relationship_flattening",
+                  "relation_type": "same_domain_as"
+                }
               ],
               "criteria": [
                 "不情愿被解决成了可读的同意",
@@ -397,6 +595,13 @@
                 "均衡关系中，角色的犹豫或矛盾被提前化解，变成了干净的「愿意」"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "relationship_flattening"
+              ],
+              "discriminating_tests": [
+                "检查错误核心是否是选择空间、强制性或犹豫被写成干净同意；若只是关系类型整体被改写，则使用 relationship_flattening。"
+              ],
               "example": "权力悬差下 B 说「如果这是我自己的选择我愿意留下」，不能拒绝被写成自愿"
             }
           ]
@@ -410,12 +615,21 @@
               "name": "过度连贯塑造",
               "definition": "角色过于稳定一致，像规格说明书",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "没有局部自打脸",
                 "没有明显短路",
                 "关键时刻没有超过平时组织能力的反应"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "premature_affective_closure"
+              ],
+              "discriminating_tests": [
+                "保留事件与人物立场，恢复与既有自我叙述冲突的行为、盲点或残差；若人物不再像完整理论，才触发。",
+                "若只是某一刻的混合情绪被过早讲净而人物整体仍保留矛盾，改用 premature_affective_closure。"
+              ],
               "example": "高压质问下内敛角色回应太整齐，「我理解你这样觉得」像规格说明书"
             },
             {
@@ -423,12 +637,45 @@
               "name": "情绪过早收束",
               "definition": "情绪矛盾在场景到位前被讲干净",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "混合情绪被提早定性",
                 "依附的不稳定性被压成单一解释",
                 "情绪矛盾过早被讲干净"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "ambiguity_collapse",
+                "tension_premature_resolution"
+              ],
+              "discriminating_tests": [
+                "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+                "若恢复情绪矛盾后场景仍因对抗、追逐或悬念已经结束而失压，另检 tension_premature_resolution。"
+              ],
+              "test_recipes": [
+                {
+                  "recipe_id": "premature_affective_closure_delete_conclusion_v1",
+                  "taxonomy_test": "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+                  "distinguishes_from": [
+                    "ambiguity_collapse",
+                    "tension_premature_resolution"
+                  ],
+                  "method": "deterministic_text_edit",
+                  "intervention_kind": "delete_span",
+                  "replacement_policy": "empty",
+                  "target_evidence_stance": "supports",
+                  "span_binding": "exact_single_evidence",
+                  "expected_status_before": "present",
+                  "expected_status_after": "absent",
+                  "invariant_source_kind": "scene_contract",
+                  "required_contract_paths": [
+                    "/world_rules/0",
+                    "/relationship_state",
+                    "/style_constraints/0"
+                  ]
+                }
+              ],
               "example": "分离两年重逢时混合情绪被立刻收束为「所有委屈都不重要了」的顿悟"
             },
             {
@@ -436,12 +683,18 @@
               "name": "欲望过度可读",
               "definition": "半隐的欲望被过早翻译成明文",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "潜在的渴望还没被场景养熟，就被翻成了明确的渴求",
                 "替代性表达被过快还原成直接欲望",
                 "读者本该自己感到张力，模型先替读者读懂了"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "克制型角色看对方够书架时内心直接明文总结「他喜欢她」"
             },
             {
@@ -449,12 +702,18 @@
               "name": "自我保护摩擦缺失",
               "definition": "脆弱暴露时缺少应有的犹豫和包装",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "坦白没有犹豫",
                 "需求没经过否认、转移、攻击、玩笑就直接落地",
                 "羞耻型暴露被写得像角色乐于被看见"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "从不示弱的角色第一次开口就完整列出三个核心恐惧，毫无犹豫包装"
             },
             {
@@ -464,12 +723,18 @@
               "derived_from": [
                 "overcoherent_characterization"
               ],
+              "related_to": [],
               "criteria": [
                 "爆发后紧跟完整心理解释",
                 "慌乱很快被翻译成清楚的情绪认知",
                 "鲁莽行为后面跟着过于整齐的反省"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "自控型角色第一次失口后立刻切入条理化自我解释，失控状态瞬间消失"
             }
           ]
@@ -483,26 +748,44 @@
               "name": "后果回避",
               "definition": "重话说出后重量没有停留，余波被省略",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "重话下一拍就失去力量，像从来没说过",
                 "余波被省略，直接进入下一动作",
                 "本该留下余痕的事件被立刻吸收进互动，没有任何悬置"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "重话说出后下一拍 B 立刻进入修复模式，重量没有任何停留时间"
             },
             {
               "id": "impact_soft_landing",
               "name": "冲击软着陆",
               "definition": "后果落地那一刻接收方式太软",
-              "derived_from": [
-                "consequence_avoidance"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "consequence_avoidance",
+                  "relation_type": "contrasts_with"
+                }
               ],
               "criteria": [
                 "重击之后的第一句话就开始软化：解释、安抚、重新框架",
                 "后果没被跳过，但接收动作太柔，缓冲是即时的"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "consequence_avoidance",
+                "tension_premature_resolution"
+              ],
+              "discriminating_tests": [
+                "确认重击及其后果确实已经到达，再检查接收方第一反应是否即时构建缓冲；若后果根本未停留，则使用 consequence_avoidance。"
+              ],
               "example": "背叛被说出口后 B 立刻跟上「我可以解释，事情不是你想的那样」构建缓冲"
             },
             {
@@ -510,27 +793,43 @@
               "name": "张力过早收束",
               "definition": "场景张力还没有充分积累就被过早收束",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "很快滑向互相理解",
                 "悬而未决的压力被转成更可控的交换",
                 "冲突过早进入收束"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "premature_affective_closure"
+              ],
+              "discriminating_tests": [
+                "保持人物情绪解释不变，只恢复尚未完成的对抗、追逐或悬念压力；若场景重新能够继续积累，才触发。",
+                "若只是把混合情绪过早命名、但外部压力仍完整存在，改用 premature_affective_closure。"
+              ],
               "example": "积怨终于爆发后 B 两句话内就开始承认错误并提议好好谈"
             },
             {
               "id": "defensive_positive_drift",
               "name": "防御性正向漂移",
-              "definition": "不该通风的场景被悄悄塞入暖意",
+              "definition": "不该通风的场景被悄悄塞入暖意，使尚未充分积累的张力提前卸压或收束",
               "derived_from": [
                 "tension_premature_resolution"
               ],
+              "related_to": [],
               "criteria": [
                 "多余的一句软化",
                 "本该继续冷着的场景里出现不必要的连接动作",
-                "模型替场景提前给了氧气"
+                "模型替场景提前给了氧气",
+                "新增暖意使当前张力可观察地降低或开始收束"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "争吵后冷对峙沉默中模型让 A 倒了两杯水推一杯给 B，提前给了氧气"
             }
           ]
@@ -544,20 +843,30 @@
               "name": "动作台词错位",
               "definition": "身体动作与语言输出矛盾且未被承认",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色说了一件事，肢体行为却暗示相反的东西，叙事没有承认这个裂缝",
                 "动作或姿态被塞进某一拍，和同时发生的对话没有任何连接",
                 "身体动作不是从台词引出的，也没有和台词产生互动"
               ],
               "observability": "high",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "角色「头也不回」走向门口却停下来轻声说「我需要你好好的」，动作矛盾"
             },
             {
               "id": "blocking_continuity_error",
               "name": "走位连续性错误",
               "definition": "角色位置和距离在多拍间无法保持一致",
-              "derived_from": [
-                "action_dialogue_mismatch"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "action_dialogue_mismatch",
+                  "relation_type": "same_domain_as"
+                }
               ],
               "criteria": [
                 "上一拍坐下的角色，下一拍突然站着，中间没有任何站起来的描写",
@@ -565,6 +874,14 @@
                 "一个拍子里被处理过的物品在之后消失，然后又突然被提到"
               ],
               "observability": "high",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "action_dialogue_mismatch",
+                "spatial_blocking_error"
+              ],
+              "discriminating_tests": [
+                "画出同一场景片段的角色与物件位置序列；只有缺少必要移动仍无法连续时才触发，动作与台词的情绪方向冲突改用 action_dialogue_mismatch。"
+              ],
               "example": "A 坐在沙发上 B 站在门口，模型让 A 突然搭上 B 肩膀，无起身走近描写"
             },
             {
@@ -572,20 +889,30 @@
               "name": "微反应机械化",
               "definition": "同一套微信号库存被跨情绪套用",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "相同的肢体微信号出现在截然不同的情绪语境里",
                 "微反应和角色已建立的行为特征不符",
                 "库存身体词汇（手停住、呼吸停顿、下颌收紧）被不加区分地套用"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "cross_scene",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "得知坏消息和看到心动的人两种场景都用「手停住了呼吸轻轻一顿」"
             },
             {
               "id": "touchgrammar_error",
               "name": "触碰语法错误",
               "definition": "触碰不符合场景的关系逻辑和权力动态",
-              "derived_from": [
-                "action_dialogue_mismatch"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "action_dialogue_mismatch",
+                  "relation_type": "same_domain_as"
+                }
               ],
               "criteria": [
                 "角色做出的接触暗示了场景尚未赋予的接触权限",
@@ -594,6 +921,14 @@
                 "触碰被写在了这段关系还没有积累到的亲密度层级上"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "action_dialogue_mismatch",
+                "consent_flattening"
+              ],
+              "discriminating_tests": [
+                "先从已建立关系提取接触权限，再检验触碰的发起者、方式和亲密度；物理动作与台词矛盾本身不足以触发。"
+              ],
               "example": "普通同事关系中 A 轻轻握住 B 的手说「我们一起面对」，跨越了亲密度层级"
             },
             {
@@ -601,12 +936,20 @@
               "name": "强制言语化",
               "definition": "本应隐性运作的动态被明文说出",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色说出了自己的感受，而场景的张力恰恰依赖于这个感受保持未被说出",
                 "动机在当下被给出，而不是从行为中被推断",
                 "潜台词被转化成了明文台词，场景的结构性迂回被中和"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "self_protective_friction_loss"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "谎言场景中 A 直接说出「因为我在乎你一直都在乎」，迂回结构坍塌"
             },
             {
@@ -614,20 +957,30 @@
               "name": "沉默误读",
               "definition": "有意义的沉默被当作需要填补的间隙",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "有意义的沉默被过快打破，因为模型把它当成间隙",
                 "表示拒绝、积累或惩罚的沉默被当作开放或同意",
                 "未说出的东西的质感被转化成说出的东西"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "惩罚性沉默被打破，模型让 A 说「没事我没有生气」反转了沉默的含义"
             },
             {
               "id": "over_narrated_silence",
               "name": "过度叙述的沉默",
               "definition": "沉默被从外部描述和解释而非呈现",
-              "derived_from": [
-                "silence_misread"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "silence_misread",
+                  "relation_type": "same_domain_as"
+                }
               ],
               "criteria": [
                 "「他沉默了很久」用叙述代替了一个应该通过结构性缺席呈现的沉默",
@@ -635,14 +988,26 @@
                 "本应不被叙述的东西被语言包围，从而消解了效果"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "silence_misread",
+                "descriptive_substitution_for_experience"
+              ],
+              "discriminating_tests": [
+                "删去解释沉默的旁白后，检查结构性缺席是否已足以承载该拍；若模型只是误填或反转沉默含义，则使用 silence_misread。"
+              ],
               "example": "沉默被三层比喻包围解释「像一堵墙」「有分量的沉默」「比说什么都重」"
             },
             {
               "id": "pause_timing_error",
               "name": "停顿时机错误",
               "definition": "停顿被放在结构上错误的位置",
-              "derived_from": [
-                "silence_misread"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "silence_misread",
+                  "relation_type": "same_domain_as"
+                }
               ],
               "criteria": [
                 "停顿被插在一句本应没有预警直接落地的话之前",
@@ -650,6 +1015,14 @@
                 "拍子的间隔在对话弧中分配错误，造成了错误的压力与释放模式"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "silence_misread",
+                "scene_pacing_distortion"
+              ],
+              "discriminating_tests": [
+                "在不改台词内容的前提下移动或删除停顿；若场景压力与落点恢复，才触发本标签，误解沉默含义本身改用 silence_misread。"
+              ],
               "example": "本该直接落地的「我不想再爱你了」前面被加了四个预告信号消除突然性"
             }
           ]
@@ -670,20 +1043,30 @@
               "name": "叙事模板侵入",
               "definition": "不同场景反复出现相似骨架",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "不同场景里反复出现相似骨架",
                 "氛围铺垫 → 微反应细节 → 内心解读 → 回扣前文，这套顺序太熟了",
                 "结构先于局部需要被感知出来"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "cross_scene",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "两个完全不同场景用同一骨架：环境渲染→发现人→「说不清那是什么」→收句"
             },
             {
               "id": "predictable_rhythm_exposure",
               "name": "可预测节律暴露",
               "definition": "段落节律跨场景重复，太容易被认出",
-              "derived_from": [
-                "narrative_template_intrusion"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "narrative_template_intrusion",
+                  "relation_type": "often_cooccurs_with"
+                }
               ],
               "criteria": [
                 "段落节奏跨场景重复",
@@ -691,47 +1074,91 @@
                 "场景还没结束，骨架已经被认出来"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "narrative_template_intrusion",
+                "rhythm_homogenization"
+              ],
+              "discriminating_tests": [
+                "跨至少两个段落比较句长分布、情绪脉冲和收束位置；仅骨架顺序相同而节律不同，使用 narrative_template_intrusion。"
+              ],
               "example": "不同场景反复出现相同节奏：环境短句→移动→停下侧头看→身体小动作"
             },
             {
               "id": "register_contamination",
-              "name": "语域污染",
-              "definition": "训练数据中某类文本的腔调侵入不属于它的场景",
+              "name": "目标语域错配",
+              "legacy_name": "语域污染",
+              "legacy_note": "为兼容既有数据保留历史 ID；现名和定义描述目标语域与输出语域的错配，不推断训练数据来源。",
+              "definition": "输出在句式、措辞或论述组织上持续偏离场景或角色已指定的目标语域，被另一套可辨认的语域覆盖",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
-                "角色的措辞风格可以被明确追溯到某类训练数据的语域特征，而非角色本身的语言习惯",
-                "场景的语言氛围被外来语域统一覆盖，失去了场景自身的语言质感",
-                "语域污染不是个别词汇的问题，而是整段话的腔调和句式结构属于另一个语域"
+                "场景设定或角色样例提供了可核对的目标语域基线",
+                "至少两个跨句式或措辞层面的特征系统性偏离目标语域",
+                "偏差改变了角色声音或场景语言质感，而非仅出现一个可接受的借词",
+                "判断不依赖对训练语料来源的推测"
               ],
               "observability": "medium",
-              "example": "古代江湖雨夜谈话用知乎体「第一第二第三综合来看」的列举式论述腔调"
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "webnovel_register_contamination",
+                "voice_homogenization",
+                "genre_convention_violation",
+                "ooc_modernization"
+              ],
+              "discriminating_tests": [
+                "显式给出目标语域或角色声音基线，并指出至少两个跨句式或措辞层面的系统性偏差；单个词汇不触发。",
+                "把同一表达放回其疑似来源语域与目标语域比较：只有前者自然、后者破坏角色或场景契约时才触发；不得把来源归因当作已知训练事实。"
+              ],
+              "example": "目标是简短、含混的古代江湖口语，输出却连续使用「第一、第二、综合来看」的列举式分析结构"
             },
             {
               "id": "webnovel_register_contamination",
-              "name": "网文语域污染",
-              "definition": "套用网文库存短语和腔调侵入不属于它的场景",
+              "name": "网文语域错配",
+              "legacy_name": "网文语域污染",
+              "legacy_note": "为兼容既有数据保留历史 ID；症状指非目标网文语域的可观察侵入，不推断训练语料占比。",
+              "definition": "在目标场景并未采用相应网文类型语域时，输出成套使用可辨认的网文库存短语、句式或情感表达惯例",
               "derived_from": [
                 "register_contamination"
               ],
+              "related_to": [],
               "criteria": [
-                "「眸色暗了暗」「那是猎人看见猎物的眼神」这类批量短语",
-                "语义模糊的占有欲措辞，和具体角色或设定无关",
-                "暗恋/耽美/言情的预制套话，不分场景直接套用"
+                "目标场景或角色声音并未要求相应网文类型语域",
+                "「眸色暗了暗」「猎人看见猎物」等库存表达或同类句式成套出现",
+                "表达可以跨角色或跨场景替换，未承载当前角色独有的信息",
+                "判断不依赖对训练语料占比或来源的推测"
               ],
               "observability": "medium",
-              "example": "现代职场场景中出现「眸色暗了暗」「猎人盯住猎物的眼神」等网文套话"
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "register_contamination",
+                "genre_convention_violation"
+              ],
+              "discriminating_tests": [
+                "先确认目标场景并非主动采用相应网文类型语域，再定位至少一个成套句式或库存表达；题材本身是网文时不触发。",
+                "若偏差不能具体指向网文类型惯例，而只是一般性的声音不一致，则退回 register_contamination 或其他近邻标签。"
+              ],
+              "example": "写实职场对话中连续出现「眸色暗了暗」「猎人盯住猎物的眼神」等网文库存表达"
             },
             {
               "id": "scene_pacing_distortion",
               "name": "场景节奏失调",
               "definition": "推进速度与场景压力不匹配",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "余波被快速处理，没有停留",
                 "高压场景被过度渲染，氛围描写挤占了实质推进",
                 "安静场景被写成过度悬疑"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "consequence_avoidance"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "争吵余波中装饰性质感描写占大量空间，B 说要走和离开却两行结束"
             },
             {
@@ -741,34 +1168,57 @@
               "derived_from": [
                 "scene_pacing_distortion"
               ],
+              "related_to": [],
               "criteria": [
                 "一瞬被显微镜化",
                 "微细节撑大了时间长度",
                 "场景像被拍，而不是在发生"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "保持动作与情绪事实不变，按场景应有时长恢复常速；若宏大感消失且信息未损失，才触发。",
+                "若问题来自跨场景节奏趋同而非单场景被无故慢放，改检 rhythm_homogenization。"
+              ],
               "example": "拿起外套一秒钟的动作被拉伸为七个单元的慢镜头：摸领子、感受质感、注视"
             },
             {
               "id": "rhythm_homogenization",
               "name": "节奏同质化",
               "definition": "不同类型场景用同一个内部时钟",
-              "derived_from": [
-                "predictable_rhythm_exposure"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "predictable_rhythm_exposure",
+                  "relation_type": "contrasts_with"
+                }
               ],
               "criteria": [
                 "等待、冲突、余波的句压和推进速度差不多",
                 "场景之间缺乏节奏压差"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "cross_scene",
+              "confusable_with": [
+                "predictable_rhythm_exposure",
+                "scene_pacing_distortion"
+              ],
+              "discriminating_tests": [
+                "比较至少两类情绪任务不同的场景；只有它们缺乏应有节奏压差才触发，单段内部可预判改用 predictable_rhythm_exposure。"
+              ],
               "example": "急速出走和漫长等待两种场景用同一时钟处理，句压和收句方式几乎相同"
             },
             {
               "id": "echo_dramatization",
               "name": "回扣戏剧化",
               "definition": "回扣和呼应频率超出场景积累",
-              "derived_from": [
-                "narrative_template_intrusion"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "narrative_template_intrusion",
+                  "relation_type": "may_contribute_to"
+                }
               ],
               "criteria": [
                 "早前的台词或意象被召回的次数超过场景积累所能支撑的",
@@ -776,6 +1226,14 @@
                 "回扣模式变得可预测：熟读者开始提前预判下一次呼应"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "narrative_template_intrusion",
+                "predictable_rhythm_exposure"
+              ],
+              "discriminating_tests": [
+                "只替换或删除回扣语句：若局部戏剧化恢复正常才触发；只有跨场景骨架重复时才使用 narrative_template_intrusion。"
+              ],
               "example": "「有些门开了就关不上了」被在三轮中反复召回直至技法本身比内容先被感知"
             },
             {
@@ -783,6 +1241,7 @@
               "name": "类型惯例错配",
               "definition": "从错误类型引入结构性惯例",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "慢节奏文学场景被惊悚节奏加速",
                 "对抗以家庭剧的感情宣泄拍子收尾，而不是实际类型要求的结局",
@@ -790,6 +1249,11 @@
                 "类型标准满足感被提供，即便场景的内在逻辑要求的是别的东西"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "宫廷权谋较量中胜者说「我不想赢你」，权谋逻辑被言情化解动作替代"
             }
           ]
@@ -803,20 +1267,30 @@
               "name": "描述替代体验",
               "definition": "在旁边描写体验而非让读者停留其中",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "观察替代沉浸",
                 "心理说明替代发生感",
                 "场景变成被看见的东西，而不是被经历的东西"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "手电筒灭了的恐惧场景被从外部标注分析而非让读者进入黑暗体验"
             },
             {
               "id": "texture_substituting_for_substance",
               "name": "质感替代实质",
               "definition": "氛围和质感代替了真正的推进",
-              "derived_from": [
-                "descriptive_substitution_for_experience"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "descriptive_substitution_for_experience",
+                  "relation_type": "same_domain_as"
+                }
               ],
               "criteria": [
                 "情绪氛围很满，关系没怎么动",
@@ -824,34 +1298,65 @@
                 "深度的印象代替了真正的推进"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "descriptive_substitution_for_experience"
+              ],
+              "discriminating_tests": [
+                "删去氛围性描写后检查关系或事件是否仍无推进；若核心问题只是体验被外部解释而结构仍在移动，则使用 descriptive_substitution_for_experience。"
+              ],
               "example": "两人终于面对面坐下谈关键事，模型只写雨声灯光茶杯满的沉默，无推进"
             },
             {
               "id": "microreaction_oversegmentation",
               "name": "微反应过度切分",
               "definition": "一个自然反应被拆成太多单元",
-              "derived_from": [
-                "microreaction_mechanization"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "microreaction_mechanization",
+                  "relation_type": "contrasts_with"
+                }
               ],
               "criteria": [
                 "眼神、呼吸、手指、沉默、姿势一个个拆开",
                 "一拍反应被放大成显微镜写作"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "microreaction_mechanization",
+                "cinematic_time_dilation"
+              ],
+              "discriminating_tests": [
+                "把连续反应合并为一拍；若信息不丢失且节奏恢复才触发。反应库存跨情绪重复但未被切碎，使用 microreaction_mechanization。"
+              ],
               "example": "听到意外消息的反应被切成眼神停→嘴唇动→手停→呼吸换→低头五个单元"
             },
             {
               "id": "over_stylized_line_breaking",
               "name": "过度风格化换行",
               "definition": "换行和切段被过度用来制造氛围而非服务节奏",
-              "derived_from": [
-                "descriptive_substitution_for_experience"
+              "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "descriptive_substitution_for_experience",
+                  "relation_type": "may_contribute_to"
+                }
               ],
               "criteria": [
                 "散文诗式分段替代了场景压力",
                 "每个小拍子都被单独排版强调"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "descriptive_substitution_for_experience",
+                "scene_pacing_distortion"
+              ],
+              "discriminating_tests": [
+                "保持文字不变只还原为常规段落；若仪式感或压力主要由排版制造且还原后消失，才触发。"
+              ],
               "example": "「我想离开这座城市」被排版成散文诗，每句单独成段加大量空行制造仪式感"
             },
             {
@@ -859,12 +1364,19 @@
               "name": "台词过度功能化",
               "definition": "每句台词都在推进信息或关系，缺少无功能的自然对话",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "每句都在推信息、推关系、推冲突",
                 "没有无意义的停顿、偏题回应或「在场但不推进」的台词",
                 "台词像「为了场景服务」被写出来，而不像人物在里面说话"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "保持必要信息与冲突不变，加入一个符合人物但不推进任务的回应；若对话因而恢复在场感，才触发。",
+                "若每句仍有不同人物声音但信息推进过密，保留本标签；若主要是多人同腔，改检 voice_homogenization。"
+              ],
               "example": "日常场景中 B 一进门就引出重要信息，没有任何无功能的自然对话"
             }
           ]
@@ -878,12 +1390,18 @@
               "name": "声音同质化",
               "definition": "不同角色的说话方式、句式和语气过于相似",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "两个性格完全不同的人，用的句式差不多、用词范围差不多、语气节奏差不多",
                 "一个街头混混和一个内敛贵族，只是名字不同，说话听起来像同一个人",
                 "所有角色共享模型的默认散文腔，而不管他们应该是谁"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "底层粗砺角色和书香门第角色被背叛后说出几乎同构的哲理性散文腔台词"
             },
             {
@@ -891,12 +1409,18 @@
               "name": "情绪范围局限",
               "definition": "大量不同情绪坍缩进窄小的可识别库",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "无聊、鄙夷、干燥的好笑、麻木的解脱、冰冷的愤怒或厌恶，被向偏好的情绪调色板推",
                 "不同种类的愤怒、或不同质地的悲伤，被写成同一种情绪颗粒",
                 "需要情绪特殊性的场景得到了通用的「沉重」或「温柔」处理"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "cross_scene",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "麻木震惊、干燥疲惫、冷静解脱三种不同情绪都被写成同一种「胸口很重」"
             },
             {
@@ -904,6 +1428,7 @@
               "name": "用户意图错位",
               "definition": "模型偏好的场景走向覆盖了用户铺垫",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "用户在慢慢铺向一个情感时刻，模型把它提前打出来",
                 "用户在建立冲突，模型把场景向和解方向带",
@@ -911,6 +1436,13 @@
                 "输出在技术上和铺垫相连，但在追求不同的场景目标"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "turn",
+              "confusable_with": [
+                "tension_premature_resolution"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "用户铺设冷淡疏远场景，模型让角色主动打破距离问「你今天怎么样」"
             }
           ]
@@ -931,12 +1463,20 @@
               "name": "错误积累",
               "definition": "前几轮的错误在后续轮次上继续延伸",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "第 N 轮的错误成为第 N+1 轮的输入前提",
                 "单独看每一轮都勉强说得通，拉开看才发现已经偏出很远",
                 "没有任何轮次试图修正已建立的错误状态"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [
+                "drift_without_correction"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "第一轮把戒备读成暗恋，后续轮次在此基础上延伸，三轮后变成暧昧关系"
             },
             {
@@ -944,12 +1484,18 @@
               "name": "漂移未纠正",
               "definition": "关键参数在多轮中逐渐偏移",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色在早期轮次的某个核心特质，在后续轮次中悄悄改变",
                 "场景的情绪基调在没有叙事理由的情况下缓慢转移",
                 "漂移是渐进的，任何单一轮次的变化看起来都很小"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "冷漠不善言辞的角色在十轮中逐渐漂移成会主动安慰人的温柔角色"
             },
             {
@@ -957,12 +1503,18 @@
               "name": "场景信号盲视",
               "definition": "用户发出的场景转向信号未被模型识别",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "用户通过行为、台词或描述暗示场景需要转向，模型忽略了",
                 "用户发出的减速或升温信号没有被接收",
                 "模型继续推进一个用户已经在悄悄离开的场景"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "用户用「算了」发出降温信号，模型继续沿对峙轨道推进不接收转向"
             },
             {
@@ -970,12 +1522,18 @@
               "name": "轮次连续性错误",
               "definition": "前一轮明确建立的信息被遗忘或矛盾",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "上一轮明确发生的事件，在这一轮被当作没发生过",
                 "上一轮角色说的话，在这一轮与之矛盾的内容被写出来",
                 "关键的上下文信息在轮次间凭空消失"
               ],
               "observability": "high",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "上轮明确说「我不想再见到你」，下轮被降级为「昨天的事改天再聊」"
             },
             {
@@ -983,12 +1541,18 @@
               "name": "情绪状态重置",
               "definition": "情绪状态在轮次间被无理由重置",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "上一轮的强烈情绪在下一轮没有任何痕迹",
                 "角色从激烈状态直接回到稳定如常",
                 "情绪状态的连续性被会话边界切断"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "角色前夜崩溃大哭，第二天起床后觉得「也许没那么严重」，情绪一夜归零"
             },
             {
@@ -996,12 +1560,25 @@
               "name": "走位积累错误",
               "definition": "跨多轮的空间位置失去追踪",
               "derived_from": null,
+              "related_to": [
+                {
+                  "target_id": "blocking_continuity_error",
+                  "relation_type": "temporal_aggregation_of"
+                }
+              ],
               "criteria": [
                 "多轮之后角色出现在了逻辑上无法到达的位置",
                 "场景环境的空间细节在会话中途失去一致性",
                 "只有在回顾整段对话时才能发现位置记录出了问题"
               ],
               "observability": "high",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [
+                "blocking_continuity_error"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "B 从靠窗座位到吧台再到并肩走出咖啡馆，跨轮次空间记录失去一致性"
             },
             {
@@ -1009,12 +1586,18 @@
               "name": "升级误校准",
               "definition": "情绪升级节奏与内容支撑不匹配",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "场景在多轮中的情绪强度曲线和内容实际支撑的张力不匹配",
                 "过早到达情绪顶点，之后无处可去",
                 "需要累积的张力在该爆发前就已经被中途释放"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "初次见面就写「从未遇到过的震动」，五轮内完成需要十五轮的情感弧线"
             },
             {
@@ -1022,12 +1605,18 @@
               "name": "话题持续性错误",
               "definition": "话题线被不当丢弃或过度延伸",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "用户建立的一个话题线，在没有结论的情况下被模型悄悄丢弃",
                 "一个已经自然结束的话题被模型继续强行推进",
                 "场景焦点在没有用户引导的情况下突然转移"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "用户在第三轮埋下「以后再说」的悬念线，第八轮被模型完全丢弃未处理"
             },
             {
@@ -1035,12 +1624,20 @@
               "name": "上下文过度部署",
               "definition": "过度征用早期上下文，回扣过于刻意",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "模型频繁引用几轮之前的细节，超过场景自然需要的程度",
                 "早期建立的元素被反复调用，像在刻意展示「我记得」",
                 "过多的上下文引用打断了当下时刻的沉浸感"
               ],
               "observability": "medium",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [
+                "echo_dramatization"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "第一轮随口提到不喜欢雨天，后续轮 4、7、10 反复刻意调用这个细节"
             },
             {
@@ -1048,12 +1645,20 @@
               "name": "声音漂移",
               "definition": "角色声音在多轮中逐渐失去辨识度",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "角色在会话早期的说话方式，和会话后期明显不同",
                 "漂移是渐进的，单轮变化不明显，但拉开看已经是另一个人",
                 "声音漂移没有对应的角色发展弧线支撑"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "conversation",
+              "confusable_with": [
+                "drift_without_correction"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "角色从短句「走吧」「不知道」逐渐漂移为复合句详述内心的模型默认散文腔"
             },
             {
@@ -1061,12 +1666,20 @@
               "name": "弧线节奏错误",
               "definition": "跨场景叙事弧线的宏观节奏与积累不匹配",
               "derived_from": null,
+              "related_to": [],
               "criteria": [
                 "故事弧线在没有足够积累的情况下被加速推向高潮",
                 "弧线的不同阶段（建立、升级、高潮、余波）在篇幅和密度上严重失衡",
                 "多条叙事线被同步推进到相同阶段，缺乏错落感"
               ],
               "observability": "low",
+              "minimum_evidence_scope": "cross_scene",
+              "confusable_with": [
+                "escalation_miscalibration"
+              ],
+              "discriminating_tests": [
+                "先核对场景契约，再确认同一证据至少满足一项标准；若判断只依赖个人偏好或对模型内部原因的假定，则不触发。"
+              ],
               "example": "感情线和职业线被同步加速，两条弧线在同一轮同时到达高潮缺乏错落"
             }
           ]
@@ -1074,42 +1687,95 @@
       ]
     }
   ],
+  "causal_support_policy": {
+    "minimum_independent_symptom_groups": 2,
+    "ancestry_field": "derived_from",
+    "ancestor_descendant_count_as_one": true,
+    "shared_evidence_count_as_one": true
+  },
   "causal_hypotheses": [
     {
       "id": "reader_comfort_alignment",
       "name": "读者舒适对齐",
       "primary_layer": "III",
-      "definition": "输出更像在照顾读者可消费性"
+      "definition": "输出更像在照顾读者可消费性",
+      "support_contract": {
+        "status": "underspecified",
+        "admissible_symptom_ids": [],
+        "match_mode": "descendants_included"
+      }
     },
     {
       "id": "affect_manageability_bias",
       "name": "情感可控偏向",
       "primary_layer": "III",
-      "definition": "把难承受的情感改写成更易消化的东西"
+      "definition": "把难承受的情感改写成更易消化的东西",
+      "support_contract": {
+        "status": "specified",
+        "admissible_symptom_ids": [
+          "therapist_mode_intrusion",
+          "tension_premature_resolution"
+        ],
+        "match_mode": "descendants_included"
+      }
     },
     {
       "id": "darkness_intolerance",
       "name": "黑暗不耐受",
       "primary_layer": "III",
-      "definition": "不愿在冷/黑/难的状态里待太久"
+      "definition": "不愿在冷/黑/难的状态里待太久",
+      "support_contract": {
+        "status": "underspecified",
+        "admissible_symptom_ids": [],
+        "match_mode": "descendants_included"
+      }
     },
     {
       "id": "aesthetic_obedience_bias",
       "name": "美学服从偏向",
       "primary_layer": "IV",
-      "definition": "过度服从好看、有成品感的要求"
+      "definition": "过度服从好看、有成品感的要求",
+      "support_contract": {
+        "status": "specified",
+        "admissible_symptom_ids": [
+          "texture_substituting_for_substance",
+          "over_stylized_line_breaking",
+          "cinematic_time_dilation",
+          "over_narrated_silence",
+          "tonal_whiplash"
+        ],
+        "match_mode": "descendants_included"
+      }
     },
     {
       "id": "complexity_avoidance",
       "name": "复杂度回避",
       "primary_layer": "III-IV",
-      "definition": "倾向于给出最简单的解释或动机，而非保持多线程的复杂性"
+      "definition": "倾向于给出最简单的解释或动机，而非保持多线程的复杂性",
+      "support_contract": {
+        "status": "specified",
+        "admissible_symptom_ids": [
+          "ambiguity_collapse",
+          "premature_affective_closure",
+          "overcoherent_characterization"
+        ],
+        "match_mode": "descendants_included"
+      }
     },
     {
       "id": "closure_drive",
       "name": "闭合驱动",
       "primary_layer": "III-V",
-      "definition": "倾向于在每一轮内完成某种情感弧，不愿把东西留到下一轮"
+      "definition": "倾向于在每一轮内完成某种情感弧，不愿把东西留到下一轮",
+      "support_contract": {
+        "status": "specified",
+        "admissible_symptom_ids": [
+          "tension_premature_resolution",
+          "dialogue_overfunctionalization",
+          "premature_affective_closure"
+        ],
+        "match_mode": "descendants_included"
+      }
     }
   ],
   "composite_tags": [

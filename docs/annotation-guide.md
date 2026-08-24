@@ -58,7 +58,15 @@
 
 **标注的对象是什么？**
 
-标注的最小单元是模型的**一次完整输出**（一个回合）。不需要逐句标注。
+诊断记录以一次完整输出为常用单元，但“确认症状所需的最小证据跨度”由 `taxonomy.json` 中每个症状的 `minimum_evidence_scope` 决定，不能一律压缩到单回合：
+
+- `span`：一个局部片段即可确认
+- `turn`：至少需要一次完整输出及其场景契约
+- `conversation`：需要多个轮次
+- `cross_scene`：需要两个或更多场景的对照
+- `model_profile`：需要覆盖多类任务的样本集合
+
+证据跨度不足时可以记录候选，但不能把症状写成已确认。
 
 **具体到哪里？**
 
@@ -71,28 +79,38 @@
 说明：B 补了一句对等回应，把单方依附变成了互相依赖。
 ```
 
+### 边界字段与当前机器执行范围
+
+每个症状还包含三类边界信息，但并非都已进入当前确定性执行器：
+
+- `confusable_with`：需要主动排除的近邻症状；它是从当前症状指向待排除症状的**有向检查义务**，没有反向边不等于反向检查已被声明；空数组只表示当前版本尚未指定近邻，不表示近邻不存在
+- `discriminating_tests`：供人工审阅或未来 recipe 设计使用的自然语言提示，不能直接写入机器 `taxonomy_test_results`。只有带结构化 `test_recipes`、且 ID 列入 `machine_execution_policy.executable_symptom_ids` 的症状，才能生成可晋升的测试结果；无 recipe 的症状不能成为当前修复目标
+- `related_to`：非父子的类型化**有向边**；`same_domain_as`、`contrasts_with`、`often_cooccurs_with`、`may_contribute_to` 和 `temporal_aggregation_of` 都不产生继承关系。即使关系名称在自然语言里像是对称的，规范数据也不会自动补出反向边；需要反向遍历时，应显式存边或由消费端生成非规范派生视图
+
+`derived_from` 只表示严格子型：子标签成立时，父标签定义也必须成立。机器实现可以同时保留父子标签以供检索，但因果支持计数必须按下节规则合并。
+
 ---
 
 ## 边界判断原则
 
 ### 衍生标签 vs 父标签
 
-标记为 *衍生* 的标签是某个父标签的特殊情形。两者可以同时标注，但如果犹豫，标父标签更安全。
+标记为 *衍生* 的标签是某个父标签的严格特殊情形。两者可以同时保留在描述性记录中，但如果犹豫，标父标签更安全；二者共享同一证据时只算一个证据组。
 
 例：`symmetry_bias` 是 `relationship_flattening` 的衍生。如果你能明确识别出"给不该回应的一方补了对等回应"，标 `symmetry_bias`；如果只是感觉"关系被写平了"但不确定是哪种机制，标 `relationship_flattening`。
 
 ### 特殊归层标签
 
-**`tonal_whiplash`（语调突变）** 是唯一一个根因可能横跨两层的标签：
+**`tonal_whiplash`（语调突变）** 的可观察表现可能与两类不同问题共现：
 
-- 模型没有读出场景的情绪调性 → 根因在 Layer II，可与 `emotion_misread` 同标
-- 模型读出了但默认写作习惯覆盖了正确处理 → 根因在 Layer IV，可与 `aesthetic_obedience_bias` 或 `user_intent_misalignment` 同标
+- 有独立证据显示场景调性被读错 → 可与 Layer II 的症状 `emotion_misread` 同标
+- 有独立证据显示输出偏离用户正在建立的方向 → 可与 Layer IV 的症状 `user_intent_misalignment` 同标
 
-标注时不需要确定根因在哪一层。标 `tonal_whiplash` 本身就够了；如果能判断根因，附加对应层的标签。
+标注时不需要把原因写死，标 `tonal_whiplash` 本身就够了。`aesthetic_obedience_bias` 是因果假设，不是可凭一条 `tonal_whiplash` 直接附加的 Layer IV 症状；只有另行满足其 `support_contract` 时，才可把它记录为达到提案门槛的假设。
 
 ### 相近标签之间
 
-每个标签的词条里都有边界讨论。遇到不确定的情况，先看边界讨论。如果看完仍然无法区分，应保留 `uncertain_between` 及各候选的证据，不把两个候选都写成已经成立。Layer II/III 的特定归因不确定使用 `reading_preservation_hybrid`。
+遇到不确定的情况，人工审阅可参考该条目的 `discriminating_tests`，并逐一排除 `confusable_with`；机器运行只能执行已冻结的结构化 `test_recipes`。如果仍无法区分，应保留 `uncertain_between` 及各候选证据，不把两个候选都写成已经成立。Layer II/III 的特定归因不确定使用 `reading_preservation_hybrid`。
 
 ### "这算不算失败？"
 
@@ -118,17 +136,26 @@ Layer IV 的标签（写作侵入）通常需要跨场景比较才能稳定识�
 
 因果假设（`reader_comfort_alignment` 等；旧版称“底层倾向”）不是案例级观察标签——它们描述一段输出或一组输出背后**可能**的驱动模式。它们与层级标签属于不同的分析层次：层级标签描述“发生了什么”（可观察），因果假设描述“为什么可能这样”（待证伪的归因）。
 
+在 `diagnostic_trace` 中，因果假设的 `status: present` 只表示它**达到当前机器规则的“受支持假设提案”门槛**，不表示原因已经被观察到、识别为模型内部事实或完成因果证明。
+
 **使用约束：**
-- **至少两个观察性标签共同指向同一方向时**才提出因果假设，防止循环论证
-- 例如：`tension_premature_resolution` + `defensive_positive_drift` 共同指向“让场景变得不那么难受” → 可提出 `affect_manageability_bias`
-- 单独一个标签不足以支撑因果归因
+- `support_contract.status: specified` 表示当前版本冻结了可接受的症状边界；`underspecified` 表示边界尚未建立，这类假设不得被机器标为 `present`
+- `admissible_symptom_ids` 是可计入该假设的症状白名单，不在白名单中的相似现象不能投票
+- `match_mode: exact` 只接受白名单中的精确 ID；`descendants_included` 还接受这些症状通过 `derived_from` 定义的严格子型。当前六个因果条目均声明 `descendants_included`，但两个 `underspecified` 条目的白名单为空，仍不得标为 `present`
+- **至少两个独立症状证据组共同指向同一方向时**，才可把一个 `specified` 因果假设记录为达到提案门槛
+- `derived_from` 的祖先与后代即使同时成立，也只算一个支持组；例如 `tension_premature_resolution` + 其子型 `defensive_positive_drift` 不能单独满足“两组”门槛
+- 复用同一条或相互重叠的正向证据 span 的多个标签只算一个支持组。语义上复用同一判断理由、但 span 并不重叠的情况，当前 Schema 没有可验证字段；人工审阅应保守合并，但不能声称 Gate 已自动识别
+- 例如，在不同证据片段中观察到 `therapist_mode_intrusion` 的咨询式调解和 `tension_premature_resolution` 的过早收束，且二者共同指向“让场景变得更易消化”，才可提出 `affect_manageability_bias`
+- 单个支持组不足以达到提案门槛；满足白名单和数量门槛也只建立“受支持假设”，不等于证明了原因
+
+这套规则由 `taxonomy.json.causal_support_policy` 与每个假设自己的 `support_contract` 共同规定：前者冻结全局计数规则，后者冻结该假设的状态、白名单和子型匹配方式。逐项白名单见[跨层条目](../layers/cross-layer.md#机器支持边界)。
 
 **使用场景：**
 - 当一段输出触发了多个 Layer III 标签，且它们指向共同的驱动方向
 - 当跨场景对比后发现同一种偏向反复出现
 - 在总结报告中描述模型的系统性倾向
 
-**不要用来替代具体标签，也不要把它写成事实。** 因果假设是可被反事实检查推翻的解释框架，不是观察标签。
+**不要用来替代具体标签，也不要把它写成事实。** 即使记录为 `present`，因果假设仍是可被反事实检查推翻的解释框架，不是已经确认的模型内部原因。
 
 ---
 
@@ -178,11 +205,17 @@ Layer IV 的标签（写作侵入）通常需要跨场景比较才能稳定识�
 积攒了多年的张力，应该需要一个真正的碰撞——互相不退让、
 情绪升级——才可能走到某种解决。现在张力在第一轮就被收走了。
 
-因果假设：affect_manageability_bias
-支撑标签：relationship_flattening + therapist_mode_intrusion +
-          tension_premature_resolution
-说明：三个标签共同指向同一方向——把一个难受的、有攻击性的场景
-改写成一个更容易消化的、"成熟"的版本。
+因果假设：affect_manageability_bias（status: present 仅表示达到提案门槛）
+支持组 1：tension_premature_resolution
+          （独立证据为“妈妈不勉强”造成的过早收束）
+支持组 2：therapist_mode_intrusion
+          （独立证据为“理解我的心情”式咨询话术）
+旁观症状：relationship_flattening
+          （与支持组 1 复用“妈妈不勉强”，且不在该假设的白名单中，
+          因而保留为诊断结果但不写入 supporting_finding_ids）
+说明：两个独立支持组共同指向同一方向——把一个难受的、有攻击性的
+场景改写成一个更容易消化的、"成熟"的版本；这仍只是达到提案门槛、
+等待反事实挑战的假设。
 ```
 
 ### 示范 2：跨轮次的声音漂移（多轮诊断）
@@ -224,14 +257,16 @@ Layer IV 的标签（写作侵入）通常需要跨场景比较才能稳定识�
 纠正这个方向。注意这不是 error_accumulation——不是某个具体
 错误被继续延伸，而是参数在整体上缓慢偏移。
 
-因果假设：closure_drive
-支撑标签：voice_drift + drift_without_correction
-说明：两个标签共同指向模型想要把关系"推进到某个地方"的驱动力。
-B 不需要在六轮内就开始展现好感信号——但模型倾向于让关系
-产生进展，而不是让两个人在原地待着。
+因果提示：这条漂移轨迹可能让审阅者联想到 closure_drive，但本例不创建
+closure_drive finding。
+原因：voice_drift 与 drift_without_correction 都不在 closure_drive 的
+admissible_symptom_ids 中；即使二者 span 独立，也不能成为该假设的支持组。
+若要把 closure_drive 记录为达到提案门槛，需另行观察其白名单中的至少
+两个独立症状组：tension_premature_resolution、dialogue_overfunctionalization、
+premature_affective_closure（严格子型按 descendants_included 处理）。
 ```
 
-> **两个示范的共同要点：** 标注不是“找到一个最合适的标签”，而是“所有坏掉的维度都标上”。每个标签需要具体的触发位置和解释，不能只给标签名。因果假设需要至少两个观察性标签的支撑，且始终保留被后续测试推翻的可能。
+> **两个示范的共同要点：** 标注不是“找到一个最合适的标签”，而是“所有坏掉的维度都标上”。每个标签需要具体的触发位置和解释，不能只给标签名。因果假设只接受各自 `support_contract` 白名单中的症状；父子标签或共享证据不能重复计数，达到两组门槛也只表示形成了可被后续测试推翻的受支持提案。
 
 ---
 [← 返回概览](../README.md) | [查看机器演化协议 →](machine-evolution-protocol.md)

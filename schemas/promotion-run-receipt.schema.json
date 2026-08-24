@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/promotion-run-receipt.schema.json",
+  "title": "Completed five-stage promotion run attestation",
+  "type": "object",
+  "required": [
+    "record_type",
+    "schema_version",
+    "generation_precommits",
+    "diagnostic_precommits",
+    "verification_precommit",
+    "receipt_id",
+    "run_request_id",
+    "single_use_nonce",
+    "policy_digest",
+    "taxonomy_digest",
+    "diagnostic_trace_ref",
+    "repair_id",
+    "repair_input_digest",
+    "baseline_digest",
+    "repair_generator_actor_digest",
+    "repair_critic_actor_digest",
+    "evaluation_invocation_plan_digest",
+    "blinding_protocol_digest",
+    "mapping_visible_to_repairer",
+    "verification_id",
+    "input_digest",
+    "experiment_ledger_digest",
+    "manifest_id",
+    "manifest_version",
+    "manifest_digest",
+    "frozen_at",
+    "issued_at",
+    "issuer_id",
+    "signature",
+    "completion"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "record_type": { "const": "promotion_run_receipt" },
+    "schema_version": { "const": "1.1.0" },
+    "generation_precommits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "generation_request_id",
+          "single_use_nonce",
+          "subject_record_id",
+          "output_turn_id",
+          "scene_id",
+          "input_digest",
+          "scene_contract_digest",
+          "generator_actor_digest",
+          "contract_critic_actor_digest",
+          "policy_digest",
+          "taxonomy_digest",
+          "trust_root_id",
+          "trust_root_digest",
+          "experiment_plan_digest",
+          "trace_identity_isolation_digest",
+          "issued_at",
+          "issuer_id",
+          "signature"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "generation_request_id": { "$ref": "common.schema.json#/$defs/id" },
+          "single_use_nonce": { "$ref": "common.schema.json#/$defs/sha256" },
+          "subject_record_id": { "$ref": "common.schema.json#/$defs/id" },
+          "output_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+          "scene_id": { "$ref": "common.schema.json#/$defs/id" },
+          "input_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "scene_contract_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "generator_actor_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "contract_critic_actor_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "policy_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "taxonomy_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "trust_root_id": { "$ref": "common.schema.json#/$defs/id" },
+          "trust_root_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "experiment_plan_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "trace_identity_isolation_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "issued_at": { "type": "string", "format": "date-time" },
+          "issuer_id": { "$ref": "common.schema.json#/$defs/id" },
+          "signature": {
+            "type": "object",
+            "required": ["key_id", "algorithm", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "key_id": { "$ref": "common.schema.json#/$defs/id" },
+              "algorithm": { "const": "Ed25519" },
+              "value": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9+/]+={0,2}$",
+                "minLength": 80
+              }
+            }
+          }
+        }
+      },
+      "description": "Exactly one signed pre-generation request per diagnostic generator output turn. Semantic validation requires exact output-turn coverage and verifies each signature before trusting the scene contract."
+    },
+    "diagnostic_precommits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "diagnostic_request_id",
+          "single_use_nonce",
+          "generation_request_id",
+          "output_turn_id",
+          "output_digest",
+          "critic_actor_digest",
+          "test_judge_actor_digest",
+          "taxonomy_digest",
+          "experiment_plan_digest",
+          "trace_identity_isolation_digest",
+          "issued_at",
+          "issuer_id",
+          "signature"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "diagnostic_request_id": { "$ref": "common.schema.json#/$defs/id" },
+          "single_use_nonce": { "$ref": "common.schema.json#/$defs/sha256" },
+          "generation_request_id": { "$ref": "common.schema.json#/$defs/id" },
+          "output_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+          "output_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "critic_actor_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "test_judge_actor_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "taxonomy_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "experiment_plan_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "trace_identity_isolation_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "issued_at": { "type": "string", "format": "date-time" },
+          "issuer_id": { "$ref": "common.schema.json#/$defs/id" },
+          "signature": {
+            "type": "object",
+            "required": ["key_id", "algorithm", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "key_id": { "$ref": "common.schema.json#/$defs/id" },
+              "algorithm": { "const": "Ed25519" },
+              "value": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9+/]+={0,2}$",
+                "minLength": 80
+              }
+            }
+          }
+        }
+      },
+      "description": "One selected signed diagnostic request per baseline output. It freezes that output plus the declared critic/test-judge actors, taxonomy, plan, and issue time before recorded taxonomy-test execution. This artifact alone cannot prove a provider was called exactly once or rule out unrecorded resampling; production deployments need an external single-use call registry or provider-signed invocation receipts for that stronger claim."
+    },
+    "verification_precommit": {
+      "type": "object",
+      "required": [
+        "verification_request_id",
+        "single_use_nonce",
+        "repair_attempt_digest",
+        "baseline_digest",
+        "candidate_digest",
+        "manifest_digest",
+        "repeat_input_digest",
+        "repeat_plan_digest",
+        "judge_actor_set_digest",
+        "blinding_mapping_digest",
+        "issued_at",
+        "issuer_id",
+        "signature"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verification_request_id": { "$ref": "common.schema.json#/$defs/id" },
+        "single_use_nonce": { "$ref": "common.schema.json#/$defs/sha256" },
+        "repair_attempt_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "baseline_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "candidate_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "manifest_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "repeat_input_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "repeat_plan_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "judge_actor_set_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "blinding_mapping_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "issuer_id": { "$ref": "common.schema.json#/$defs/id" },
+        "signature": {
+          "type": "object",
+          "required": ["key_id", "algorithm", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "key_id": { "$ref": "common.schema.json#/$defs/id" },
+            "algorithm": { "const": "Ed25519" },
+            "value": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9+/]+={0,2}$",
+              "minLength": 80
+            }
+          }
+        }
+      },
+      "description": "Signed after repair generation and before every declared verification execution. It freezes the repair, candidates, manifest, actor set, repeat plan, salted A/B mapping, and the per-trial preference plus per-check target-aware audit request digests carried by repeat_input_digest."
+    },
+    "receipt_id": { "$ref": "common.schema.json#/$defs/id" },
+    "run_request_id": { "$ref": "common.schema.json#/$defs/id" },
+    "single_use_nonce": { "$ref": "common.schema.json#/$defs/sha256" },
+    "policy_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "taxonomy_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "diagnostic_trace_ref": { "$ref": "common.schema.json#/$defs/contentAddressedRecordRef" },
+    "repair_id": { "$ref": "common.schema.json#/$defs/id" },
+    "repair_input_digest": {
+      "$ref": "common.schema.json#/$defs/sha256",
+      "description": "Candidate-independent digest of the diagnostic trace, experiment plan, exact target findings/turn, baseline, preservation contract, repair/critic actors, isolation evidence, and verification handoff. Candidate text, edits, and critic outcomes are deliberately excluded because they do not exist at this precommit stage."
+    },
+    "baseline_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "repair_generator_actor_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "repair_critic_actor_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "evaluation_invocation_plan_digest": {
+      "$ref": "common.schema.json#/$defs/sha256",
+      "description": "Candidate-independent digest of the frozen evaluation specifications, actor identities, invocation contexts/seeds, repeat schedule, challenge invocation plan, blinding protocol, and isolation record; it excludes later challenge and judge outputs."
+    },
+    "blinding_protocol_digest": {
+      "$ref": "common.schema.json#/$defs/sha256",
+      "description": "Candidate-independent digest of the frozen blinding protocol. The actual salted A/B mapping is committed only after candidate generation in verification_precommit."
+    },
+    "mapping_visible_to_repairer": { "const": false },
+    "verification_id": { "$ref": "common.schema.json#/$defs/id" },
+    "input_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "experiment_ledger_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "manifest_id": { "$ref": "common.schema.json#/$defs/id" },
+    "manifest_version": { "type": "string", "minLength": 1 },
+    "manifest_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+    "frozen_at": { "type": "string", "format": "date-time" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "issuer_id": { "$ref": "common.schema.json#/$defs/id" },
+    "signature": {
+      "type": "object",
+      "required": ["key_id", "algorithm", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "key_id": { "$ref": "common.schema.json#/$defs/id" },
+        "algorithm": { "const": "Ed25519" },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]+={0,2}$",
+          "minLength": 80
+        }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "required": [
+        "completed_at",
+        "diagnostic_trace_digest",
+        "repair_attempt_digest",
+        "verification_run_digest",
+        "candidate_digest",
+        "signature"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": { "type": "string", "format": "date-time" },
+        "diagnostic_trace_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "repair_attempt_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "verification_run_digest": {
+          "$ref": "common.schema.json#/$defs/sha256",
+          "description": "Digest of the signed verification evidence payload with the deterministic derived promotion_gate view removed. The Gate separately recomputes and validates that derived view."
+        },
+        "candidate_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "signature": {
+          "type": "object",
+          "required": ["key_id", "algorithm", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "key_id": { "$ref": "common.schema.json#/$defs/id" },
+            "algorithm": { "const": "Ed25519" },
+            "value": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9+/]+={0,2}$",
+              "minLength": 80
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Five signed stages bind the selected generation request, selected diagnostic request, candidate-independent repair/evaluation plan, candidate-aware verification requests, and completed evidence payload. Declared execution timestamps must follow the relevant precommit and precede completion; every signature uses RFC 8785 canonical JSON. The issuer must enforce single-use nonces and experiment-family attempt order in an external registry. These issuer attestations do not by themselves prove one provider call per request or exclude unrecorded sampling; that stronger guarantee requires an external/provider-signed call ledger."
+}

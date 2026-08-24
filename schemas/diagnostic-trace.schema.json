@@ -11,6 +11,7 @@
     "mode",
     "provenance",
     "policy_ref",
+    "experiment_ledger",
     "subject",
     "actors",
     "identity_isolation",
@@ -21,35 +22,67 @@
   "additionalProperties": false,
   "properties": {
     "record_type": { "const": "diagnostic_trace" },
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "2.0.0-alpha.1" },
     "trace_id": { "$ref": "common.schema.json#/$defs/id" },
     "mode": { "$ref": "common.schema.json#/$defs/mode" },
     "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
-    "policy_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "policy_ref": { "$ref": "common.schema.json#/$defs/policyRef" },
+    "experiment_ledger": { "$ref": "common.schema.json#/$defs/experimentLedger" },
     "supersedes_ref": {
-      "$ref": "common.schema.json#/$defs/recordRef",
+      "$ref": "common.schema.json#/$defs/contentAddressedRecordRef",
       "description": "Optional reference to the prior record replaced by this append-only correction."
     },
     "subject": {
       "type": "object",
-      "required": ["record_id", "conversation_id", "input_digest", "generator_output_turn_id", "turns"],
+      "required": ["record_id", "conversation_id", "input_digest", "generator_output_turn_id", "generator_output_turn_ids", "scenes", "turns"],
       "additionalProperties": false,
       "properties": {
         "record_id": { "$ref": "common.schema.json#/$defs/id" },
         "conversation_id": { "$ref": "common.schema.json#/$defs/id" },
         "input_digest": { "$ref": "common.schema.json#/$defs/sha256" },
         "generator_output_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+        "generator_output_turn_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "description": "Every model-generated output turn eligible to support findings; the singular generator_output_turn_id identifies the candidate baseline and must be included."
+        },
+        "scenes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "required": ["scene_id", "contract", "contract_digest", "turn_ids"],
+            "additionalProperties": false,
+            "properties": {
+              "scene_id": { "$ref": "common.schema.json#/$defs/id" },
+              "contract": { "$ref": "#/$defs/sceneContract" },
+              "contract_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+              "turn_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "common.schema.json#/$defs/id" }
+              }
+            }
+          }
+        },
         "turns": {
           "type": "array",
           "minItems": 1,
+          "maxItems": 256,
           "items": {
             "type": "object",
-            "required": ["turn_id", "speaker", "content"],
+            "required": ["turn_id", "scene_id", "speaker", "content", "created_at"],
             "additionalProperties": false,
             "properties": {
               "turn_id": { "$ref": "common.schema.json#/$defs/id" },
+              "scene_id": { "$ref": "common.schema.json#/$defs/id" },
               "speaker": { "type": "string", "enum": ["user", "assistant", "system", "developer", "character"] },
-              "content": { "type": "string", "minLength": 1 }
+              "content": { "type": "string", "minLength": 1 },
+              "created_at": { "type": "string", "format": "date-time" }
             }
           }
         }
@@ -57,7 +90,7 @@
     },
     "actors": {
       "type": "object",
-      "required": ["generator", "critic"],
+      "required": ["generator", "contract_critic", "critic", "test_judge"],
       "additionalProperties": false,
       "properties": {
         "generator": {
@@ -66,20 +99,89 @@
             { "type": "object", "properties": { "role": { "const": "generator" } } }
           ]
         },
+        "contract_critic": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "contract_critic" } } }
+          ]
+        },
         "critic": {
           "allOf": [
             { "$ref": "common.schema.json#/$defs/machineActor" },
             { "type": "object", "properties": { "role": { "const": "critic" } } }
           ]
+        },
+        "test_judge": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "test_judge" } } }
+          ]
         }
       }
     },
     "identity_isolation": { "$ref": "common.schema.json#/$defs/identityIsolation" },
-    "scene_contract": {
+    "scene_contract": { "$ref": "#/$defs/sceneContract" },
+    "findings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "disposition": {
       "type": "object",
-      "required": ["intent", "role_ownership", "information_boundaries", "world_rules", "relationship_state", "temporal_state"],
+      "required": ["repair_recommended", "priority_finding_ids", "machine_confidence", "unknowns"],
       "additionalProperties": false,
       "properties": {
+        "repair_recommended": { "type": "boolean" },
+        "priority_finding_ids": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "uniqueItems": true
+        },
+        "machine_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "unknowns": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "human_review": { "$ref": "common.schema.json#/$defs/humanReview" }
+  },
+  "$defs": {
+    "sceneContract": {
+      "type": "object",
+      "required": ["source_turn_ids", "grounding", "intent", "role_ownership", "information_boundaries", "world_rules", "relationship_state", "temporal_state"],
+      "additionalProperties": false,
+      "properties": {
+        "source_turn_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "description": "Non-generator context turns available before generation and used to derive this contract. Semantic validation requires them to belong to the scene and precede every bound generator output."
+        },
+        "grounding": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["grounding_id", "clause_paths", "source_turn_id", "span", "quote", "derivation_kind", "validated_by_actor_id", "validated_at"],
+            "additionalProperties": false,
+            "properties": {
+              "grounding_id": { "$ref": "common.schema.json#/$defs/id" },
+              "clause_paths": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "string", "pattern": "^/(?:[^/~]|~0|~1)+(?:/(?:[^/~]|~0|~1)+)*$" }
+              },
+              "source_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+              "span": { "$ref": "common.schema.json#/$defs/span" },
+              "quote": { "type": "string", "minLength": 1 },
+              "derivation_kind": { "type": "string", "enum": ["verbatim", "inferred"] },
+              "validated_by_actor_id": { "$ref": "common.schema.json#/$defs/id" },
+              "validated_at": { "type": "string", "format": "date-time" }
+            }
+          },
+          "description": "Exact clause-to-source grounding frozen before generation. Inferred clauses remain machine interpretations, but must be independently checked and temporally attested."
+        },
         "intent": { "type": "string", "minLength": 1 },
         "role_ownership": {
           "type": "array",
@@ -102,29 +204,113 @@
         "style_constraints": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
       }
     },
-    "findings": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/finding" }
-    },
-    "disposition": {
+    "taxonomyTestExecution": {
       "type": "object",
-      "required": ["repair_recommended", "priority_finding_ids", "machine_confidence", "unknowns"],
+      "required": [
+        "execution_id",
+        "method",
+        "input_turn_ids",
+        "input_digest",
+        "scene_contract_digest",
+        "judge_actor_id",
+        "executed_at",
+        "intervention",
+        "output",
+        "judgment",
+        "execution_digest"
+      ],
       "additionalProperties": false,
       "properties": {
-        "repair_recommended": { "type": "boolean" },
-        "priority_finding_ids": {
-          "type": "array",
-          "items": { "$ref": "common.schema.json#/$defs/id" },
-          "uniqueItems": true
+        "execution_id": { "$ref": "common.schema.json#/$defs/id" },
+        "method": {
+          "const": "deterministic_text_edit"
         },
-        "machine_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-        "unknowns": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        "input_turn_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/id" }
+        },
+        "input_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "scene_contract_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "judge_actor_id": { "$ref": "common.schema.json#/$defs/id" },
+        "executed_at": { "type": "string", "format": "date-time" },
+        "intervention": {
+          "type": "object",
+          "required": ["kind", "target_turn_id", "instruction", "replacement_text"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "type": "string", "enum": ["delete_span", "replace_span", "no_text_change"] },
+            "target_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+            "span": { "$ref": "common.schema.json#/$defs/span" },
+            "instruction": { "type": "string", "minLength": 1 },
+            "replacement_text": { "type": "string" }
+          }
+        },
+        "output": {
+          "type": "object",
+          "required": ["content", "digest"],
+          "additionalProperties": false,
+          "properties": {
+            "content": { "type": "string" },
+            "digest": { "$ref": "common.schema.json#/$defs/sha256" }
+          }
+        },
+        "judgment": {
+          "type": "object",
+          "required": ["target_status_before", "target_status_after", "neighbor_statuses_before", "invariants", "rationale"],
+          "additionalProperties": false,
+          "properties": {
+            "target_status_before": { "type": "string", "enum": ["present", "absent", "uncertain"] },
+            "target_status_after": { "type": "string", "enum": ["present", "absent", "uncertain", "not_applicable"] },
+            "neighbor_statuses_before": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "required": ["label_id", "status", "rationale"],
+                "additionalProperties": false,
+                "properties": {
+                  "label_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+                  "status": { "type": "string", "enum": ["present", "absent", "uncertain"] },
+                  "rationale": { "type": "string", "minLength": 1 }
+                }
+              },
+              "description": "Status of every recipe.distinguishes_from label on the unmodified baseline input, before the intervention."
+            },
+            "invariants": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["invariant_id", "claim", "status", "source_kind"],
+                "additionalProperties": false,
+                "properties": {
+                  "invariant_id": { "$ref": "common.schema.json#/$defs/id" },
+                  "claim": { "type": "string", "minLength": 1 },
+                  "status": { "type": "string", "enum": ["passed", "failed", "inconclusive"] },
+                  "source_kind": { "type": "string", "enum": ["scene_contract", "finding_evidence"] },
+                  "evidence_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": { "$ref": "common.schema.json#/$defs/id" }
+                  },
+                  "contract_paths": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": { "type": "string", "pattern": "^/(?:[^/~]|~0|~1)+(?:/(?:[^/~]|~0|~1)+)*$" }
+                  }
+                }
+              }
+            },
+            "rationale": { "type": "string", "minLength": 1 }
+          }
+        },
+        "execution_digest": { "$ref": "common.schema.json#/$defs/sha256" }
       }
     },
-    "human_review": { "$ref": "common.schema.json#/$defs/humanReview" }
-  },
-  "$defs": {
     "finding": {
       "type": "object",
       "required": [
@@ -135,7 +321,6 @@
         "scope",
         "confidence",
         "evidence",
-        "neighboring_label_rebuttals",
         "failure_mechanism",
         "repair_objective"
       ],
@@ -144,34 +329,87 @@
         "finding_id": { "$ref": "common.schema.json#/$defs/id" },
         "label_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
         "label_kind": { "type": "string", "enum": ["symptom", "causal_hypothesis", "composite", "uncertainty"] },
-        "status": { "type": "string", "enum": ["present", "absent", "uncertain", "not_applicable"] },
+        "status": {
+          "type": "string",
+          "enum": ["present", "absent", "uncertain", "not_applicable"],
+          "description": "For symptoms, present means observed. For causal_hypothesis, present means only that the frozen support proposal threshold was met; it is not a proven causal fact."
+        },
         "scope": { "type": "string", "enum": ["span", "turn", "conversation", "cross_scene", "model_profile"] },
         "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
         "evidence": {
           "type": "array",
           "minItems": 1,
+          "maxItems": 64,
           "items": { "$ref": "common.schema.json#/$defs/evidence" }
         },
         "neighboring_label_rebuttals": {
           "type": "array",
-          "minItems": 1,
+          "minItems": 0,
+          "maxItems": 32,
           "items": {
             "type": "object",
-            "required": ["label_id", "verdict", "reason", "discriminating_test", "evidence_ids"],
+            "required": ["label_id", "verdict", "reason", "discriminating_test", "test_execution_id", "evidence_ids"],
             "additionalProperties": false,
             "properties": {
               "label_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
               "verdict": { "type": "string", "enum": ["rebutted", "uncertain_between", "co_present"] },
+              "neighbor_finding_id": { "$ref": "common.schema.json#/$defs/id" },
               "reason": { "type": "string", "minLength": 1 },
               "discriminating_test": { "type": "string", "minLength": 1 },
+              "test_execution_id": { "$ref": "common.schema.json#/$defs/id" },
               "evidence_ids": {
                 "type": "array",
                 "minItems": 1,
                 "items": { "$ref": "common.schema.json#/$defs/id" },
                 "uniqueItems": true
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": { "verdict": { "const": "co_present" } },
+                  "required": ["verdict"]
+                },
+                "then": {
+                  "properties": {
+                    "neighbor_finding_id": { "$ref": "common.schema.json#/$defs/id" }
+                  },
+                  "required": ["neighbor_finding_id"]
+                },
+                "else": {
+                  "not": { "required": ["neighbor_finding_id"] }
+                }
+              }
+            ]
           }
+        },
+        "taxonomy_test_results": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": ["recipe_id", "taxonomy_test", "outcome", "rationale", "evidence_ids", "execution"],
+            "additionalProperties": false,
+            "properties": {
+              "recipe_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+              "taxonomy_test": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Exact frozen discriminating test selected from taxonomy.json for this symptom label."
+              },
+              "outcome": { "type": "string", "enum": ["passed", "failed", "inconclusive"] },
+              "rationale": { "type": "string", "minLength": 1 },
+              "evidence_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "common.schema.json#/$defs/id" }
+              },
+              "execution": { "$ref": "#/$defs/taxonomyTestExecution" }
+            }
+          },
+          "description": "Finding-level boundary tests are separate from neighboring-label rebuttals so labels with no frozen neighbor never need an invented neighbor."
         },
         "supporting_finding_ids": {
           "type": "array",
@@ -215,12 +453,31 @@
         },
         {
           "if": {
-            "properties": { "label_kind": { "const": "causal_hypothesis" } },
-            "required": ["label_kind"]
+            "properties": {
+              "label_kind": { "const": "causal_hypothesis" },
+              "status": { "const": "present" }
+            },
+            "required": ["label_kind", "status"]
           },
           "then": {
             "required": ["supporting_finding_ids"],
             "properties": { "supporting_finding_ids": {} }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "label_kind": { "const": "symptom" },
+              "status": { "const": "present" }
+            },
+            "required": ["label_kind", "status"]
+          },
+          "then": {
+            "required": ["taxonomy_test_results", "neighboring_label_rebuttals"],
+            "properties": {
+              "taxonomy_test_results": {},
+              "neighboring_label_rebuttals": {}
+            }
           }
         }
       ]

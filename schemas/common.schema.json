@@ -27,10 +27,10 @@
       "required": ["provider", "model", "model_version"],
       "additionalProperties": false,
       "properties": {
-        "provider": { "type": "string", "minLength": 1 },
-        "model": { "type": "string", "minLength": 1 },
-        "model_version": { "type": "string", "minLength": 1 },
-        "deployment": { "type": "string", "minLength": 1 },
+        "provider": { "type": "string", "minLength": 1, "pattern": "\\S" },
+        "model": { "type": "string", "minLength": 1, "pattern": "\\S" },
+        "model_version": { "type": "string", "minLength": 1, "pattern": "\\S" },
+        "deployment": { "type": "string", "minLength": 1, "pattern": "\\S" },
         "weights_digest": { "$ref": "#/$defs/sha256" },
         "endpoint_class": {
           "type": "string",
@@ -58,7 +58,7 @@
         "kind": { "const": "machine" },
         "role": {
           "type": "string",
-          "enum": ["generator", "critic", "repairer", "judge", "aggregator", "policy_executor"]
+          "enum": ["generator", "contract_critic", "critic", "test_judge", "repairer", "judge", "aggregator", "policy_executor"]
         },
         "prompt": {
           "type": "object",
@@ -143,6 +143,97 @@
         "digest": { "$ref": "#/$defs/sha256" }
       }
     },
+    "contentAddressedRecordRef": {
+      "type": "object",
+      "required": ["record_id", "schema_id", "schema_version", "uri", "digest"],
+      "additionalProperties": false,
+      "properties": {
+        "record_id": { "$ref": "#/$defs/id" },
+        "schema_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "uri": { "$ref": "#/$defs/uriReference" },
+        "digest": { "$ref": "#/$defs/sha256" }
+      },
+      "description": "A reference bound by SHA-256 to the RFC 8785 canonicalized complete JSON value of the referenced record."
+    },
+    "policyRef": {
+      "type": "object",
+      "required": ["record_id", "policy_version", "schema_id", "schema_version", "uri", "digest"],
+      "additionalProperties": false,
+      "properties": {
+        "record_id": { "$ref": "#/$defs/id" },
+        "policy_version": { "type": "string", "minLength": 1 },
+        "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json" },
+        "schema_version": { "const": "2.0.0-alpha.1" },
+        "uri": { "$ref": "#/$defs/uriReference" },
+        "digest": {
+          "$ref": "#/$defs/sha256",
+          "description": "Must equal the referenced policy record's policy_digest."
+        }
+      }
+    },
+    "experimentLedger": {
+      "type": "object",
+      "required": ["family_id", "attempt_id", "attempt_index", "budget", "stop_rule"],
+      "additionalProperties": false,
+      "properties": {
+        "family_id": {
+          "$ref": "#/$defs/id",
+          "description": "Stable identifier shared by every candidate attempt addressing the same experimental question."
+        },
+        "attempt_id": { "$ref": "#/$defs/id" },
+        "attempt_index": { "type": "integer", "minimum": 1 },
+        "budget": {
+          "type": "object",
+          "required": ["max_candidate_attempts", "candidate_attempts_used", "max_model_calls", "model_calls_used"],
+          "additionalProperties": false,
+          "properties": {
+            "max_candidate_attempts": { "type": "integer", "minimum": 1 },
+            "candidate_attempts_used": { "type": "integer", "minimum": 0 },
+            "max_model_calls": { "type": "integer", "minimum": 1 },
+            "model_calls_used": { "type": "integer", "minimum": 0 }
+          },
+          "description": "Precommitted search budget. Semantic validation must reject used values greater than their maxima."
+        },
+        "stop_rule": {
+          "type": "object",
+          "required": ["rule_id", "precommitted", "condition_code", "condition", "action_when_met", "action_on_budget_exhaustion", "triggered", "triggered_by"],
+          "additionalProperties": false,
+          "properties": {
+            "rule_id": { "$ref": "#/$defs/id" },
+            "precommitted": { "const": true },
+            "condition_code": {
+              "const": "first_critic_approval_or_budget_exhaustion",
+              "description": "Executable condition: stop search at the first critic-approved candidate; budget exhaustion is a non-promoting stop."
+            },
+            "condition": { "type": "string", "minLength": 1 },
+            "action_when_met": {
+              "const": "halt_and_verify"
+            },
+            "action_on_budget_exhaustion": { "const": "halt_without_promotion" },
+            "triggered": { "type": "boolean" },
+            "triggered_by": {
+              "type": "string",
+              "enum": ["not_triggered", "critic_approval", "budget_exhaustion"]
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "triggered": { "const": false },
+                "triggered_by": { "const": "not_triggered" }
+              }
+            },
+            {
+              "properties": {
+                "triggered": { "const": true },
+                "triggered_by": { "enum": ["critic_approval", "budget_exhaustion"] }
+              }
+            }
+          ]
+        }
+      }
+    },
     "versionProvenance": {
       "type": "object",
       "required": ["taxonomy", "schema", "runner", "prompt_bundle", "digest_status", "created_at"],
@@ -204,12 +295,15 @@
       "properties": {
         "start": { "type": "integer", "minimum": 0 },
         "end": { "type": "integer", "minimum": 1 },
-        "unit": { "type": "string", "enum": ["unicode_codepoint", "line", "turn"] }
+        "unit": {
+          "const": "unicode_codepoint",
+          "description": "Zero-based half-open offsets into the exact source turn content; semantic validation must also require end > start and content.slice(start, end) === quote."
+        }
       }
     },
     "evidence": {
       "type": "object",
-      "required": ["evidence_id", "source_record_id", "turn_id", "quote", "stance", "rationale"],
+      "required": ["evidence_id", "source_record_id", "turn_id", "span", "quote", "stance", "rationale"],
       "additionalProperties": false,
       "properties": {
         "evidence_id": { "$ref": "#/$defs/id" },

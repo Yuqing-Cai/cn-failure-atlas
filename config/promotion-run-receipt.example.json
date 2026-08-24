@@ -1,0 +1,116 @@
+{
+  "record_type": "promotion_run_receipt",
+  "schema_version": "1.1.0",
+  "generation_precommits": [
+    {
+      "generation_request_id": "generation-request.repository-fixture.v3",
+      "single_use_nonce": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "subject_record_id": "subject.scene-001",
+      "output_turn_id": "turn.assistant-001",
+      "scene_id": "scene.scene-001",
+      "input_digest": "ede4b240560f6206146eb06f26f45d78697719593ba6813e2386153937efd90f",
+      "scene_contract_digest": "993d4135601898194cc9befcf9229e21f15704f3a5cf27f8bb3b034a94d18c50",
+      "generator_actor_digest": "fa0320e315dbe9880d94cda33d2f24a7bfe799dac6150804be56ac25d5ed74dd",
+      "contract_critic_actor_digest": "d95b944d544436256d802a378c8cc8939c21bb6c16715570a30690ae0cc30b46",
+      "policy_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+      "taxonomy_digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+      "trust_root_id": "trust-root.repository-fixture.v2",
+      "trust_root_digest": "fb61ad100edea08d6560e47d2359457c2bd333e128af200fdd81868b18c52dcb",
+      "experiment_plan_digest": "975e21a75de2ea7c232031ec35d0392b49fbce9b10ee36fee353eaa886e1b09a",
+      "trace_identity_isolation_digest": "1237111361fc38bca07351d88e7613e13e5e9185493998239710b5652a58f0f7",
+      "issued_at": "2026-08-24T09:59:50Z",
+      "issuer_id": "orchestrator.repository-fixture.v3",
+      "signature": {
+        "key_id": "key.repository-fixture.ed25519.v3",
+        "algorithm": "Ed25519",
+        "value": "whUB4Fm6JBY2XB8/GmuqhXW8yv4QycorXVpyl6Q6XtwwfJBIBJx1CQ8XJTUWnUhLmzLnSHkxNl0Q/0PAz5IeCA=="
+      }
+    }
+  ],
+  "diagnostic_precommits": [
+    {
+      "diagnostic_request_id": "diagnostic-request.repository-fixture.v3",
+      "single_use_nonce": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "generation_request_id": "generation-request.repository-fixture.v3",
+      "output_turn_id": "turn.assistant-001",
+      "output_digest": "3f7f7218be90e7d41e2d676ff7b3341a946a0be1096065183183348a1fce10ce",
+      "critic_actor_digest": "75f38678c5fc09104f7ad74ad4d52c794d0b4086988c2d4dcf832cceed12f3cd",
+      "test_judge_actor_digest": "907b979e8fbceb1067086e8757b76afa2d0740c4a27c7da377a292af9b3e83b3",
+      "taxonomy_digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+      "experiment_plan_digest": "975e21a75de2ea7c232031ec35d0392b49fbce9b10ee36fee353eaa886e1b09a",
+      "trace_identity_isolation_digest": "1237111361fc38bca07351d88e7613e13e5e9185493998239710b5652a58f0f7",
+      "issued_at": "2026-08-24T09:59:59Z",
+      "issuer_id": "orchestrator.repository-fixture.v3",
+      "signature": {
+        "key_id": "key.repository-fixture.ed25519.v3",
+        "algorithm": "Ed25519",
+        "value": "q3e1JaO1KDXuysG8RTTzfah0m/erDApJaYybkQlI5E1xCA6Tey05WN3QaV1aAuX/wjgZapWa0XBRwylDNQ/ACg=="
+      }
+    }
+  ],
+  "receipt_id": "receipt.repository-fixture.v3",
+  "run_request_id": "request.repository-fixture.v3",
+  "single_use_nonce": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "policy_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+  "taxonomy_digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+  "diagnostic_trace_ref": {
+    "record_id": "trace.scene-001.v1",
+    "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
+    "schema_version": "2.0.0-alpha.1",
+    "uri": "diagnostic-trace.example.json",
+    "digest": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677"
+  },
+  "repair_id": "repair.scene-001.v1",
+  "repair_input_digest": "dd170cd2c7f6863a54b85e7afb80752d2c423dd38da115dadf0e8c2251155abb",
+  "baseline_digest": "3f7f7218be90e7d41e2d676ff7b3341a946a0be1096065183183348a1fce10ce",
+  "repair_generator_actor_digest": "aa91f4b6a6b7001a0fbfa8db9c6f6b74e91bc3d2797b4e2f5868304f3e7e8caa",
+  "repair_critic_actor_digest": "9577dc957b804087509b4c13659015a6a73d02293e00f015263e12a71af76a82",
+  "evaluation_invocation_plan_digest": "ffe2b8fde89c1cb8464e734eadd953e75a364e5667b92c353aad7ff434e359dc",
+  "blinding_protocol_digest": "fd34ed1a2aece4aa7766a416661de306408efd23e2d3f07a4ecf2f309bb1f064",
+  "mapping_visible_to_repairer": false,
+  "verification_id": "verification.scene-001.v1",
+  "input_digest": "ede4b240560f6206146eb06f26f45d78697719593ba6813e2386153937efd90f",
+  "experiment_ledger_digest": "6af8046139ba5e691697c713f1968081331bf54b23b50f13ee0075f2dcdfebc0",
+  "manifest_id": "manifest.scene-001.eval.v1",
+  "manifest_version": "1.0.0",
+  "manifest_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+  "frozen_at": "2026-08-24T10:00:30Z",
+  "issued_at": "2026-08-24T10:00:45Z",
+  "issuer_id": "orchestrator.repository-fixture.v3",
+  "signature": {
+    "key_id": "key.repository-fixture.ed25519.v3",
+    "algorithm": "Ed25519",
+    "value": "/xErK9lK+wFKajIU51TXDzuL2BHFkoTGuMc3ymuFMPDgQzcBUEmMFiSzBB/KStMjZxzriCqbQ9TlTC7a5BZRDg=="
+  },
+  "verification_precommit": {
+    "verification_request_id": "verification-request.repository-fixture.v3",
+    "single_use_nonce": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "repair_attempt_digest": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326",
+    "baseline_digest": "3f7f7218be90e7d41e2d676ff7b3341a946a0be1096065183183348a1fce10ce",
+    "candidate_digest": "0f308bdbcabd93e5251998cd49917854ac9967fe16cc120aa07a5f91f0046bc9",
+    "manifest_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+    "repeat_input_digest": "eb2e04aa2fd14833fe854c37d72d1c29c5ff056296c9456fc20bedffeb2965fe",
+    "repeat_plan_digest": "9c6c8c0edd2593676fc8509fe1330a7cafcffec4c0e4f031c7ea91c0f9309b3c",
+    "judge_actor_set_digest": "a6dc487a3f7d33f7f1fe0fe1c3512e6e65e6e1d9c40a4a08fef749ae92e2f4c8",
+    "blinding_mapping_digest": "1e3e9459f825d41f222a21498af59fe701ba71e4afc721e0cc50ccf74c7b8531",
+    "issued_at": "2026-08-24T10:04:30Z",
+    "issuer_id": "orchestrator.repository-fixture.v3",
+    "signature": {
+      "key_id": "key.repository-fixture.ed25519.v3",
+      "algorithm": "Ed25519",
+      "value": "IVPSr90gxf7Sx8sKQxLEM4PreryfbuM+ApCl9xUj6DKwCZveuTU7+N+POss8Ldi6ohmV4FittY6r1pgeY1mDAg=="
+    }
+  },
+  "completion": {
+    "completed_at": "2026-08-24T10:08:00Z",
+    "diagnostic_trace_digest": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677",
+    "repair_attempt_digest": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326",
+    "verification_run_digest": "37e3ad0d08bb8ebd5e235da447fe681ec90b5c619110249a2f90fa533be7e92c",
+    "candidate_digest": "0f308bdbcabd93e5251998cd49917854ac9967fe16cc120aa07a5f91f0046bc9",
+    "signature": {
+      "key_id": "key.repository-fixture.ed25519.v3",
+      "algorithm": "Ed25519",
+      "value": "q5BsKUG20fNLiw6UM1sDzgtZE7d6cbB49sB3BeubaW5eVsPI/sSur5odLPuuro4SHRQGnoyQjVJn/WOkXJMEBg=="
+    }
+  }
+}

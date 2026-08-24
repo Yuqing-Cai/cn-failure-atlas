@@ -9,6 +9,7 @@
     "schema_version",
     "mode",
     "provenance",
+    "policy_digest",
     "policy",
     "actor_isolation",
     "verification_protocol",
@@ -19,11 +20,15 @@
   "additionalProperties": false,
   "properties": {
     "record_type": { "const": "evolution_policy" },
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "2.0.0-alpha.1" },
     "mode": { "$ref": "common.schema.json#/$defs/mode" },
     "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
+    "policy_digest": {
+      "$ref": "common.schema.json#/$defs/sha256",
+      "description": "SHA-256 of the RFC 8785 canonicalized object containing schema_version, mode, provenance, policy, actor_isolation, verification_protocol, promotion_lifecycle, rollback_policy, and supersedes_ref when present. Only conformance-example references are excluded. Every policy_ref.digest must match this value."
+    },
     "supersedes_ref": {
-      "$ref": "common.schema.json#/$defs/recordRef",
+      "$ref": "common.schema.json#/$defs/contentAddressedRecordRef",
       "description": "Optional prior policy record superseded by this append-only version."
     },
     "policy": {
@@ -58,10 +63,10 @@
           "additionalProperties": false,
           "properties": {
             "min_independent_judges": { "type": "integer", "minimum": 2 },
-            "min_evidence_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
-            "min_counterfactual_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
-            "max_regression_failure_rate": { "type": "number", "minimum": 0, "maximum": 1 },
-            "min_repeat_runs": { "type": "integer", "minimum": 1 }
+            "min_evidence_coverage": { "type": "number", "minimum": 0.8, "maximum": 1 },
+            "min_counterfactual_pass_rate": { "type": "number", "minimum": 0.8, "maximum": 1 },
+            "max_regression_failure_rate": { "type": "number", "minimum": 0, "maximum": 0.05 },
+            "min_repeat_runs": { "type": "integer", "minimum": 2 }
           }
         },
         "prohibit_generator_as_judge": { "const": true },
@@ -76,7 +81,7 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"]
+            "enum": ["repair_case", "repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"]
           }
         }
       }
@@ -88,18 +93,13 @@
       "properties": {
         "logical_roles": {
           "type": "array",
-          "minItems": 4,
-          "uniqueItems": true,
-          "items": { "type": "string", "enum": ["generator", "critic", "repairer", "judge", "aggregator", "policy_executor"] }
+          "const": ["generator", "contract_critic", "critic", "test_judge", "repairer", "judge", "aggregator", "policy_executor"],
+          "description": "Complete signed role vocabulary used by the current machine-only protocol. Preference and audit judges are separate actor sets within the judge role family."
         },
         "required_pair_boundaries": {
           "type": "array",
-          "minItems": 3,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": ["generator_critic", "generator_judge", "repairer_judge", "judge_aggregator", "critic_judge"]
-          }
+          "const": ["generator_critic", "generator_repairer", "diagnostic_repairer", "generator_judge", "repairer_judge", "judge_aggregator", "critic_judge", "preference_judge_audit_judge"],
+          "description": "All required role-family boundaries enforced across the signed artifact bundle. The repairer must use a fresh identity/context/prompt relative to generation and diagnosis; target-aware audit contexts remain isolated from blind preference contexts."
         },
         "accepted_mechanisms": {
           "type": "array",
@@ -116,7 +116,7 @@
     },
     "verification_protocol": {
       "type": "object",
-      "required": ["pairwise_blind_comparison", "orders", "reset_context_between_orders", "counterfactual_suite_required", "regression_suite_required", "evidence_trace_required", "challenge_round_required", "inconclusive_is_not_promotion"],
+      "required": ["pairwise_blind_comparison", "orders", "reset_context_between_orders", "counterfactual_suite_required", "regression_suite_required", "evidence_trace_required", "challenge_round_required", "promotion_artifact_binding_required", "frozen_evaluation_manifest_required", "exact_manifest_coverage_required", "experiment_ledger_required", "inconclusive_is_not_promotion"],
       "additionalProperties": false,
       "properties": {
         "pairwise_blind_comparison": { "const": true },
@@ -129,6 +129,10 @@
         "regression_suite_required": { "const": true },
         "evidence_trace_required": { "const": true },
         "challenge_round_required": { "const": true },
+        "promotion_artifact_binding_required": { "const": true },
+        "frozen_evaluation_manifest_required": { "const": true },
+        "exact_manifest_coverage_required": { "const": true },
+        "experiment_ledger_required": { "const": true },
         "inconclusive_is_not_promotion": { "const": true }
       }
     },
@@ -143,9 +147,19 @@
         },
         "hard_gates": {
           "type": "array",
-          "minItems": 8,
+          "minItems": 57,
           "uniqueItems": true,
+          "description": "Signed declarative inventory of deterministic checks implemented by the current Gate. Lifecycle side effects remain the responsibility of an external orchestrator.",
           "allOf": [
+            { "contains": { "const": "schema_bundle_valid" } },
+            { "contains": { "const": "provenance_verified" } },
+            { "contains": { "const": "trust_root_pinned" } },
+            { "contains": { "const": "taxonomy_authority_pinned" } },
+            { "contains": { "const": "run_attestation_verified" } },
+            { "contains": { "const": "source_records_content_addressed" } },
+            { "contains": { "const": "actor_profiles_bound" } },
+            { "contains": { "const": "target_failure_reduced" } },
+            { "contains": { "const": "aggregation_recomputed" } },
             { "contains": { "const": "generator_not_judge" } },
             { "contains": { "const": "order_swap_complete" } },
             { "contains": { "const": "independent_judges_met" } },
@@ -154,11 +168,59 @@
             { "contains": { "const": "regression_failure_rate_met" } },
             { "contains": { "const": "repeat_runs_met" } },
             { "contains": { "const": "no_unresolved_blocking_challenges" } },
-            { "contains": { "const": "candidate_wins" } }
+            { "contains": { "const": "candidate_wins" } },
+            { "contains": { "const": "policy_digest_bound" } },
+            { "contains": { "const": "promotion_artifact_bound" } },
+            { "contains": { "const": "evaluation_manifest_complete" } },
+            { "contains": { "const": "experiment_budget_respected" } }
+            ,{ "contains": { "const": "taxonomy_test_recipe_replayed" } }
+            ,{ "contains": { "const": "scene_contract_grounded" } }
+            ,{ "contains": { "const": "generation_request_precommitted" } }
+            ,{ "contains": { "const": "diagnostic_request_precommitted" } }
+            ,{ "contains": { "const": "repair_request_precommitted" } }
+            ,{ "contains": { "const": "verification_request_precommitted" } }
+            ,{ "contains": { "const": "repair_targets_evidence_bound" } }
+            ,{ "contains": { "const": "actor_ids_unique" } }
+            ,{ "contains": { "const": "preference_audit_channels_isolated" } }
+            ,{ "contains": { "const": "target_judge_cartesian_coverage" } }
+            ,{ "contains": { "const": "critic_handoff_complete" } }
+            ,{ "contains": { "const": "receipt_timeline_valid" } }
+            ,{ "contains": { "const": "blinding_mapping_committed" } }
+            ,{ "contains": { "const": "repeat_contexts_isolated" } }
+            ,{ "contains": { "const": "repair_edits_replayed" } }
+            ,{ "contains": { "const": "preservation_checks_bound" } }
+            ,{ "contains": { "const": "stop_rule_trigger_consistent" } }
+            ,{ "contains": { "const": "target_turn_bound" } }
+            ,{ "contains": { "const": "cross_stage_actor_isolation" } }
+            ,{ "contains": { "const": "taxonomy_semantics_valid" } }
+            ,{ "contains": { "const": "regression_registry_pinned" } }
+            ,{ "contains": { "const": "preference_requests_bound" } }
+            ,{ "contains": { "const": "challenge_invocations_bound" } }
+            ,{ "contains": { "const": "counterfactual_sources_bound" } }
+            ,{ "contains": { "const": "evidence_support_set_complete" } }
+            ,{ "contains": { "const": "verification_suites_bound" } }
+            ,{ "contains": { "const": "structural_input_limits_enforced" } }
+            ,{ "contains": { "const": "audit_requests_bound" } }
+            ,{ "contains": { "const": "lifecycle_graph_frozen" } }
+            ,{ "contains": { "const": "model_call_lower_bound_enforced" } }
+            ,{ "contains": { "const": "verification_timestamps_ordered" } }
+            ,{ "contains": { "const": "challenge_requests_bound" } }
+            ,{ "contains": { "const": "challenge_resolution_checks_exact" } }
+            ,{ "contains": { "const": "case_scoped_promotion_only" } }
+            ,{ "contains": { "const": "model_call_ledger_cumulative" } }
           ],
           "items": {
             "type": "string",
             "enum": [
+              "schema_bundle_valid",
+              "provenance_verified",
+              "trust_root_pinned",
+              "taxonomy_authority_pinned",
+              "run_attestation_verified",
+              "source_records_content_addressed",
+              "actor_profiles_bound",
+              "target_failure_reduced",
+              "aggregation_recomputed",
               "generator_not_judge",
               "order_swap_complete",
               "independent_judges_met",
@@ -167,23 +229,71 @@
               "regression_failure_rate_met",
               "repeat_runs_met",
               "no_unresolved_blocking_challenges",
-              "candidate_wins"
+              "candidate_wins",
+              "policy_digest_bound",
+              "promotion_artifact_bound",
+              "evaluation_manifest_complete",
+              "experiment_budget_respected",
+              "taxonomy_test_recipe_replayed",
+              "scene_contract_grounded",
+              "generation_request_precommitted",
+              "diagnostic_request_precommitted",
+              "repair_request_precommitted",
+              "verification_request_precommitted",
+              "repair_targets_evidence_bound",
+              "actor_ids_unique",
+              "preference_audit_channels_isolated",
+              "target_judge_cartesian_coverage",
+              "critic_handoff_complete",
+              "receipt_timeline_valid",
+              "blinding_mapping_committed",
+              "repeat_contexts_isolated",
+              "repair_edits_replayed",
+              "preservation_checks_bound",
+              "stop_rule_trigger_consistent",
+              "target_turn_bound",
+              "cross_stage_actor_isolation",
+              "taxonomy_semantics_valid",
+              "regression_registry_pinned",
+              "preference_requests_bound",
+              "challenge_invocations_bound",
+              "counterfactual_sources_bound",
+              "evidence_support_set_complete",
+              "verification_suites_bound",
+              "structural_input_limits_enforced",
+              "audit_requests_bound",
+              "lifecycle_graph_frozen",
+              "model_call_lower_bound_enforced",
+              "verification_timestamps_ordered",
+              "challenge_requests_bound",
+              "challenge_resolution_checks_exact",
+              "case_scoped_promotion_only",
+              "model_call_ledger_cumulative"
             ]
           }
         },
         "transitions": {
           "type": "array",
-          "minItems": 3,
-          "items": {
-            "type": "object",
-            "required": ["from", "to", "condition"],
-            "additionalProperties": false,
-            "properties": {
-              "from": { "type": "string", "enum": ["generated", "diagnosed", "challenged", "repair_proposed", "verifying", "probation", "promoted"] },
-              "to": { "type": "string", "enum": ["diagnosed", "challenged", "repair_proposed", "verifying", "probation", "promoted", "rejected", "quarantined", "deprecated", "rolled_back"] },
-              "condition": { "type": "string", "minLength": 1 }
-            }
-          }
+          "const": [
+            { "from": "generated", "to": "diagnosed", "condition_code": "diagnostic_bundle_valid" },
+            { "from": "generated", "to": "quarantined", "condition_code": "diagnostic_bundle_invalid" },
+            { "from": "diagnosed", "to": "challenged", "condition_code": "diagnostic_challenge_required" },
+            { "from": "diagnosed", "to": "quarantined", "condition_code": "diagnostic_evidence_inconclusive" },
+            { "from": "challenged", "to": "repair_proposed", "condition_code": "diagnostic_challenge_resolved" },
+            { "from": "challenged", "to": "quarantined", "condition_code": "diagnostic_challenge_unresolved" },
+            { "from": "repair_proposed", "to": "verifying", "condition_code": "verification_request_precommitted" },
+            { "from": "repair_proposed", "to": "rejected", "condition_code": "repair_critic_rejected" },
+            { "from": "verifying", "to": "rejected", "condition_code": "gate_rejected" },
+            { "from": "verifying", "to": "quarantined", "condition_code": "gate_inconclusive" },
+            { "from": "verifying", "to": "probation", "condition_code": "gate_candidate" },
+            { "from": "verifying", "to": "promoted", "condition_code": "gate_adopted" },
+            { "from": "probation", "to": "rejected", "condition_code": "fresh_batch_gate_rejected" },
+            { "from": "probation", "to": "quarantined", "condition_code": "fresh_batch_gate_inconclusive" },
+            { "from": "probation", "to": "promoted", "condition_code": "fresh_batch_gate_adopted" },
+            { "from": "promoted", "to": "rolled_back", "condition_code": "new_blocking_regression" },
+            { "from": "promoted", "to": "deprecated", "condition_code": "superseded_by_promoted_artifact" }
+          ],
+          "description": "Exact machine-readable lifecycle graph. The Gate derives the current gate result; an external orchestrator applies these signed transitions and records side effects."
         },
         "taxonomy_change_scope": {
           "type": "object",
@@ -200,6 +310,7 @@
     },
     "rollback_policy": {
       "type": "object",
+      "description": "Signed rollback intent. The current library evaluates and reports gate state but does not mutate deployments; an external orchestrator must execute and audit rollback actions.",
       "required": ["retain_all_artifacts", "rollback_on_new_blocking_regression", "rollback_on_gate_recalculation_failure", "quarantine_failed_strategy"],
       "additionalProperties": false,
       "properties": {

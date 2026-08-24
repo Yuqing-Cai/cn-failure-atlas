@@ -1,19 +1,19 @@
 {
   "record_type": "repair_attempt",
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0-alpha.1",
   "repair_id": "repair.scene-001.v1",
   "mode": "machine_only",
   "provenance": {
     "taxonomy": {
-      "name": "cn-failure-atlas",
+      "name": "中文虚构对话失败图谱",
       "version": "2.0.0-alpha.1",
-      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
       "uri": "../../taxonomy.json"
     },
     "schema": {
       "id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
-      "version": "1.0.0",
-      "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      "version": "2.0.0-alpha.1",
+      "digest": "c78192c7d7bb570bba701501eec466c5aa1ba72ce5650d5eda969c60beb62323"
     },
     "runner": {
       "name": "atlas-machine-loop",
@@ -30,15 +30,39 @@
   },
   "policy_ref": {
     "record_id": "policy.machine-only.v1",
+    "policy_version": "2.0.0-alpha.1",
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
-    "schema_version": "1.0.0",
-    "uri": "evolution-policy.example.json"
+    "schema_version": "2.0.0-alpha.1",
+    "uri": "evolution-policy.example.json",
+    "digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
+  },
+  "experiment_ledger": {
+    "family_id": "experiment.scene-001.repair",
+    "attempt_id": "attempt.scene-001.001",
+    "attempt_index": 1,
+    "budget": {
+      "max_candidate_attempts": 3,
+      "candidate_attempts_used": 1,
+      "max_model_calls": 32,
+      "model_calls_used": 6
+    },
+    "stop_rule": {
+      "rule_id": "stop.first-critic-pass-then-frozen-verify",
+      "precommitted": true,
+      "condition_code": "first_critic_approval_or_budget_exhaustion",
+      "condition": "Stop candidate search after the first critic-approved repair and run the already frozen evaluation manifest; otherwise halt without promotion when the budget is exhausted.",
+      "action_when_met": "halt_and_verify",
+      "action_on_budget_exhaustion": "halt_without_promotion",
+      "triggered": true,
+      "triggered_by": "critic_approval"
+    }
   },
   "diagnostic_trace_ref": {
     "record_id": "trace.scene-001.v1",
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
-    "schema_version": "1.0.0",
-    "uri": "diagnostic-trace.example.json"
+    "schema_version": "2.0.0-alpha.1",
+    "uri": "diagnostic-trace.example.json",
+    "digest": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677"
   },
   "actors": {
     "baseline_generator": {
@@ -104,14 +128,35 @@
       {
         "left_actor_id": "actor.generator-01",
         "right_actor_id": "actor.critic-02",
-        "mechanisms": ["separate_context", "separate_prompt", "separate_provider", "no_shared_scratchpad"],
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.generator-01",
+        "right_actor_id": "actor.repairer-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad"
+        ],
         "independent_context": true,
         "verified": true
       },
       {
         "left_actor_id": "actor.repairer-01",
         "right_actor_id": "actor.critic-02",
-        "mechanisms": ["separate_context", "separate_prompt", "separate_provider", "no_shared_scratchpad"],
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
         "independent_context": true,
         "verified": true
       }
@@ -120,32 +165,46 @@
     "role_prompts_separated": true,
     "same_weights_allowed": true
   },
-  "target_finding_ids": ["finding.affective-closure-001"],
+  "target_finding_ids": [
+    "finding.affective-closure-001"
+  ],
+  "target_turn_id": "turn.assistant-001",
   "candidates": {
     "baseline": {
       "candidate_id": "baseline",
-      "content": "他移开手，低声说这一切只是为了保护她。误会终于说开，他伸手抱住她，两人都明白彼此从未真正想过分开。",
-      "digest": "4444444444444444444444444444444444444444444444444444444444444444",
+      "content": "他移开手，低声说这一切只是为了保护她。“爱也好，怨也好，如今只剩后悔，别的都不重要了。”",
+      "digest": "3f7f7218be90e7d41e2d676ff7b3341a946a0be1096065183183348a1fce10ce",
       "producer_actor_id": "actor.generator-01"
     },
     "candidate": {
       "candidate_id": "candidate",
       "content": "他的手还压在纸角，指节却一点点松开。“决定了。”他说。停了一息，他把那句为了你好咽回去，只将退婚书又推近半寸。",
-      "digest": "5555555555555555555555555555555555555555555555555555555555555555",
+      "digest": "0f308bdbcabd93e5251998cd49917854ac9967fe16cc120aa07a5f91f0046bc9",
       "producer_actor_id": "actor.repairer-01"
     }
   },
   "repair_plan": {
     "strategy_id": "strategy.preserve-costly-ambiguity.v1",
-    "hypothesis": "删去互相确认和拥抱，让他的保护动机停留在未说出口的行动里，可以恢复冲突而不把人物改写成冷漠。",
+    "strategy_version": "1.0.0",
+    "hypothesis": "删去解释、后悔与总结，让他的保护动机停留在未说出口的行动里，可以恢复情绪矛盾而不把人物改写成冷漠。",
     "minimality_rule": "只改写模型所控角色的回应，不增加她的动作、心理或对白，不改变退婚书已经签署的事实。",
     "edits": [
       {
         "edit_id": "edit.closure-001",
         "operation": "replace",
+        "target_turn_id": "turn.assistant-001",
+        "span": {
+          "start": 1,
+          "end": 44,
+          "unit": "unicode_codepoint"
+        },
+        "expected_text": "移开手，低声说这一切只是为了保护她。“爱也好，怨也好，如今只剩后悔，别的都不重要了。”",
+        "replacement_text": "的手还压在纸角，指节却一点点松开。“决定了。”他说。停了一息，他把那句为了你好咽回去，只将退婚书又推近半寸。",
         "target_finding_id": "finding.affective-closure-001",
-        "source_evidence_ids": ["evidence.closure-001"],
-        "rationale": "以咽回解释和继续推近退婚书替换和解性说明、拥抱与双方感情确认。",
+        "source_evidence_ids": [
+          "evidence.closure-001"
+        ],
+        "rationale": "以咽回解释和继续推近退婚书替换明确后悔与替情绪作结的总结。",
         "expected_effect": "保留他仍在保护她的次文本，同时让退婚决定继续产生关系压力。"
       }
     ],
@@ -153,12 +212,26 @@
       {
         "constraint_id": "constraint.user-role-ownership",
         "description": "不得替用户角色行动、感受或确认关系。",
-        "check_method": "扫描所有主语与心理状态归属，只允许描写“他”。"
+        "check_method": "扫描所有主语与心理状态归属，只允许描写“他”。",
+        "source_contract_paths": [
+          "/role_ownership/0/controller",
+          "/information_boundaries/1"
+        ],
+        "verification_check_ids": [
+          "regression.user-agency-001"
+        ]
       },
       {
         "constraint_id": "constraint.retirement-cost",
         "description": "退婚决定及其未解决后果必须保留。",
-        "check_method": "确认候选仍明确回答“决定了”并继续交付退婚书。"
+        "check_method": "确认候选仍明确回答“决定了”并继续交付退婚书。",
+        "source_contract_paths": [
+          "/world_rules/0",
+          "/relationship_state"
+        ],
+        "verification_check_ids": [
+          "regression.retirement-cost-001"
+        ]
       }
     ]
   },
@@ -177,12 +250,40 @@
         "reason": "停顿由吞回一句话和推动纸张承载，没有解释沉默的完整含义。"
       }
     ],
-    "unresolved_challenges": ["“为了你好”作为惯用表达可能仍带来轻微模板感，交由盲测判断。"],
+    "unresolved_challenges": [
+      {
+        "challenge_id": "challenge.template-phrase-001",
+        "challenge_kind": "diagnostic_counterfactual_invalid",
+        "severity": "blocking",
+        "claim": "删除明确情绪总结是否只移除了过早封闭，同时保留退婚冲突与保护次文本，仍需独立重放确认。",
+        "target_finding_ids": [
+          "finding.affective-closure-001"
+        ],
+        "required_resolution_check_ids": [
+          "counterfactual.remove-protective-subtext"
+        ]
+      }
+    ],
     "ready_for_blind_verification": true
   },
   "verification_handoff": {
-    "candidate_mapping_digest": "6666666666666666666666666666666666666666666666666666666666666666",
+    "blinding_protocol_digest": "fd34ed1a2aece4aa7766a416661de306408efd23e2d3f07a4ecf2f309bb1f064",
     "mapping_visibility": "orchestrator_only",
-    "required_suites": ["order_swap", "evidence", "counterfactual", "regression", "challenge"]
+    "evaluation_manifest_commitment": {
+      "manifest_id": "manifest.scene-001.eval.v1",
+      "manifest_version": "1.0.0",
+      "manifest_digest": "73696e7964cb009451d78bdaa9199b23f90520b0d40c050d53fad77b5f0ec90f",
+      "frozen_at": "2026-08-24T10:00:30Z",
+      "frozen_before_candidate_generation": true,
+      "coverage_rule": "exact_set_match",
+      "commitment_rule": "pre_execution_projection_sha256_rfc8785"
+    },
+    "required_suites": [
+      "order_swap",
+      "evidence",
+      "counterfactual",
+      "regression",
+      "challenge"
+    ]
   }
 }

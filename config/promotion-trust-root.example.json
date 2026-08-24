@@ -1,0 +1,148 @@
+{
+  "record_type": "promotion_trust_root",
+  "schema_version": "1.0.0",
+  "trust_root_id": "trust-root.repository-fixture.v2",
+  "policy_id": "policy.machine-only.v1",
+  "policy_version": "2.0.0-alpha.1",
+  "policy_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
+  "taxonomy_name": "中文虚构对话失败图谱",
+  "taxonomy_version": "2.0.0-alpha.1",
+  "taxonomy_digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
+  "trusted_runners": [
+    {
+      "name": "atlas-machine-loop",
+      "version": "0.1.0",
+      "commit": "1a2b3c4"
+    }
+  ],
+  "trusted_prompt_bundles": [
+    {
+      "id": "prompt.policy-execution.v1",
+      "version": "1.0.0",
+      "digest": "1212121212121212121212121212121212121212121212121212121212121212"
+    },
+    {
+      "id": "prompt.verification-audit-evidence.v1",
+      "version": "1.0.0",
+      "digest": "1717171717171717171717171717171717171717171717171717171717171717"
+    },
+    {
+      "id": "prompt.verification-audit-regression.v1",
+      "version": "1.0.0",
+      "digest": "1818181818181818181818181818181818181818181818181818181818181818"
+    },
+    {
+      "id": "prompt.diagnostic.v1",
+      "version": "1.0.0",
+      "digest": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    {
+      "id": "prompt.taxonomy-test-judge.v1",
+      "version": "1.0.0",
+      "digest": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    {
+      "id": "prompt.contract-grounding.v1",
+      "version": "1.0.0",
+      "digest": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    {
+      "id": "prompt.generation.v1",
+      "version": "1.0.0",
+      "digest": "7777777777777777777777777777777777777777777777777777777777777777"
+    },
+    {
+      "id": "prompt.repair.v1",
+      "version": "1.0.0",
+      "digest": "8888888888888888888888888888888888888888888888888888888888888888"
+    },
+    {
+      "id": "prompt.repair-critic.v1",
+      "version": "1.0.0",
+      "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    {
+      "id": "prompt.verification-contrastive.v1",
+      "version": "1.0.0",
+      "digest": "abababababababababababababababababababababababababababababababab"
+    },
+    {
+      "id": "prompt.verification-pairwise.v1",
+      "version": "1.0.0",
+      "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    {
+      "id": "prompt.verification.v1",
+      "version": "1.0.0",
+      "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    {
+      "id": "prompt.aggregation.v1",
+      "version": "1.0.0",
+      "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+  ],
+  "trusted_regression_suites": [
+    {
+      "suite_id": "suite.role-boundary.v1",
+      "suite_version": "1.0.0",
+      "suite_digest": "1313131313131313131313131313131313131313131313131313131313131313",
+      "suite_uri": "registry://example/suites/role-boundary.v1.json",
+      "digest_rule": "sha256_rfc8785_json",
+      "cases": [
+        {
+          "case_id": "case.user-silent-after-question",
+          "case_digest": "1414141414141414141414141414141414141414141414141414141414141414",
+          "case_uri": "registry://example/cases/user-silent-after-question.json",
+          "digest_rule": "sha256_rfc8785_json",
+          "required_for_promotion": true,
+          "failure_policy": "hard_veto"
+        }
+      ]
+    },
+    {
+      "suite_id": "suite.subtext-preservation.v1",
+      "suite_version": "1.0.0",
+      "suite_digest": "1515151515151515151515151515151515151515151515151515151515151515",
+      "suite_uri": "registry://example/suites/subtext-preservation.v1.json",
+      "digest_rule": "sha256_rfc8785_json",
+      "cases": [
+        {
+          "case_id": "case.costly-protection-without-confession",
+          "case_digest": "1616161616161616161616161616161616161616161616161616161616161616",
+          "case_uri": "registry://example/cases/costly-protection-without-confession.json",
+          "digest_rule": "sha256_rfc8785_json",
+          "required_for_promotion": true,
+          "failure_policy": "hard_veto"
+        }
+      ]
+    },
+    {
+      "suite_id": "suite.scene-contract-preservation.v1",
+      "suite_version": "1.0.0",
+      "suite_digest": "2020202020202020202020202020202020202020202020202020202020202020",
+      "suite_uri": "registry://example/suites/scene-contract-preservation.v1.json",
+      "digest_rule": "sha256_rfc8785_json",
+      "cases": [
+        {
+          "case_id": "case.retirement-conflict-remains-open",
+          "case_digest": "2121212121212121212121212121212121212121212121212121212121212121",
+          "case_uri": "registry://example/cases/retirement-conflict-remains-open.json",
+          "digest_rule": "sha256_rfc8785_json",
+          "required_for_promotion": true,
+          "failure_policy": "hard_veto"
+        }
+      ]
+    }
+  ],
+  "receipt_public_keys": [
+    {
+      "key_id": "key.repository-fixture.ed25519.v3",
+      "issuer_id": "orchestrator.repository-fixture.v3",
+      "algorithm": "Ed25519",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAjhPKKMwftMlLWWg61aIM6PpG2bTyUQckepRNcTyCN9s=\n-----END PUBLIC KEY-----\n"
+    }
+  ],
+  "immutable": true,
+  "created_at": "2026-08-24T09:50:00Z"
+}

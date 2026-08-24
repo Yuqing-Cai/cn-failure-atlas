@@ -14,7 +14,9 @@
     "diagnostic_order",
     "total_items",
     "item_counts",
+    "machine_execution_policy",
     "layers",
+    "causal_support_policy",
     "causal_hypotheses",
     "composite_tags",
     "uncertainty_markers"
@@ -52,12 +54,29 @@
         "uncertainty_markers": { "type": "integer", "minimum": 0 }
       }
     },
+    "machine_execution_policy": {
+      "type": "object",
+      "required": ["present_requires_structured_recipe", "prose_only_tests_are_non_promoting", "executable_symptom_ids"],
+      "additionalProperties": false,
+      "properties": {
+        "present_requires_structured_recipe": { "const": true },
+        "prose_only_tests_are_non_promoting": { "const": true },
+        "executable_symptom_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        }
+      },
+      "description": "Explicit fail-closed production coverage. Only listed symptom labels have a structured recipe capable of supporting status=present in machine-only mode."
+    },
     "layers": {
       "type": "array",
       "items": { "$ref": "#/$defs/layer" },
       "minItems": 5,
       "maxItems": 5
     },
+    "causal_support_policy": { "$ref": "#/$defs/causal_support_policy" },
     "causal_hypotheses": { "type": "array", "items": { "$ref": "#/$defs/causal_hypothesis" } },
     "composite_tags": { "type": "array", "items": { "$ref": "#/$defs/auxiliary_item" } },
     "uncertainty_markers": { "type": "array", "items": { "$ref": "#/$defs/auxiliary_item" } }
@@ -65,6 +84,46 @@
   "$defs": {
     "non_empty_string": { "type": "string", "minLength": 1 },
     "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "evidence_scope": {
+      "type": "string",
+      "enum": ["span", "turn", "conversation", "cross_scene", "model_profile"],
+      "description": "确认症状所需的最小证据结构；实现须按枚举语义收集相应上下文，不应仅按字符串顺序推断包含关系。"
+    },
+    "semantic_relation": {
+      "type": "object",
+      "required": ["target_id", "relation_type"],
+      "additionalProperties": false,
+      "properties": {
+        "target_id": { "$ref": "#/$defs/identifier" },
+        "relation_type": {
+          "type": "string",
+          "enum": [
+            "same_domain_as",
+            "contrasts_with",
+            "often_cooccurs_with",
+            "may_contribute_to",
+            "temporal_aggregation_of"
+          ]
+        }
+      }
+    },
+    "causal_support_policy": {
+      "type": "object",
+      "required": [
+        "minimum_independent_symptom_groups",
+        "ancestry_field",
+        "ancestor_descendant_count_as_one",
+        "shared_evidence_count_as_one"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "minimum_independent_symptom_groups": { "const": 2 },
+        "ancestry_field": { "const": "derived_from" },
+        "ancestor_descendant_count_as_one": { "const": true },
+        "shared_evidence_count_as_one": { "const": true }
+      },
+      "description": "提出因果假设时的独立证据计数规则。父子症状和复用同一证据的症状均只构成一个支持组。"
+    },
     "layer": {
       "type": "object",
       "required": ["id", "name", "description", "subcategories"],
@@ -97,11 +156,24 @@
     },
     "symptom": {
       "type": "object",
-      "required": ["id", "name", "definition", "derived_from", "criteria", "observability"],
+      "required": [
+        "id",
+        "name",
+        "definition",
+        "derived_from",
+        "related_to",
+        "criteria",
+        "observability",
+        "minimum_evidence_scope",
+        "confusable_with",
+        "discriminating_tests"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": { "$ref": "#/$defs/identifier" },
         "name": { "$ref": "#/$defs/non_empty_string" },
+        "legacy_name": { "$ref": "#/$defs/non_empty_string" },
+        "legacy_note": { "$ref": "#/$defs/non_empty_string" },
         "definition": { "$ref": "#/$defs/non_empty_string" },
         "derived_from": {
           "oneOf": [
@@ -114,6 +186,12 @@
             { "type": "null" }
           ]
         },
+        "related_to": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/semantic_relation" },
+          "uniqueItems": true,
+          "description": "不满足严格子型关系的 source→target 类型化关联；不得用于 derived_from 的祖先计数，也不得自动推导逆边。"
+        },
         "criteria": {
           "type": "array",
           "items": { "$ref": "#/$defs/non_empty_string" },
@@ -125,18 +203,106 @@
           "enum": ["high", "medium", "low"],
           "description": "定义给出的证据在输出中被直接观察到的预期难易，不是一次诊断的置信度。"
         },
+        "minimum_evidence_scope": { "$ref": "#/$defs/evidence_scope" },
+        "confusable_with": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true,
+          "description": "source finding 需要主动排除的 target 近邻症状 ID；边按 source→target 存储，不自动补逆边。空数组表示当前未指定近邻，不表示不存在近邻。"
+        },
+        "discriminating_tests": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/non_empty_string" },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "冻结的边界测试文本。只有同时存在匹配的结构化 test_recipes 时，测试才是 machine-only 可执行证据并可支持 status=present；其余文本仅是非晋升性诊断提示。"
+        },
+        "test_recipes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "recipe_id",
+              "taxonomy_test",
+              "distinguishes_from",
+              "method",
+              "intervention_kind",
+              "replacement_policy",
+              "target_evidence_stance",
+              "span_binding",
+              "expected_status_before",
+              "expected_status_after",
+              "invariant_source_kind",
+              "required_contract_paths"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "recipe_id": { "$ref": "#/$defs/identifier" },
+              "taxonomy_test": { "$ref": "#/$defs/non_empty_string" },
+              "distinguishes_from": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/identifier" }
+              },
+              "method": {
+                "const": "deterministic_text_edit"
+              },
+              "intervention_kind": { "const": "delete_span" },
+              "replacement_policy": { "const": "empty" },
+              "target_evidence_stance": { "const": "supports" },
+              "span_binding": { "type": "string", "enum": ["exact_single_evidence", "none"] },
+              "expected_status_before": { "type": "string", "enum": ["present", "absent", "uncertain"] },
+              "expected_status_after": { "type": "string", "enum": ["present", "absent", "uncertain", "not_applicable"] },
+              "invariant_source_kind": { "type": "string", "enum": ["scene_contract", "finding_evidence"] },
+              "required_contract_paths": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "string", "pattern": "^/(?:[^/~]|~0|~1)+(?:/(?:[^/~]|~0|~1)+)*$" }
+              }
+            }
+          },
+          "description": "Optional structured execution recipes. A symptom may be marked present only when at least one passed result follows a recipe exactly; prose-only tests are not executable evidence."
+        },
         "example": { "$ref": "#/$defs/non_empty_string" }
       }
     },
     "causal_hypothesis": {
       "type": "object",
-      "required": ["id", "name", "primary_layer", "definition"],
+      "required": ["id", "name", "primary_layer", "definition", "support_contract"],
       "additionalProperties": false,
       "properties": {
         "id": { "$ref": "#/$defs/identifier" },
         "name": { "$ref": "#/$defs/non_empty_string" },
         "primary_layer": { "type": "string", "pattern": "^(?:I|II|III|IV|V)(?:-(?:I|II|III|IV|V))?$" },
-        "definition": { "$ref": "#/$defs/non_empty_string" }
+        "definition": { "$ref": "#/$defs/non_empty_string" },
+        "support_contract": {
+          "type": "object",
+          "required": ["status", "match_mode", "admissible_symptom_ids"],
+          "additionalProperties": false,
+          "properties": {
+            "status": { "type": "string", "enum": ["specified", "underspecified"] },
+            "match_mode": {
+              "type": "string",
+              "enum": ["exact", "descendants_included"],
+              "description": "Whether an admissible symptom also admits its strict derived_from descendants."
+            },
+            "admissible_symptom_ids": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/identifier" },
+              "uniqueItems": true
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "status": { "const": "specified" } }, "required": ["status"] },
+              "then": { "properties": { "admissible_symptom_ids": { "type": "array", "minItems": 2 } } },
+              "else": { "properties": { "admissible_symptom_ids": { "type": "array", "maxItems": 0 } } }
+            }
+          ],
+          "description": "冻结的因果支持边界。underspecified 假设不得被机器标为 present；allowlist 仅表示可作为初步表现，不构成因果证明。"
+        }
       }
     },
     "auxiliary_item": {

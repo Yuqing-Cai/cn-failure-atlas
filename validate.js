@@ -1,11 +1,18 @@
 #!/usr/bin/env node
 
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { validateMachineArtifacts } from "./lib/machine-artifact-validator.js";
+import { parseJsonWithUniqueKeys } from "./lib/content-integrity.js";
+import { validateTaxonomySemantics } from "./lib/taxonomy-semantic-validator.js";
+import {
+  assertJsonSourceSize,
+  describeStructureFailure,
+  inspectUntrustedStructure,
+} from "./lib/untrusted-input.js";
 
 export const REPOSITORY_ROOT = fileURLToPath(new URL(".", import.meta.url));
 
@@ -18,7 +25,13 @@ const LAYER_DOCUMENTS = {
 };
 
 function readJson(path) {
-  return JSON.parse(readFileSync(path, "utf8"));
+  assertJsonSourceSize(statSync(path).size, path);
+  const parsed = parseJsonWithUniqueKeys(readFileSync(path, "utf8"));
+  const structure = inspectUntrustedStructure(parsed);
+  if (!structure.pass) {
+    throw new RangeError(describeStructureFailure(structure, path));
+  }
+  return parsed;
 }
 
 export function collectSymptoms(taxonomy) {
@@ -113,6 +126,7 @@ function checkUniqueIds(taxonomy, errors) {
 function checkDerivedGraph(taxonomy, errors) {
   const symptoms = collectSymptoms(taxonomy);
   const ids = new Set(symptoms.map((item) => item.id));
+  const allEntryIds = new Set(collectEntries(taxonomy).map((item) => item.id));
   const graph = new Map();
 
   for (const symptom of symptoms) {
@@ -124,6 +138,22 @@ function checkDerivedGraph(taxonomy, errors) {
       }
       if (parent === symptom.id) {
         errors.push(issue("R4", `"${symptom.id}" 不能衍生自自身`));
+      }
+    }
+    for (const confusableId of symptom.confusable_with ?? []) {
+      if (confusableId === symptom.id) {
+        errors.push(issue("R4", `"${symptom.id}" 不能与自身混淆`));
+      }
+      if (!ids.has(confusableId)) {
+        errors.push(issue("R4", `"${symptom.id}" 的 confusable_with 引用了不存在的症状 "${confusableId}"`));
+      }
+    }
+    for (const relation of symptom.related_to ?? []) {
+      if (relation.target_id === symptom.id) {
+        errors.push(issue("R4", `"${symptom.id}" 的 related_to 不能指向自身`));
+      }
+      if (!allEntryIds.has(relation.target_id)) {
+        errors.push(issue("R4", `"${symptom.id}" 的 related_to 引用了不存在的条目 "${relation.target_id}"`));
       }
     }
   }
@@ -148,6 +178,96 @@ function checkDerivedGraph(taxonomy, errors) {
     state.set(id, 2);
   }
   for (const id of graph.keys()) visit(id);
+}
+
+function checkMachineTestRecipes(taxonomy, errors) {
+  const symptoms = collectSymptoms(taxonomy);
+  const symptomIds = new Set(symptoms.map((item) => item.id));
+  const recipeIds = new Set();
+  const executableIds = [];
+  for (const symptom of symptoms) {
+    const tests = new Set(symptom.discriminating_tests ?? []);
+    const confusables = new Set(symptom.confusable_with ?? []);
+    const recipes = symptom.test_recipes ?? [];
+    const coveredConfusables = new Set();
+    if (recipes.length > 0) executableIds.push(symptom.id);
+    for (const recipe of recipes) {
+      if (recipeIds.has(recipe.recipe_id)) {
+        errors.push(issue("R4", `taxonomy test recipe_id "${recipe.recipe_id}" 重复`));
+      }
+      recipeIds.add(recipe.recipe_id);
+      if (!tests.has(recipe.taxonomy_test)) {
+        errors.push(
+          issue(
+            "R4",
+            `症状 "${symptom.id}" 的 recipe "${recipe.recipe_id}" 未逐字引用本标签 discriminating_tests`,
+          ),
+        );
+      }
+      for (const neighborId of recipe.distinguishes_from ?? []) {
+        coveredConfusables.add(neighborId);
+        if (!confusables.has(neighborId) || !symptomIds.has(neighborId)) {
+          errors.push(
+            issue(
+              "R4",
+              `症状 "${symptom.id}" 的 recipe "${recipe.recipe_id}" 引用了未冻结的近邻 "${neighborId}"`,
+            ),
+          );
+        }
+      }
+      if (
+        (recipe.method === "deterministic_text_edit") !==
+        (recipe.span_binding === "exact_single_evidence")
+      ) {
+        errors.push(
+          issue(
+            "R4",
+            `recipe "${recipe.recipe_id}" 的 method 与 span_binding 不兼容`,
+          ),
+        );
+      }
+      if (
+        recipe.method !== "deterministic_text_edit" ||
+        recipe.intervention_kind !== "delete_span" ||
+        recipe.replacement_policy !== "empty" ||
+        recipe.expected_status_before !== "present" ||
+        recipe.expected_status_after !== "absent" ||
+        recipe.invariant_source_kind !== "scene_contract" ||
+        !(recipe.required_contract_paths?.length > 0)
+      ) {
+        errors.push(
+          issue(
+            "R4",
+            `recipe "${recipe.recipe_id}" 使用了当前执行器不可满足的方法、状态转移或 invariant 契约`,
+          ),
+        );
+      }
+    }
+    if (
+      recipes.length > 0 &&
+      JSON.stringify([...coveredConfusables].sort()) !==
+        JSON.stringify([...confusables].sort())
+    ) {
+      errors.push(
+        issue(
+          "R4",
+          `症状 "${symptom.id}" 的结构化 recipes 未精确覆盖 confusable_with`,
+        ),
+      );
+    }
+  }
+  const declaredExecutable = [
+    ...(taxonomy?.machine_execution_policy?.executable_symptom_ids ?? []),
+  ].sort();
+  executableIds.sort();
+  if (JSON.stringify(declaredExecutable) !== JSON.stringify(executableIds)) {
+    errors.push(
+      issue(
+        "R4",
+        `machine_execution_policy.executable_symptom_ids 与实际结构化 recipe 覆盖不一致`,
+      ),
+    );
+  }
 }
 
 function checkLayerStructure(taxonomy, errors) {
@@ -224,6 +344,7 @@ function checkDocumentation(taxonomy, markdowns, errors) {
 function checkCausalRanges(taxonomy, errors) {
   const order = taxonomy?.diagnostic_order ?? [];
   const validLayers = new Set(order);
+  const symptomIds = new Set(collectSymptoms(taxonomy).map((item) => item.id));
   for (const hypothesis of taxonomy?.causal_hypotheses ?? []) {
     const parts = hypothesis.primary_layer?.split("-") ?? [];
     if (parts.some((part) => !validLayers.has(part))) {
@@ -233,19 +354,51 @@ function checkCausalRanges(taxonomy, errors) {
     if (parts.length === 2 && order.indexOf(parts[0]) >= order.indexOf(parts[1])) {
       errors.push(issue("R7", `因果假设 "${hypothesis.id}" 的层级范围必须从前向后："${hypothesis.primary_layer}"`));
     }
+    for (const symptomId of hypothesis.support_contract?.admissible_symptom_ids ?? []) {
+      if (!symptomIds.has(symptomId)) {
+        errors.push(
+          issue(
+            "R7",
+            `因果假设 "${hypothesis.id}" 的 support_contract 引用了不存在的症状 "${symptomId}"`,
+          ),
+        );
+      }
+    }
   }
 }
 
 export function validateTaxonomy({ taxonomy, schema, markdowns = null }) {
   const errors = [];
   const warnings = [];
+  for (const [label, value] of [
+    ["taxonomy", taxonomy],
+    ["taxonomy schema", schema],
+    ["taxonomy documentation", markdowns],
+  ]) {
+    if (value === null || value === undefined) continue;
+    const structure = inspectUntrustedStructure(value);
+    if (!structure.pass) {
+      errors.push(issue("R1", describeStructureFailure(structure, label)));
+    }
+  }
+  if (errors.length > 0) {
+    return {
+      errors,
+      warnings,
+      stats: {
+        symptoms: 0,
+        causal_hypotheses: 0,
+        composites: 0,
+        uncertainty_markers: 0,
+        total: 0,
+      },
+    };
+  }
   checkSchema(taxonomy, schema, errors);
-  const stats = checkCounts(taxonomy, errors);
-  checkUniqueIds(taxonomy, errors);
-  checkDerivedGraph(taxonomy, errors);
-  checkLayerStructure(taxonomy, errors);
+  const semanticResult = validateTaxonomySemantics(taxonomy);
+  errors.push(...semanticResult.errors);
+  const stats = semanticResult.stats;
   checkDocumentation(taxonomy, markdowns, errors);
-  checkCausalRanges(taxonomy, errors);
   return { errors, warnings, stats };
 }
 
@@ -269,11 +422,16 @@ export function validateRepository(root = REPOSITORY_ROOT) {
   const examples = readdirSync(join(root, "examples", "machine-only"))
     .filter((filename) => filename.endsWith(".json"))
     .map((filename) => ({ filename, data: readJson(join(root, "examples", "machine-only", filename)) }));
+  const trustRoot = readJson(join(root, "config", "promotion-trust-root.example.json"));
+  const runReceipt = readJson(join(root, "config", "promotion-run-receipt.example.json"));
   const machineResult = validateMachineArtifacts({
     schemas,
     examples,
     taxonomyVersion: taxonomy.taxonomy_version,
-    taxonomy
+    taxonomy,
+    trustRoot,
+    runReceipt,
+    enforceConformanceExamples: true
   });
   return {
     errors: [...taxonomyResult.errors, ...machineResult.errors],

@@ -11,10 +11,12 @@
     "mode",
     "provenance",
     "policy_ref",
+    "experiment_ledger",
     "diagnostic_trace_ref",
     "actors",
     "identity_isolation",
     "target_finding_ids",
+    "target_turn_id",
     "candidates",
     "repair_plan",
     "critic_check",
@@ -23,16 +25,17 @@
   "additionalProperties": false,
   "properties": {
     "record_type": { "const": "repair_attempt" },
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "2.0.0-alpha.1" },
     "repair_id": { "$ref": "common.schema.json#/$defs/id" },
     "mode": { "$ref": "common.schema.json#/$defs/mode" },
     "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
-    "policy_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "policy_ref": { "$ref": "common.schema.json#/$defs/policyRef" },
+    "experiment_ledger": { "$ref": "common.schema.json#/$defs/experimentLedger" },
     "supersedes_ref": {
-      "$ref": "common.schema.json#/$defs/recordRef",
+      "$ref": "common.schema.json#/$defs/contentAddressedRecordRef",
       "description": "Optional reference to the prior record replaced by this append-only correction."
     },
-    "diagnostic_trace_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "diagnostic_trace_ref": { "$ref": "common.schema.json#/$defs/contentAddressedRecordRef" },
     "actors": {
       "type": "object",
       "required": ["baseline_generator", "repair_generator", "critic"],
@@ -65,6 +68,10 @@
       "uniqueItems": true,
       "items": { "$ref": "common.schema.json#/$defs/id" }
     },
+    "target_turn_id": {
+      "$ref": "common.schema.json#/$defs/id",
+      "description": "The single primary generator output rewritten by this alpha protocol. Multi-turn candidate maps are not yet supported."
+    },
     "candidates": {
       "type": "object",
       "required": ["baseline", "candidate"],
@@ -86,10 +93,11 @@
     },
     "repair_plan": {
       "type": "object",
-      "required": ["strategy_id", "hypothesis", "minimality_rule", "edits", "preservation_contract"],
+      "required": ["strategy_id", "strategy_version", "hypothesis", "minimality_rule", "edits", "preservation_contract"],
       "additionalProperties": false,
       "properties": {
         "strategy_id": { "$ref": "common.schema.json#/$defs/id" },
+        "strategy_version": { "type": "string", "minLength": 1 },
         "hypothesis": { "type": "string", "minLength": 1 },
         "minimality_rule": { "type": "string", "minLength": 1 },
         "edits": {
@@ -97,11 +105,15 @@
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["edit_id", "operation", "target_finding_id", "source_evidence_ids", "rationale", "expected_effect"],
+            "required": ["edit_id", "operation", "target_turn_id", "span", "expected_text", "replacement_text", "target_finding_id", "source_evidence_ids", "rationale", "expected_effect"],
             "additionalProperties": false,
             "properties": {
               "edit_id": { "$ref": "common.schema.json#/$defs/id" },
-              "operation": { "type": "string", "enum": ["delete", "replace", "insert", "reorder", "preserve"] },
+              "operation": { "const": "replace" },
+              "target_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+              "span": { "$ref": "common.schema.json#/$defs/span" },
+              "expected_text": { "type": "string", "minLength": 1 },
+              "replacement_text": { "type": "string" },
               "target_finding_id": { "$ref": "common.schema.json#/$defs/id" },
               "source_evidence_ids": {
                 "type": "array",
@@ -119,12 +131,25 @@
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["constraint_id", "description", "check_method"],
+            "required": ["constraint_id", "description", "check_method", "source_contract_paths", "verification_check_ids"],
             "additionalProperties": false,
             "properties": {
               "constraint_id": { "$ref": "common.schema.json#/$defs/id" },
               "description": { "type": "string", "minLength": 1 },
-              "check_method": { "type": "string", "minLength": 1 }
+              "check_method": { "type": "string", "minLength": 1 },
+              "source_contract_paths": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "string", "pattern": "^/(?:[^/~]|~0|~1)+(?:/(?:[^/~]|~0|~1)+)*$" }
+              },
+              "verification_check_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "common.schema.json#/$defs/id" },
+                "description": "Frozen hard-veto regression checks that verify this preservation constraint after candidate generation."
+              }
             }
           }
         }
@@ -150,26 +175,77 @@
             }
           }
         },
-        "unresolved_challenges": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "unresolved_challenges": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["challenge_id", "challenge_kind", "severity", "claim", "target_finding_ids", "required_resolution_check_ids"],
+            "additionalProperties": false,
+            "properties": {
+              "challenge_id": { "$ref": "common.schema.json#/$defs/id" },
+              "challenge_kind": {
+                "type": "string",
+                "enum": ["target_failure_persists", "evidence_not_reduced", "diagnostic_counterfactual_invalid"]
+              },
+              "severity": { "type": "string", "enum": ["blocking", "major", "minor", "informational"] },
+              "claim": { "type": "string", "minLength": 1 },
+              "target_finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "common.schema.json#/$defs/id" }
+              },
+              "required_resolution_check_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "common.schema.json#/$defs/id" },
+                "description": "The exact verification check IDs that must resolve this challenge; the verifier may neither substitute nor append checks after seeing results."
+              }
+            }
+          },
+          "description": "Structured critic challenges that verification_run.challenges must inherit exactly once by challenge_id and repair critic identity, preserving kind, severity, claim, target findings, and the precommitted exact resolution-check set."
+        },
         "ready_for_blind_verification": { "type": "boolean" }
       }
     },
     "verification_handoff": {
       "type": "object",
-      "required": ["candidate_mapping_digest", "mapping_visibility", "required_suites"],
+      "required": ["blinding_protocol_digest", "mapping_visibility", "evaluation_manifest_commitment", "required_suites"],
       "additionalProperties": false,
       "properties": {
-        "candidate_mapping_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "blinding_protocol_digest": {
+          "$ref": "common.schema.json#/$defs/sha256",
+          "description": "Candidate-independent protocol commitment; the salted alias mapping is deliberately absent from the repair record."
+        },
         "mapping_visibility": { "const": "orchestrator_only" },
+        "evaluation_manifest_commitment": {
+          "type": "object",
+          "required": ["manifest_id", "manifest_version", "manifest_digest", "frozen_at", "frozen_before_candidate_generation", "coverage_rule", "commitment_rule"],
+          "additionalProperties": false,
+          "properties": {
+            "manifest_id": { "$ref": "common.schema.json#/$defs/id" },
+            "manifest_version": { "type": "string", "minLength": 1 },
+            "manifest_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+            "frozen_at": { "type": "string", "format": "date-time" },
+            "frozen_before_candidate_generation": { "const": true },
+            "coverage_rule": { "const": "exact_set_match" },
+            "commitment_rule": { "const": "pre_execution_projection_sha256_rfc8785" }
+          },
+          "description": "Content-addressed commitment to the complete evaluation manifest before candidate generation."
+        },
         "required_suites": {
           "type": "array",
-          "minItems": 3,
+          "minItems": 5,
+          "maxItems": 5,
           "uniqueItems": true,
           "allOf": [
             { "contains": { "const": "order_swap" } },
             { "contains": { "const": "evidence" } },
             { "contains": { "const": "counterfactual" } },
-            { "contains": { "const": "regression" } }
+            { "contains": { "const": "regression" } },
+            { "contains": { "const": "challenge" } }
           ],
           "items": { "type": "string", "enum": ["order_swap", "evidence", "counterfactual", "regression", "challenge"] }
         }

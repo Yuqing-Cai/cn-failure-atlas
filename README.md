@@ -1,34 +1,32 @@
 # 中文虚构对话失败图谱
 
-面向中文虚构与角色扮演对话的机器可读失败本体，以及一套无需人工标注的自我纠错与规则晋升协议。
+面向中文虚构与角色扮演对话的机器可读失败分类法，以及一套不依赖人工标注的自我纠错协议。
 
-> v2 处于 `experimental` 阶段：已实现分类法、记录 Schema、语义校验器与确定性晋升门；尚未接入模型提供方、自动编排或权重更新。
+> v2 仍处于 `experimental`：仓库已实现分类法、记录 Schema、证据链校验和确定性晋升门；尚未接入模型服务、全链编排或权重更新。
 
-[浏览本体](taxonomy.json) · [机器演化协议](docs/machine-evolution-protocol.md) · [v2 迁移](docs/migration-v2.md) · [可选人工指南](docs/annotation-guide.md) · [项目缘起](docs/project-background.md)
+[分类法](taxonomy.json) · [机器演化协议](docs/machine-evolution-protocol.md) · [v2 迁移](docs/migration-v2.md) · [可选人工指南](docs/annotation-guide.md) · [项目缘起](docs/project-background.md)
 
-## 核心设计
+## 它解决什么
 
-图谱包含：
+Atlas 把诊断对象分成四种认识论类型：
 
-- 70 个可由输出证据支持的症状
-- 6 个必须允许反事实推翻的因果假设
-- 1 个复合现象
-- 1 个不确定性标记
+- 70 个可从输出中举证的症状；
+- 6 个可被反事实推翻的因果假设；
+- 1 个复合现象；
+- 1 个不确定性标记。
 
-它们不是认识论地位相同的“78 个标签”。机器应先引用证据、记录症状，再提出因果解释。
+机器必须先引用原文；只有存在结构化 recipe 的症状才能重放冻结测试并进入修复。诊断、质疑、修订和评审由隔离角色承担；人工审阅只是可选审计。
 
 ```text
-生成 → 证据诊断 → 对抗质疑 → 最小修订
-     → A/B 与 B/A 盲测 → 冻结回归 → 晋升、观察、拒绝或隔离
+冻结契约 → 生成 → 结构化诊断 → 可重放修订
+        → 隔离的匿名偏好 + 目标审计 → 晋升或隔离
 ```
-
-协议要求由彼此隔离的机器角色承担诊断、质疑、修订和评审，不要求人类提供正确标签。人工审阅只是一种可选审计手段。
 
 ## 五层诊断地图
 
-I → V 是推荐检查顺序，不代表严重度。
+I → V 是推荐检查顺序，不代表严重度或模型内部处理阶段。
 
-| 层 | 维度 | 症状数 | 完整词条 |
+| 层 | 维度 | 症状数 | 词条 |
 |---|---|---:|---|
 | I | 结构性前提 | 9 | [前置条件](layers/layer-1-preconditions.md) |
 | II | 认知归因 | 8 | [意义读取](layers/layer-2-semantic-reading.md) |
@@ -47,24 +45,42 @@ npm ci
 npm run check
 ```
 
-运行确定性晋升门：
+完整晋升门还要求候选不可写的信任根和五阶段签名链：生成前承诺、输出后的诊断承诺、修复前承诺、试验前承诺、完成证明。部署环境必须**预先配置**信任根的 RFC 8785 规范 JSON 摘要；它不是原始文件字节的哈希，也不能在评估时从同一份信任根临时推导：
 
 ```bash
+export CN_FAILURE_ATLAS_TRUST_ROOT_SHA256=fb61ad100edea08d6560e47d2359457c2bd333e128af200fdd81868b18c52dcb
+
 node scripts/evaluate-promotion.js \
   --policy examples/machine-only/evolution-policy.example.json \
+  --trace examples/machine-only/diagnostic-trace.example.json \
+  --repair examples/machine-only/repair-attempt.example.json \
   --run examples/machine-only/verification-run.example.json \
+  --taxonomy taxonomy.json \
+  --trust-root config/promotion-trust-root.example.json \
+  --run-receipt config/promotion-run-receipt.example.json \
   --pretty
 ```
 
-示例使用占位摘要，因此会如预期返回 `inconclusive`。生产编排器负责签发 `verified` 来源声明；CLI 校验记录，但不重算外部制品摘要。
+PowerShell 对应写法：
+
+```powershell
+$env:CN_FAILURE_ATLAS_TRUST_ROOT_SHA256 = "fb61ad100edea08d6560e47d2359457c2bd333e128af200fdd81868b18c52dcb"
+```
+
+上面的固定值只对应仓库样例。`scripts/print-trust-root-digest.js` 仅供部署前离线核对或生成新的预配值，不能充当运行时信任来源；生产摘要应由独立部署配置或密钥系统提供。仓库中的信任根、公钥与签名也只用于演示格式，不能复制到生产环境。示例会返回 `inconclusive`：本地摘要与签名可验证，但远程模型、提示和运行来源仍标为占位。只有完整、受信且可重放的证据包才可能得到 `adopted`；生产签发器还必须在外部持久化并拒绝重复的 `single_use_nonce`。
+
+维护样例时，先运行 `npm run reseal:examples` 重算内容摘要，再运行 `npm run issue:example-receipt` 签发新的演示密钥与五阶段收据。
 
 ## 当前边界
 
-本仓库已经实现记录契约、严格校验、对盲测记录的防偏差检查和确定性晋升门，但不会自行调用模型或修改权重。提供方适配器、自动编排与分类法自动迁移属于下一阶段。
+- 晋升门目前只执行案例级 `repair_case`；编辑必须可重放且逐字生成候选。`repair_strategy` 在具备跨独立留出案例证据前明确不可晋升。
+- 70 个症状中目前只有 `premature_affective_closure` 有结构化机器 recipe；其余 69 项的自然语言测试只作设计提示，不能晋升。因此 6 个因果假设目前也无法满足“两组可执行症状”门槛。
+- 本仓库不调用模型、不自动应用策略，也不直接更新权重。
+- nonce 消费、实验族注册、模型调用、回归集取回/执行和状态迁移仍由外部编排器负责；仓库内签名不能单独证明“每个请求只调用模型一次”。
+- `adopted` 只表示这一案例的修复工件通过当前冻结 policy，不代表策略已泛化，更不代表跨模型、跨任务或永久有效。
+- 分类法和 judge 尚缺真实语料上的经验校准；机器闭环不能替代外部效度证明。
 
-`adopted` 只表示候选通过当前策略阈值，不代表跨模型、跨任务或永久有效。
-
-English: CN Failure Atlas is a machine-readable ontology and machine-only self-correction protocol for structural failures in Chinese fictional and roleplay dialogue.
+English: CN Failure Atlas is an experimental machine-readable taxonomy and machine-only self-correction protocol for structural failures in Chinese fictional and roleplay dialogue.
 
 ## License
 

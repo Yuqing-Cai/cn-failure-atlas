@@ -17,7 +17,9 @@
   "scripts": {
     "validate": "node validate.js",
     "test": "node --test",
-    "check": "npm run validate && npm test"
+    "check": "npm run validate && npm test",
+    "reseal:examples": "node scripts/reseal-machine-examples.js",
+    "issue:example-receipt": "node scripts/issue-example-receipt.js"
   },
   "devDependencies": {
     "ajv": "^8.17.1",

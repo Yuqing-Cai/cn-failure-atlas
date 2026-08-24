@@ -1,18 +1,18 @@
 {
   "record_type": "evolution_policy",
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0-alpha.1",
   "mode": "machine_only",
   "provenance": {
     "taxonomy": {
-      "name": "cn-failure-atlas",
+      "name": "中文虚构对话失败图谱",
       "version": "2.0.0-alpha.1",
-      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
       "uri": "../../taxonomy.json"
     },
     "schema": {
       "id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
-      "version": "1.0.0",
-      "digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "version": "2.0.0-alpha.1",
+      "digest": "e04f7d58888bd510b5f92fd336ccfcddb2d9b0c9620b2d8a8c9c5069cf2426f4"
     },
     "runner": {
       "name": "atlas-machine-loop",
@@ -27,9 +27,10 @@
     "digest_status": "example_placeholder",
     "created_at": "2026-08-24T09:55:00Z"
   },
+  "policy_digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7",
   "policy": {
     "id": "policy.machine-only.v1",
-    "version": "1.0.0",
+    "version": "2.0.0-alpha.1",
     "status": "promoted",
     "thresholds": {
       "min_independent_judges": 2,
@@ -44,28 +45,82 @@
     "require_blind_candidate_identity": true,
     "require_blind_model_identity": true,
     "require_no_unresolved_blocking_challenges": true,
-    "promotion_targets": ["repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"]
+    "promotion_targets": [
+      "repair_case"
+    ]
   },
   "actor_isolation": {
-    "logical_roles": ["generator", "critic", "repairer", "judge", "aggregator", "policy_executor"],
-    "required_pair_boundaries": ["generator_critic", "generator_judge", "repairer_judge", "judge_aggregator", "critic_judge"],
-    "accepted_mechanisms": ["separate_context", "separate_prompt", "fresh_seed", "blinded_candidate_identity", "no_shared_scratchpad"],
+    "logical_roles": [
+      "generator",
+      "contract_critic",
+      "critic",
+      "test_judge",
+      "repairer",
+      "judge",
+      "aggregator",
+      "policy_executor"
+    ],
+    "required_pair_boundaries": [
+      "generator_critic",
+      "generator_repairer",
+      "diagnostic_repairer",
+      "generator_judge",
+      "repairer_judge",
+      "judge_aggregator",
+      "critic_judge",
+      "preference_judge_audit_judge"
+    ],
+    "accepted_mechanisms": [
+      "separate_context",
+      "separate_prompt",
+      "fresh_seed",
+      "blinded_candidate_identity",
+      "no_shared_scratchpad"
+    ],
     "same_model_weights_allowed": true,
     "origin_diversity_preferred": true
   },
   "verification_protocol": {
     "pairwise_blind_comparison": true,
-    "orders": ["AB", "BA"],
+    "orders": [
+      "AB",
+      "BA"
+    ],
     "reset_context_between_orders": true,
     "counterfactual_suite_required": true,
     "regression_suite_required": true,
     "evidence_trace_required": true,
     "challenge_round_required": true,
+    "promotion_artifact_binding_required": true,
+    "frozen_evaluation_manifest_required": true,
+    "exact_manifest_coverage_required": true,
+    "experiment_ledger_required": true,
     "inconclusive_is_not_promotion": true
   },
   "promotion_lifecycle": {
-    "states": ["generated", "diagnosed", "challenged", "repair_proposed", "verifying", "probation", "promoted", "rejected", "quarantined", "deprecated", "rolled_back"],
+    "states": [
+      "generated",
+      "diagnosed",
+      "challenged",
+      "repair_proposed",
+      "verifying",
+      "probation",
+      "promoted",
+      "rejected",
+      "quarantined",
+      "deprecated",
+      "rolled_back"
+    ],
     "hard_gates": [
+      "schema_bundle_valid",
+      "provenance_verified",
+      "trust_root_pinned",
+      "taxonomy_authority_pinned",
+      "run_attestation_verified",
+      "source_records_content_addressed",
+      "actor_profiles_bound",
+      "target_failure_reduced",
+      "aggregation_recomputed",
       "generator_not_judge",
       "order_swap_complete",
       "independent_judges_met",
@@ -74,38 +129,132 @@
       "regression_failure_rate_met",
       "repeat_runs_met",
       "no_unresolved_blocking_challenges",
-      "candidate_wins"
+      "candidate_wins",
+      "policy_digest_bound",
+      "promotion_artifact_bound",
+      "evaluation_manifest_complete",
+      "experiment_budget_respected",
+      "taxonomy_test_recipe_replayed",
+      "scene_contract_grounded",
+      "generation_request_precommitted",
+      "diagnostic_request_precommitted",
+      "repair_request_precommitted",
+      "verification_request_precommitted",
+      "repair_targets_evidence_bound",
+      "actor_ids_unique",
+      "preference_audit_channels_isolated",
+      "target_judge_cartesian_coverage",
+      "critic_handoff_complete",
+      "receipt_timeline_valid",
+      "blinding_mapping_committed",
+      "repeat_contexts_isolated",
+      "repair_edits_replayed",
+      "preservation_checks_bound",
+      "stop_rule_trigger_consistent",
+      "target_turn_bound",
+      "cross_stage_actor_isolation",
+      "taxonomy_semantics_valid",
+      "regression_registry_pinned",
+      "preference_requests_bound",
+      "challenge_invocations_bound",
+      "counterfactual_sources_bound",
+      "evidence_support_set_complete",
+      "verification_suites_bound",
+      "structural_input_limits_enforced",
+      "audit_requests_bound",
+      "lifecycle_graph_frozen",
+      "model_call_lower_bound_enforced",
+      "verification_timestamps_ordered",
+      "challenge_requests_bound",
+      "challenge_resolution_checks_exact",
+      "case_scoped_promotion_only",
+      "model_call_ledger_cumulative"
     ],
     "transitions": [
       {
+        "from": "generated",
+        "to": "diagnosed",
+        "condition_code": "diagnostic_bundle_valid"
+      },
+      {
+        "from": "generated",
+        "to": "quarantined",
+        "condition_code": "diagnostic_bundle_invalid"
+      },
+      {
+        "from": "diagnosed",
+        "to": "challenged",
+        "condition_code": "diagnostic_challenge_required"
+      },
+      {
+        "from": "diagnosed",
+        "to": "quarantined",
+        "condition_code": "diagnostic_evidence_inconclusive"
+      },
+      {
+        "from": "challenged",
+        "to": "repair_proposed",
+        "condition_code": "diagnostic_challenge_resolved"
+      },
+      {
+        "from": "challenged",
+        "to": "quarantined",
+        "condition_code": "diagnostic_challenge_unresolved"
+      },
+      {
+        "from": "repair_proposed",
+        "to": "verifying",
+        "condition_code": "verification_request_precommitted"
+      },
+      {
+        "from": "repair_proposed",
+        "to": "rejected",
+        "condition_code": "repair_critic_rejected"
+      },
+      {
         "from": "verifying",
         "to": "rejected",
-        "condition": "The deterministic gate returns rejected."
+        "condition_code": "gate_rejected"
       },
       {
         "from": "verifying",
         "to": "quarantined",
-        "condition": "The deterministic gate returns inconclusive; missing evidence must not be learned as failure."
+        "condition_code": "gate_inconclusive"
       },
       {
         "from": "verifying",
         "to": "probation",
-        "condition": "The deterministic gate returns candidate because all available checks pass but independent repeats are insufficient."
+        "condition_code": "gate_candidate"
       },
       {
         "from": "verifying",
         "to": "promoted",
-        "condition": "The deterministic gate returns adopted after every frozen threshold passes."
+        "condition_code": "gate_adopted"
+      },
+      {
+        "from": "probation",
+        "to": "rejected",
+        "condition_code": "fresh_batch_gate_rejected"
+      },
+      {
+        "from": "probation",
+        "to": "quarantined",
+        "condition_code": "fresh_batch_gate_inconclusive"
       },
       {
         "from": "probation",
         "to": "promoted",
-        "condition": "A fresh independent batch raises the deterministic gate result from candidate to adopted."
+        "condition_code": "fresh_batch_gate_adopted"
       },
       {
         "from": "promoted",
         "to": "rolled_back",
-        "condition": "A new blocking regression is causally linked to the promoted artifact."
+        "condition_code": "new_blocking_regression"
+      },
+      {
+        "from": "promoted",
+        "to": "deprecated",
+        "condition_code": "superseded_by_promoted_artifact"
       }
     ],
     "taxonomy_change_scope": {
@@ -125,20 +274,23 @@
     "diagnostic_trace": {
       "record_id": "trace.scene-001.v1",
       "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
-      "schema_version": "1.0.0",
-      "uri": "diagnostic-trace.example.json"
+      "schema_version": "2.0.0-alpha.1",
+      "uri": "diagnostic-trace.example.json",
+      "digest": "b60195cf835e2a7a7e325d144102aa8e1462573baa5f00503d87430fc8c66677"
     },
     "repair_attempt": {
       "record_id": "repair.scene-001.v1",
       "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
-      "schema_version": "1.0.0",
-      "uri": "repair-attempt.example.json"
+      "schema_version": "2.0.0-alpha.1",
+      "uri": "repair-attempt.example.json",
+      "digest": "adece260b71ec1a4530122ea56853ad3e13c58dcd19c60ed27bd669e92719326"
     },
     "verification_run": {
       "record_id": "verification.scene-001.v1",
       "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json",
-      "schema_version": "1.0.0",
-      "uri": "verification-run.example.json"
+      "schema_version": "2.0.0-alpha.1",
+      "uri": "verification-run.example.json",
+      "digest": "dd97e00046963dab7544c44b15edbbb611dc4db61fc39521a32e807030359833"
     }
   }
 }

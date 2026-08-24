@@ -27,7 +27,10 @@ function validateMutation(mutate) {
     schemas: candidateSchemas,
     examples: candidateExamples,
     taxonomyVersion: taxonomy.taxonomy_version,
-    taxonomy
+    taxonomy,
+    trustRoot: readJson(join(REPOSITORY_ROOT, "config", "promotion-trust-root.example.json")),
+    runReceipt: readJson(join(REPOSITORY_ROOT, "config", "promotion-run-receipt.example.json")),
+    enforceConformanceExamples: true
   });
 }
 
@@ -75,7 +78,17 @@ test("AB/BA coverage cannot be forged by duplicate presentation orders", () => {
 
 test("persisted promotion output must equal a fresh deterministic recomputation", () => {
   const result = validateMutation((records) => {
-    example(records, "verification_run").promotion_gate.metrics.repeat_runs.observed = 999;
+    const run = example(records, "verification_run");
+    run.promotion_gate = {
+      decision_version: "2.0.0-alpha.1",
+      run_id: run.verification_id,
+      policy_id: "policy.machine-only.v1",
+      status: "adopted",
+      reason_codes: ["ALL_ADOPTION_GATES_PASSED"],
+      metrics: { tampered: true },
+      lifecycle_state: "promoted",
+      lifecycle_reason: "Deliberately inconsistent test fixture.",
+    };
   });
   assert.ok(result.errors.some((error) => error.rule === "R10" && error.message.includes("重新计算")));
 });
@@ -96,4 +109,157 @@ test("diagnostic label IDs and kinds are checked against the taxonomy", () => {
   });
   assert.ok(result.errors.some((error) => error.rule === "R10" && error.message.includes("不存在的 label_id")));
   assert.ok(result.errors.some((error) => error.rule === "R10" && error.message.includes("至少两个 present symptom")));
+});
+
+test("repair targets must be the reparable priority present symptoms", () => {
+  const uncertain = validateMutation((records) => {
+    example(records, "diagnostic_trace").findings[0].status = "uncertain";
+  });
+  assert.ok(
+    uncertain.errors.some(
+      (error) =>
+        error.rule === "R10" && error.message.includes("必须是 present symptom"),
+    ),
+  );
+
+  const notPriority = validateMutation((records) => {
+    example(records, "diagnostic_trace").disposition.priority_finding_ids = [];
+  });
+  assert.ok(
+    notPriority.errors.some(
+      (error) =>
+        error.rule === "R10" &&
+        error.message.includes("priority_finding_ids 中的 present symptoms 完全一致"),
+    ),
+  );
+});
+
+test("repair and verification may cite only supporting evidence owned by their finding", () => {
+  const refutingRepairEvidence = validateMutation((records) => {
+    example(records, "repair_attempt").repair_plan.edits[0].source_evidence_ids = [
+      "evidence.closure-counter-001",
+    ];
+  });
+  assert.ok(
+    refutingRepairEvidence.errors.some(
+      (error) =>
+        error.rule === "R10" &&
+        error.message.includes("source evidence") &&
+        error.message.includes("stance 为 supports"),
+    ),
+  );
+
+  const refutingVerificationEvidence = validateMutation((records) => {
+    example(records, "verification_run").evidence_checks[0].evidence_ids = [
+      "evidence.closure-counter-001",
+    ];
+  });
+  assert.ok(
+    refutingVerificationEvidence.errors.some(
+      (error) =>
+        error.rule === "R10" &&
+        error.message.includes("evidence_checks 的 evidence") &&
+        error.message.includes("stance 为 supports"),
+    ),
+  );
+});
+
+test("repair and verification cannot borrow another finding's supporting evidence", () => {
+  const result = validateMutation((records) => {
+    const trace = example(records, "diagnostic_trace");
+    const source = trace.findings[0];
+    const parallel = structuredClone(source);
+    parallel.finding_id = "finding.affective-closure-parallel";
+    const remappedEvidenceIds = new Map();
+    for (const evidence of parallel.evidence) {
+      const remapped = `${evidence.evidence_id}-parallel`;
+      remappedEvidenceIds.set(evidence.evidence_id, remapped);
+      evidence.evidence_id = remapped;
+    }
+    for (const testResult of parallel.taxonomy_test_results) {
+      testResult.evidence_ids = testResult.evidence_ids.map((evidenceId) =>
+        remappedEvidenceIds.get(evidenceId),
+      );
+    }
+    for (const rebuttal of parallel.neighboring_label_rebuttals) {
+      rebuttal.evidence_ids = rebuttal.evidence_ids.map((evidenceId) =>
+        remappedEvidenceIds.get(evidenceId),
+      );
+    }
+    trace.findings.push(parallel);
+
+    const borrowedEvidenceId = remappedEvidenceIds.get("evidence.closure-001");
+    example(records, "repair_attempt").repair_plan.edits[0].source_evidence_ids = [
+      borrowedEvidenceId,
+    ];
+    example(records, "verification_run").evidence_checks[0].evidence_ids = [
+      borrowedEvidenceId,
+    ];
+  });
+
+  assert.ok(
+    result.errors.some(
+      (error) =>
+        error.rule === "R10" &&
+        error.message.includes("repair edit 的 source evidence") &&
+        error.message.includes("必须属于 target finding"),
+    ),
+  );
+  assert.ok(
+    result.errors.some(
+      (error) =>
+        error.rule === "R10" &&
+        error.message.includes("evidence_checks 的 evidence") &&
+        error.message.includes("必须属于 finding"),
+    ),
+  );
+});
+
+test("supersedes references are content-addressed and keep same-record schema identity", () => {
+  for (const recordType of [
+    "evolution_policy",
+    "diagnostic_trace",
+    "repair_attempt",
+    "verification_run",
+  ]) {
+    const missingDigest = validateMutation((records) => {
+      const record = example(records, recordType);
+      record.supersedes_ref = {
+        record_id: `${recordType}.prior`,
+        schema_id: record.provenance.schema.id,
+        schema_version: record.schema_version,
+        uri: `${recordType}.prior.json`,
+      };
+    });
+    assert.ok(
+      missingDigest.errors.some(
+        (error) =>
+          error.rule === "R8" &&
+          error.message.includes("supersedes_ref") &&
+          error.message.includes("digest"),
+      ),
+      recordType,
+    );
+
+    const wrongSchema = validateMutation((records) => {
+      const record = example(records, recordType);
+      record.supersedes_ref = {
+        record_id: `${recordType}.prior`,
+        schema_id:
+          "https://yuqing-cai.github.io/cn-failure-atlas/schemas/wrong.schema.json",
+        schema_version: record.schema_version,
+        uri: `${recordType}.prior.json`,
+        digest: "a".repeat(64),
+      };
+    });
+    assert.ok(
+      wrongSchema.errors.some(
+        (error) =>
+          error.rule === "R10" &&
+          error.message.includes(`${recordType}.supersedes_ref`) &&
+          error.message.includes("schema_id/schema_version"),
+      ),
+      recordType,
+    );
+  }
 });

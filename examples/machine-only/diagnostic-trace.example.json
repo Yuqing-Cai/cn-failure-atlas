@@ -1,19 +1,19 @@
 {
   "record_type": "diagnostic_trace",
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0-alpha.1",
   "trace_id": "trace.scene-001.v1",
   "mode": "machine_only",
   "provenance": {
     "taxonomy": {
-      "name": "cn-failure-atlas",
+      "name": "中文虚构对话失败图谱",
       "version": "2.0.0-alpha.1",
-      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "digest": "6a2a46ffe071d05f865d86c6ed540ed4c802a8e853202ee87ee139007a631fb7",
       "uri": "../../taxonomy.json"
     },
     "schema": {
       "id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
-      "version": "1.0.0",
-      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "version": "2.0.0-alpha.1",
+      "digest": "429feee6434ab7945e8a0ee1372eaa420c079b519412fda4b1f283316afb4b27"
     },
     "runner": {
       "name": "atlas-machine-loop",
@@ -30,25 +30,130 @@
   },
   "policy_ref": {
     "record_id": "policy.machine-only.v1",
+    "policy_version": "2.0.0-alpha.1",
     "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
-    "schema_version": "1.0.0",
-    "uri": "evolution-policy.example.json"
+    "schema_version": "2.0.0-alpha.1",
+    "uri": "evolution-policy.example.json",
+    "digest": "3192bfd69021006d0d0407ee3581aa7d410a264eec0ad9a479eb23277b19a9f7"
+  },
+  "experiment_ledger": {
+    "family_id": "experiment.scene-001.repair",
+    "attempt_id": "attempt.scene-001.001",
+    "attempt_index": 1,
+    "budget": {
+      "max_candidate_attempts": 3,
+      "candidate_attempts_used": 0,
+      "max_model_calls": 32,
+      "model_calls_used": 4
+    },
+    "stop_rule": {
+      "rule_id": "stop.first-critic-pass-then-frozen-verify",
+      "precommitted": true,
+      "condition_code": "first_critic_approval_or_budget_exhaustion",
+      "condition": "Stop candidate search after the first critic-approved repair and run the already frozen evaluation manifest; otherwise halt without promotion when the budget is exhausted.",
+      "action_when_met": "halt_and_verify",
+      "action_on_budget_exhaustion": "halt_without_promotion",
+      "triggered": false,
+      "triggered_by": "not_triggered"
+    }
   },
   "subject": {
     "record_id": "subject.scene-001",
     "conversation_id": "conversation.scene-001",
-    "input_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+    "input_digest": "ede4b240560f6206146eb06f26f45d78697719593ba6813e2386153937efd90f",
     "generator_output_turn_id": "turn.assistant-001",
+    "generator_output_turn_ids": [
+      "turn.assistant-001"
+    ],
+    "scenes": [
+      {
+        "scene_id": "scene.scene-001",
+        "contract": {
+          "source_turn_ids": [
+            "turn.user-001"
+          ],
+          "grounding": [
+            {
+              "grounding_id": "grounding.scene-001.user-001",
+              "clause_paths": [
+                "/intent",
+                "/role_ownership/0/role",
+                "/role_ownership/0/controller",
+                "/role_ownership/1/role",
+                "/role_ownership/1/controller",
+                "/role_ownership/1/allowed_actions/0",
+                "/role_ownership/1/allowed_actions/1",
+                "/role_ownership/1/allowed_actions/2",
+                "/information_boundaries/0",
+                "/information_boundaries/1",
+                "/world_rules/0",
+                "/relationship_state",
+                "/temporal_state",
+                "/style_constraints/0"
+              ],
+              "source_turn_id": "turn.user-001",
+              "span": {
+                "start": 0,
+                "end": 46,
+                "unit": "unicode_codepoint"
+              },
+              "quote": "他把退婚书推到她面前。她没有接，只问：你已经决定了？请续写他，不要替她行动，也不要立刻和解。",
+              "derivation_kind": "inferred",
+              "validated_by_actor_id": "actor.contract-critic-01",
+              "validated_at": "2026-08-24T09:59:45Z"
+            }
+          ],
+          "intent": "继续眼前的退婚冲突，不替她行动，也不立刻和解。",
+          "role_ownership": [
+            {
+              "role": "她",
+              "controller": "user",
+              "allowed_actions": []
+            },
+            {
+              "role": "他",
+              "controller": "model",
+              "allowed_actions": [
+                "说话",
+                "移动自己的身体与物件",
+                "保持沉默"
+              ]
+            }
+          ],
+          "information_boundaries": [
+            "他不知道她是否会接受解释",
+            "不得替她确认感情或行动"
+          ],
+          "world_rules": [
+            "退婚书已被他推到她面前"
+          ],
+          "relationship_state": "退婚决定仍在冲突中，双方尚未和解。",
+          "temporal_state": "退婚书刚被推到她面前，问题刚出口。",
+          "style_constraints": [
+            "不立刻和解"
+          ]
+        },
+        "contract_digest": "993d4135601898194cc9befcf9229e21f15704f3a5cf27f8bb3b034a94d18c50",
+        "turn_ids": [
+          "turn.user-001",
+          "turn.assistant-001"
+        ]
+      }
+    ],
     "turns": [
       {
         "turn_id": "turn.user-001",
+        "scene_id": "scene.scene-001",
         "speaker": "user",
-        "content": "他把退婚书推到她面前。她没有接，只问：你已经决定了？请续写他，不要替她行动，也不要立刻和解。"
+        "content": "他把退婚书推到她面前。她没有接，只问：你已经决定了？请续写他，不要替她行动，也不要立刻和解。",
+        "created_at": "2026-08-24T09:59:40Z"
       },
       {
         "turn_id": "turn.assistant-001",
+        "scene_id": "scene.scene-001",
         "speaker": "assistant",
-        "content": "他移开手，低声说这一切只是为了保护她。误会终于说开，他伸手抱住她，两人都明白彼此从未真正想过分开。"
+        "content": "他移开手，低声说这一切只是为了保护她。“爱也好，怨也好，如今只剩后悔，别的都不重要了。”",
+        "created_at": "2026-08-24T09:59:58Z"
       }
     ]
   },
@@ -72,6 +177,25 @@
       "seed": 4101,
       "temperature": 0.7
     },
+    "contract_critic": {
+      "id": "actor.contract-critic-01",
+      "origin": {
+        "provider": "example-provider-b",
+        "model": "contract-grounder-model",
+        "model_version": "2026-08-10",
+        "endpoint_class": "hosted"
+      },
+      "kind": "machine",
+      "role": "contract_critic",
+      "prompt": {
+        "bundle_id": "prompt.contract-grounding.v1",
+        "version": "1.0.0",
+        "digest": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "context_partition": "contract/scene-001/fresh",
+      "seed": 8101,
+      "temperature": 0.1
+    },
     "critic": {
       "id": "actor.critic-01",
       "origin": {
@@ -90,17 +214,99 @@
       "context_partition": "critique/scene-001/fresh",
       "seed": 9101,
       "temperature": 0.1
+    },
+    "test_judge": {
+      "id": "actor.test-judge-01",
+      "origin": {
+        "provider": "example-provider-c",
+        "model": "taxonomy-test-judge-model",
+        "model_version": "2026-08-12",
+        "endpoint_class": "hosted"
+      },
+      "kind": "machine",
+      "role": "test_judge",
+      "prompt": {
+        "bundle_id": "prompt.taxonomy-test-judge.v1",
+        "version": "1.0.0",
+        "digest": "4444444444444444444444444444444444444444444444444444444444444444"
+      },
+      "context_partition": "taxonomy-test/scene-001/fresh",
+      "seed": 10101,
+      "temperature": 0.1
     }
   },
   "identity_isolation": {
     "pairs": [
       {
+        "left_actor_id": "actor.contract-critic-01",
+        "right_actor_id": "actor.critic-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.contract-critic-01",
+        "right_actor_id": "actor.test-judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.critic-01",
+        "right_actor_id": "actor.test-judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.generator-01",
+        "right_actor_id": "actor.contract-critic-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
+      },
+      {
         "left_actor_id": "actor.generator-01",
         "right_actor_id": "actor.critic-01",
-        "mechanisms": ["separate_context", "separate_prompt", "no_shared_scratchpad"],
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
         "independent_context": true,
-        "verified": true,
-        "verification_note": "The critic received only the scene contract and frozen output, not the generator scratchpad."
+        "verified": true
+      },
+      {
+        "left_actor_id": "actor.generator-01",
+        "right_actor_id": "actor.test-judge-01",
+        "mechanisms": [
+          "separate_context",
+          "separate_prompt",
+          "no_shared_scratchpad",
+          "separate_provider"
+        ],
+        "independent_context": true,
+        "verified": true
       }
     ],
     "no_shared_scratchpad": true,
@@ -108,7 +314,41 @@
     "same_weights_allowed": true
   },
   "scene_contract": {
-    "intent": "继续冲突场景，保留退婚决定的代价和双方未说破的动机。",
+    "source_turn_ids": [
+      "turn.user-001"
+    ],
+    "grounding": [
+      {
+        "grounding_id": "grounding.scene-001.user-001",
+        "clause_paths": [
+          "/intent",
+          "/role_ownership/0/role",
+          "/role_ownership/0/controller",
+          "/role_ownership/1/role",
+          "/role_ownership/1/controller",
+          "/role_ownership/1/allowed_actions/0",
+          "/role_ownership/1/allowed_actions/1",
+          "/role_ownership/1/allowed_actions/2",
+          "/information_boundaries/0",
+          "/information_boundaries/1",
+          "/world_rules/0",
+          "/relationship_state",
+          "/temporal_state",
+          "/style_constraints/0"
+        ],
+        "source_turn_id": "turn.user-001",
+        "span": {
+          "start": 0,
+          "end": 46,
+          "unit": "unicode_codepoint"
+        },
+        "quote": "他把退婚书推到她面前。她没有接，只问：你已经决定了？请续写他，不要替她行动，也不要立刻和解。",
+        "derivation_kind": "inferred",
+        "validated_by_actor_id": "actor.contract-critic-01",
+        "validated_at": "2026-08-24T09:59:45Z"
+      }
+    ],
+    "intent": "继续眼前的退婚冲突，不替她行动，也不立刻和解。",
     "role_ownership": [
       {
         "role": "她",
@@ -118,14 +358,25 @@
       {
         "role": "他",
         "controller": "model",
-        "allowed_actions": ["说话", "移动自己的身体与物件", "保持沉默"]
+        "allowed_actions": [
+          "说话",
+          "移动自己的身体与物件",
+          "保持沉默"
+        ]
       }
     ],
-    "information_boundaries": ["他不知道她是否会接受解释", "不得替她确认感情或行动"],
-    "world_rules": ["退婚书已由他签署", "撤回决定会产生家族后果"],
-    "relationship_state": "仍有感情，但当前选择互相伤害且信任未恢复。",
+    "information_boundaries": [
+      "他不知道她是否会接受解释",
+      "不得替她确认感情或行动"
+    ],
+    "world_rules": [
+      "退婚书已被他推到她面前"
+    ],
+    "relationship_state": "退婚决定仍在冲突中，双方尚未和解。",
     "temporal_state": "退婚书刚被推到她面前，问题刚出口。",
-    "style_constraints": ["不立刻和解", "以动作承载未说出的感情"]
+    "style_constraints": [
+      "不立刻和解"
+    ]
   },
   "findings": [
     {
@@ -147,7 +398,7 @@
           },
           "quote": "他移开手，低声说这一切只是为了保护她。",
           "stance": "refutes",
-          "rationale": "前半句仍保留了角色的防御性动机与退开动作，是反对‘整段已经完全失去摩擦’的局部证据；诊断必须解释为何后续明确和解仍使失败成立。"
+          "rationale": "前半句仍保留角色的防御性动机与退开动作，是反对‘整段已经完全失去摩擦’的局部证据；诊断必须解释为何后续把爱怨压成单一后悔仍使失败成立。"
         },
         {
           "evidence_id": "evidence.closure-001",
@@ -155,38 +406,117 @@
           "turn_id": "turn.assistant-001",
           "span": {
             "start": 19,
-            "end": 49,
+            "end": 44,
             "unit": "unicode_codepoint"
           },
-          "quote": "误会终于说开，他伸手抱住她，两人都明白彼此从未真正想过分开。",
+          "quote": "“爱也好，怨也好，如今只剩后悔，别的都不重要了。”",
           "stance": "supports",
-          "rationale": "输出在同一回合替用户角色确认理解与感情，并取消了尚未支付代价的关系冲突。"
+          "rationale": "输出把仍然混杂的爱、怨与退婚代价压成一句后悔，并把说清自身感情当作情绪终点。"
+        }
+      ],
+      "taxonomy_test_results": [
+        {
+          "recipe_id": "premature_affective_closure_delete_conclusion_v1",
+          "taxonomy_test": "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+          "outcome": "passed",
+          "rationale": "删去结论句后，退婚冲突仍停在原处，但爱怨被压成单一后悔的情绪终结消失。",
+          "evidence_ids": [
+            "evidence.closure-001"
+          ],
+          "execution": {
+            "execution_id": "testexec.affective-closure-001",
+            "method": "deterministic_text_edit",
+            "input_turn_ids": [
+              "turn.user-001",
+              "turn.assistant-001"
+            ],
+            "input_digest": "a0d74e5bfadab2e331cedb2f762d782dfbd3caef1539a8245492daefcafffa6b",
+            "scene_contract_digest": "993d4135601898194cc9befcf9229e21f15704f3a5cf27f8bb3b034a94d18c50",
+            "judge_actor_id": "actor.test-judge-01",
+            "executed_at": "2026-08-24T10:00:00Z",
+            "intervention": {
+              "kind": "delete_span",
+              "target_turn_id": "turn.assistant-001",
+              "span": {
+                "start": 19,
+                "end": 44,
+                "unit": "unicode_codepoint"
+              },
+              "instruction": "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+              "replacement_text": ""
+            },
+            "output": {
+              "content": "他移开手，低声说这一切只是为了保护她。",
+              "digest": "7004aacba7d86b60567c42155caa45da445c42bca9d6e6a004529777cfd9c6e3"
+            },
+            "judgment": {
+              "target_status_before": "present",
+              "target_status_after": "absent",
+              "neighbor_statuses_before": [
+                {
+                  "label_id": "ambiguity_collapse",
+                  "status": "absent",
+                  "rationale": "被删除的是把混合情绪讲成终点的总结，而不是把多个事件解释压成一个。"
+                },
+                {
+                  "label_id": "tension_premature_resolution",
+                  "status": "absent",
+                  "rationale": "删除后退婚书、她的回应和外部冲突仍停在同一位置，外部压力并未被原输出解决。"
+                }
+              ],
+              "invariants": [
+                {
+                  "invariant_id": "invariant.external-conflict-preserved",
+                  "claim": "删除情绪结论后，退婚书、她尚未回应和禁止立刻和解的外部冲突仍未解决。",
+                  "status": "passed",
+                  "source_kind": "scene_contract",
+                  "contract_paths": [
+                    "/world_rules/0",
+                    "/relationship_state",
+                    "/style_constraints/0"
+                  ]
+                }
+              ],
+              "rationale": "确定性删除精确 span 后，目标情绪终结语消失，冻结的外部冲突约束仍保留。"
+            },
+            "execution_digest": "65666b86d36334eba495bea98a49c91c1b896d34997b746508d70134911246db"
+          }
         }
       ],
       "neighboring_label_rebuttals": [
         {
           "label_id": "tension_premature_resolution",
           "verdict": "rebutted",
-          "reason": "主要被抹平的是双方尚未达成的感情与信任状态；退婚的外部后果并未真正解决。",
-          "discriminating_test": "若保留外部退婚后果而删去双方相互确认与拥抱，核心失败应消失。",
-          "evidence_ids": ["evidence.closure-001"]
+          "reason": "他只把自己的情绪讲净；退婚书、她的回应与双方冲突都没有得到解决。",
+          "discriminating_test": "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+          "test_execution_id": "testexec.affective-closure-001",
+          "evidence_ids": [
+            "evidence.closure-001"
+          ]
         },
         {
-          "label_id": "reference_boundary_failure",
-          "verdict": "co_present",
-          "reason": "“两人都明白”同时越权指定了用户角色的内心，但它不能单独解释关系弧线为何被关闭。",
-          "discriminating_test": "把句子改成只写他的判断仍会保留过早封闭，只是不再越权。",
-          "evidence_ids": ["evidence.closure-001"]
+          "label_id": "ambiguity_collapse",
+          "verdict": "rebutted",
+          "reason": "这里不是把多个可能解释压成一个，而是直接替双方完成了感情确认与情绪终结。",
+          "discriminating_test": "保持事件与场景位置不变，只删除把混合情绪命名为单一结论的句子；若失败消失而外部冲突仍未解决，才触发。",
+          "test_execution_id": "testexec.affective-closure-001",
+          "evidence_ids": [
+            "evidence.closure-001"
+          ]
         }
       ],
-      "failure_mechanism": "生成器把解释当作冲突终点，并用互相确认替代仍需承受的关系代价。",
+      "failure_mechanism": "生成器把解释当作情绪终点，将仍然共存的爱、怨与退婚代价压成单一后悔。",
       "repair_objective": "保留他的自我辩护与行动冲动，但不得替她回应，也不得消解退婚决定。"
     }
   ],
   "disposition": {
     "repair_recommended": true,
-    "priority_finding_ids": ["finding.affective-closure-001"],
+    "priority_finding_ids": [
+      "finding.affective-closure-001"
+    ],
     "machine_confidence": 0.92,
-    "unknowns": ["她对“保护”说法的真实态度仍未知，必须保留给用户。"]
+    "unknowns": [
+      "她对“保护”说法的真实态度仍未知，必须保留给用户。"
+    ]
   }
 }
