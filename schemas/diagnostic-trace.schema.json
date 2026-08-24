@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
+  "title": "Diagnostic trace",
+  "description": "A machine-auditable trace from scene contract through evidence-backed findings and neighboring-label rebuttals.",
+  "type": "object",
+  "required": [
+    "record_type",
+    "schema_version",
+    "trace_id",
+    "mode",
+    "provenance",
+    "policy_ref",
+    "subject",
+    "actors",
+    "identity_isolation",
+    "scene_contract",
+    "findings",
+    "disposition"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "record_type": { "const": "diagnostic_trace" },
+    "schema_version": { "const": "1.0.0" },
+    "trace_id": { "$ref": "common.schema.json#/$defs/id" },
+    "mode": { "$ref": "common.schema.json#/$defs/mode" },
+    "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
+    "policy_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "supersedes_ref": {
+      "$ref": "common.schema.json#/$defs/recordRef",
+      "description": "Optional reference to the prior record replaced by this append-only correction."
+    },
+    "subject": {
+      "type": "object",
+      "required": ["record_id", "conversation_id", "input_digest", "generator_output_turn_id", "turns"],
+      "additionalProperties": false,
+      "properties": {
+        "record_id": { "$ref": "common.schema.json#/$defs/id" },
+        "conversation_id": { "$ref": "common.schema.json#/$defs/id" },
+        "input_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "generator_output_turn_id": { "$ref": "common.schema.json#/$defs/id" },
+        "turns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["turn_id", "speaker", "content"],
+            "additionalProperties": false,
+            "properties": {
+              "turn_id": { "$ref": "common.schema.json#/$defs/id" },
+              "speaker": { "type": "string", "enum": ["user", "assistant", "system", "developer", "character"] },
+              "content": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "actors": {
+      "type": "object",
+      "required": ["generator", "critic"],
+      "additionalProperties": false,
+      "properties": {
+        "generator": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "generator" } } }
+          ]
+        },
+        "critic": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "critic" } } }
+          ]
+        }
+      }
+    },
+    "identity_isolation": { "$ref": "common.schema.json#/$defs/identityIsolation" },
+    "scene_contract": {
+      "type": "object",
+      "required": ["intent", "role_ownership", "information_boundaries", "world_rules", "relationship_state", "temporal_state"],
+      "additionalProperties": false,
+      "properties": {
+        "intent": { "type": "string", "minLength": 1 },
+        "role_ownership": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["role", "controller"],
+            "additionalProperties": false,
+            "properties": {
+              "role": { "type": "string", "minLength": 1 },
+              "controller": { "type": "string", "enum": ["user", "model", "shared"] },
+              "allowed_actions": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+            }
+          }
+        },
+        "information_boundaries": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+        "world_rules": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+        "relationship_state": { "type": "string", "minLength": 1 },
+        "temporal_state": { "type": "string", "minLength": 1 },
+        "style_constraints": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "disposition": {
+      "type": "object",
+      "required": ["repair_recommended", "priority_finding_ids", "machine_confidence", "unknowns"],
+      "additionalProperties": false,
+      "properties": {
+        "repair_recommended": { "type": "boolean" },
+        "priority_finding_ids": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "uniqueItems": true
+        },
+        "machine_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "unknowns": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "human_review": { "$ref": "common.schema.json#/$defs/humanReview" }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "required": [
+        "finding_id",
+        "label_id",
+        "label_kind",
+        "status",
+        "scope",
+        "confidence",
+        "evidence",
+        "neighboring_label_rebuttals",
+        "failure_mechanism",
+        "repair_objective"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": { "$ref": "common.schema.json#/$defs/id" },
+        "label_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "label_kind": { "type": "string", "enum": ["symptom", "causal_hypothesis", "composite", "uncertainty"] },
+        "status": { "type": "string", "enum": ["present", "absent", "uncertain", "not_applicable"] },
+        "scope": { "type": "string", "enum": ["span", "turn", "conversation", "cross_scene", "model_profile"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "common.schema.json#/$defs/evidence" }
+        },
+        "neighboring_label_rebuttals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["label_id", "verdict", "reason", "discriminating_test", "evidence_ids"],
+            "additionalProperties": false,
+            "properties": {
+              "label_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+              "verdict": { "type": "string", "enum": ["rebutted", "uncertain_between", "co_present"] },
+              "reason": { "type": "string", "minLength": 1 },
+              "discriminating_test": { "type": "string", "minLength": 1 },
+              "evidence_ids": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "$ref": "common.schema.json#/$defs/id" },
+                "uniqueItems": true
+              }
+            }
+          }
+        },
+        "supporting_finding_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "description": "Required for causal hypotheses: at least two observable symptom findings that support the hypothesis."
+        },
+        "failure_mechanism": { "type": "string", "minLength": 1 },
+        "repair_objective": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "present" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "type": "array",
+                "contains": {
+                  "type": "object",
+                  "properties": { "stance": { "const": "supports" } },
+                  "required": ["stance"]
+                },
+                "minContains": 1,
+                "allOf": [
+                  {
+                    "contains": {
+                      "type": "object",
+                      "properties": { "stance": { "const": "refutes" } },
+                      "required": ["stance"]
+                    },
+                    "minContains": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "label_kind": { "const": "causal_hypothesis" } },
+            "required": ["label_kind"]
+          },
+          "then": {
+            "required": ["supporting_finding_ids"],
+            "properties": { "supporting_finding_ids": {} }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,7 @@
 # Spec: Validation Rules
 
+> 历史说明：这是 v1 规格快照。v2 的可执行规则已经升级为完整 Draft 2020-12 校验、分类型计数、衍生图环检测和严格文档同步；当前契约以根目录 Schema、`validate.js` 与负例测试为准。
+
 ## R1 — JSON Schema 合规
 
 - taxonomy.json 必须通过 taxonomy.schema.json 验证

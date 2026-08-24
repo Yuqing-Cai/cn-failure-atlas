@@ -1,0 +1,144 @@
+{
+  "record_type": "evolution_policy",
+  "schema_version": "1.0.0",
+  "mode": "machine_only",
+  "provenance": {
+    "taxonomy": {
+      "name": "cn-failure-atlas",
+      "version": "2.0.0-alpha.1",
+      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "uri": "../../taxonomy.json"
+    },
+    "schema": {
+      "id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
+      "version": "1.0.0",
+      "digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "runner": {
+      "name": "atlas-machine-loop",
+      "version": "0.1.0",
+      "commit": "1a2b3c4"
+    },
+    "prompt_bundle": {
+      "id": "prompt.policy-execution.v1",
+      "version": "1.0.0",
+      "digest": "1212121212121212121212121212121212121212121212121212121212121212"
+    },
+    "digest_status": "example_placeholder",
+    "created_at": "2026-08-24T09:55:00Z"
+  },
+  "policy": {
+    "id": "policy.machine-only.v1",
+    "version": "1.0.0",
+    "status": "promoted",
+    "thresholds": {
+      "min_independent_judges": 2,
+      "min_evidence_coverage": 0.9,
+      "min_counterfactual_pass_rate": 0.9,
+      "max_regression_failure_rate": 0.05,
+      "min_repeat_runs": 2
+    },
+    "prohibit_generator_as_judge": true,
+    "require_order_swap": true,
+    "require_candidate_preferred": true,
+    "require_blind_candidate_identity": true,
+    "require_blind_model_identity": true,
+    "require_no_unresolved_blocking_challenges": true,
+    "promotion_targets": ["repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"]
+  },
+  "actor_isolation": {
+    "logical_roles": ["generator", "critic", "repairer", "judge", "aggregator", "policy_executor"],
+    "required_pair_boundaries": ["generator_critic", "generator_judge", "repairer_judge", "judge_aggregator", "critic_judge"],
+    "accepted_mechanisms": ["separate_context", "separate_prompt", "fresh_seed", "blinded_candidate_identity", "no_shared_scratchpad"],
+    "same_model_weights_allowed": true,
+    "origin_diversity_preferred": true
+  },
+  "verification_protocol": {
+    "pairwise_blind_comparison": true,
+    "orders": ["AB", "BA"],
+    "reset_context_between_orders": true,
+    "counterfactual_suite_required": true,
+    "regression_suite_required": true,
+    "evidence_trace_required": true,
+    "challenge_round_required": true,
+    "inconclusive_is_not_promotion": true
+  },
+  "promotion_lifecycle": {
+    "states": ["generated", "diagnosed", "challenged", "repair_proposed", "verifying", "probation", "promoted", "rejected", "quarantined", "deprecated", "rolled_back"],
+    "hard_gates": [
+      "generator_not_judge",
+      "order_swap_complete",
+      "independent_judges_met",
+      "evidence_coverage_met",
+      "counterfactual_pass_rate_met",
+      "regression_failure_rate_met",
+      "repeat_runs_met",
+      "no_unresolved_blocking_challenges",
+      "candidate_wins"
+    ],
+    "transitions": [
+      {
+        "from": "verifying",
+        "to": "rejected",
+        "condition": "The deterministic gate returns rejected."
+      },
+      {
+        "from": "verifying",
+        "to": "quarantined",
+        "condition": "The deterministic gate returns inconclusive; missing evidence must not be learned as failure."
+      },
+      {
+        "from": "verifying",
+        "to": "probation",
+        "condition": "The deterministic gate returns candidate because all available checks pass but independent repeats are insufficient."
+      },
+      {
+        "from": "verifying",
+        "to": "promoted",
+        "condition": "The deterministic gate returns adopted after every frozen threshold passes."
+      },
+      {
+        "from": "probation",
+        "to": "promoted",
+        "condition": "A fresh independent batch raises the deterministic gate result from candidate to adopted."
+      },
+      {
+        "from": "promoted",
+        "to": "rolled_back",
+        "condition": "A new blocking regression is causally linked to the promoted artifact."
+      }
+    ],
+    "taxonomy_change_scope": {
+      "direct_mutation_allowed": false,
+      "proposal_required": true,
+      "version_bump_required": true,
+      "revalidate_prior_anchors": true
+    }
+  },
+  "rollback_policy": {
+    "retain_all_artifacts": true,
+    "rollback_on_new_blocking_regression": true,
+    "rollback_on_gate_recalculation_failure": true,
+    "quarantine_failed_strategy": true
+  },
+  "conformance_examples": {
+    "diagnostic_trace": {
+      "record_id": "trace.scene-001.v1",
+      "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
+      "schema_version": "1.0.0",
+      "uri": "diagnostic-trace.example.json"
+    },
+    "repair_attempt": {
+      "record_id": "repair.scene-001.v1",
+      "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/repair-attempt.schema.json",
+      "schema_version": "1.0.0",
+      "uri": "repair-attempt.example.json"
+    },
+    "verification_run": {
+      "record_id": "verification.scene-001.v1",
+      "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json",
+      "schema_version": "1.0.0",
+      "uri": "verification-run.example.json"
+    }
+  }
+}

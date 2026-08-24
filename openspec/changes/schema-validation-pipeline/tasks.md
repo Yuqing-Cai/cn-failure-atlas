@@ -1,5 +1,7 @@
 # Tasks
 
+> 历史说明：以下是 v1 任务清单；其中未完成的手写 `additionalProperties` 检查已由 v2 的 Ajv 严格校验替代。
+
 - [x] 1. 创建 validate.js 骨架 + loadData + checkRequiredFields (R1) + checkTotalLabels (R2)
 - [x] 2. checkIdUniqueness (R3) + checkDerivedFromIntegrity (R4)
 - [x] 3. checkSubcategoryPrefix (R5)

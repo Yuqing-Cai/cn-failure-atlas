@@ -1,5 +1,7 @@
 # Proposal: Schema Validation Pipeline
 
+> 历史说明：本文记录 v1 验证器的原始提案。v2 已采用 Ajv 全量 Schema 校验，并以 `total_items` / `item_counts`、`causal_hypotheses`、`composite_tags` 和 `uncertainty_markers` 取代下文的旧数据契约；当前行为以根目录 `validate.js` 与测试为准。
+
 ## Why
 
 cn-failure-atlas 有 78 个标签分布在 5 层 + 底层倾向 + 跨层标签中。随着分类体系持续演进（加标签、改定义、调整层级关系），纯手动维护会引入以下风险：

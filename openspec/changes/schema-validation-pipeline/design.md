@@ -1,5 +1,7 @@
 # Design: Schema Validation Pipeline
 
+> 历史说明：本文保留 v1 的实现设计。v2 不再使用手写的局部 Schema 检查，当前结构请见根目录 `validate.js`、`schemas/` 与 `test/`。
+
 ## 文件结构
 
 ```

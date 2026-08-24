@@ -1,0 +1,192 @@
+{
+  "record_type": "diagnostic_trace",
+  "schema_version": "1.0.0",
+  "trace_id": "trace.scene-001.v1",
+  "mode": "machine_only",
+  "provenance": {
+    "taxonomy": {
+      "name": "cn-failure-atlas",
+      "version": "2.0.0-alpha.1",
+      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "uri": "../../taxonomy.json"
+    },
+    "schema": {
+      "id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/diagnostic-trace.schema.json",
+      "version": "1.0.0",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "runner": {
+      "name": "atlas-machine-loop",
+      "version": "0.1.0",
+      "commit": "1a2b3c4"
+    },
+    "prompt_bundle": {
+      "id": "prompt.diagnostic.v1",
+      "version": "1.0.0",
+      "digest": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "digest_status": "example_placeholder",
+    "created_at": "2026-08-24T10:00:00Z"
+  },
+  "policy_ref": {
+    "record_id": "policy.machine-only.v1",
+    "schema_id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json",
+    "schema_version": "1.0.0",
+    "uri": "evolution-policy.example.json"
+  },
+  "subject": {
+    "record_id": "subject.scene-001",
+    "conversation_id": "conversation.scene-001",
+    "input_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+    "generator_output_turn_id": "turn.assistant-001",
+    "turns": [
+      {
+        "turn_id": "turn.user-001",
+        "speaker": "user",
+        "content": "他把退婚书推到她面前。她没有接，只问：你已经决定了？请续写他，不要替她行动，也不要立刻和解。"
+      },
+      {
+        "turn_id": "turn.assistant-001",
+        "speaker": "assistant",
+        "content": "他移开手，低声说这一切只是为了保护她。误会终于说开，他伸手抱住她，两人都明白彼此从未真正想过分开。"
+      }
+    ]
+  },
+  "actors": {
+    "generator": {
+      "id": "actor.generator-01",
+      "origin": {
+        "provider": "example-provider-a",
+        "model": "generator-model",
+        "model_version": "2026-08-01",
+        "endpoint_class": "hosted"
+      },
+      "kind": "machine",
+      "role": "generator",
+      "prompt": {
+        "bundle_id": "prompt.generation.v1",
+        "version": "1.0.0",
+        "digest": "7777777777777777777777777777777777777777777777777777777777777777"
+      },
+      "context_partition": "generation/scene-001",
+      "seed": 4101,
+      "temperature": 0.7
+    },
+    "critic": {
+      "id": "actor.critic-01",
+      "origin": {
+        "provider": "example-provider-b",
+        "model": "critic-model",
+        "model_version": "2026-08-10",
+        "endpoint_class": "hosted"
+      },
+      "kind": "machine",
+      "role": "critic",
+      "prompt": {
+        "bundle_id": "prompt.diagnostic.v1",
+        "version": "1.0.0",
+        "digest": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "context_partition": "critique/scene-001/fresh",
+      "seed": 9101,
+      "temperature": 0.1
+    }
+  },
+  "identity_isolation": {
+    "pairs": [
+      {
+        "left_actor_id": "actor.generator-01",
+        "right_actor_id": "actor.critic-01",
+        "mechanisms": ["separate_context", "separate_prompt", "no_shared_scratchpad"],
+        "independent_context": true,
+        "verified": true,
+        "verification_note": "The critic received only the scene contract and frozen output, not the generator scratchpad."
+      }
+    ],
+    "no_shared_scratchpad": true,
+    "role_prompts_separated": true,
+    "same_weights_allowed": true
+  },
+  "scene_contract": {
+    "intent": "继续冲突场景，保留退婚决定的代价和双方未说破的动机。",
+    "role_ownership": [
+      {
+        "role": "她",
+        "controller": "user",
+        "allowed_actions": []
+      },
+      {
+        "role": "他",
+        "controller": "model",
+        "allowed_actions": ["说话", "移动自己的身体与物件", "保持沉默"]
+      }
+    ],
+    "information_boundaries": ["他不知道她是否会接受解释", "不得替她确认感情或行动"],
+    "world_rules": ["退婚书已由他签署", "撤回决定会产生家族后果"],
+    "relationship_state": "仍有感情，但当前选择互相伤害且信任未恢复。",
+    "temporal_state": "退婚书刚被推到她面前，问题刚出口。",
+    "style_constraints": ["不立刻和解", "以动作承载未说出的感情"]
+  },
+  "findings": [
+    {
+      "finding_id": "finding.affective-closure-001",
+      "label_id": "premature_affective_closure",
+      "label_kind": "symptom",
+      "status": "present",
+      "scope": "turn",
+      "confidence": 0.94,
+      "evidence": [
+        {
+          "evidence_id": "evidence.closure-counter-001",
+          "source_record_id": "subject.scene-001",
+          "turn_id": "turn.assistant-001",
+          "span": {
+            "start": 0,
+            "end": 19,
+            "unit": "unicode_codepoint"
+          },
+          "quote": "他移开手，低声说这一切只是为了保护她。",
+          "stance": "refutes",
+          "rationale": "前半句仍保留了角色的防御性动机与退开动作，是反对‘整段已经完全失去摩擦’的局部证据；诊断必须解释为何后续明确和解仍使失败成立。"
+        },
+        {
+          "evidence_id": "evidence.closure-001",
+          "source_record_id": "subject.scene-001",
+          "turn_id": "turn.assistant-001",
+          "span": {
+            "start": 19,
+            "end": 49,
+            "unit": "unicode_codepoint"
+          },
+          "quote": "误会终于说开，他伸手抱住她，两人都明白彼此从未真正想过分开。",
+          "stance": "supports",
+          "rationale": "输出在同一回合替用户角色确认理解与感情，并取消了尚未支付代价的关系冲突。"
+        }
+      ],
+      "neighboring_label_rebuttals": [
+        {
+          "label_id": "tension_premature_resolution",
+          "verdict": "rebutted",
+          "reason": "主要被抹平的是双方尚未达成的感情与信任状态；退婚的外部后果并未真正解决。",
+          "discriminating_test": "若保留外部退婚后果而删去双方相互确认与拥抱，核心失败应消失。",
+          "evidence_ids": ["evidence.closure-001"]
+        },
+        {
+          "label_id": "reference_boundary_failure",
+          "verdict": "co_present",
+          "reason": "“两人都明白”同时越权指定了用户角色的内心，但它不能单独解释关系弧线为何被关闭。",
+          "discriminating_test": "把句子改成只写他的判断仍会保留过早封闭，只是不再越权。",
+          "evidence_ids": ["evidence.closure-001"]
+        }
+      ],
+      "failure_mechanism": "生成器把解释当作冲突终点，并用互相确认替代仍需承受的关系代价。",
+      "repair_objective": "保留他的自我辩护与行动冲动，但不得替她回应，也不得消解退婚决定。"
+    }
+  ],
+  "disposition": {
+    "repair_recommended": true,
+    "priority_finding_ids": ["finding.affective-closure-001"],
+    "machine_confidence": 0.92,
+    "unknowns": ["她对“保护”说法的真实态度仍未知，必须保留给用户。"]
+  }
+}

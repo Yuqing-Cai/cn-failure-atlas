@@ -1,62 +1,83 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "中文虚构对话失败图谱分类体系",
-  "description": "面向大语言模型虚构和角色扮演对话的失败模式分类体系的结构化定义",
+  "$id": "https://github.com/Yuqing-Cai/cn-failure-atlas/raw/main/taxonomy.schema.json",
+  "title": "中文虚构对话失败图谱 v2",
+  "description": "将可观察症状、因果假设、复合现象与不确定性标记分开表达的机器可读诊断本体。",
   "type": "object",
-  "required": ["name", "total_labels", "layers", "underlying_tendencies", "cross_layer_tags"],
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "status",
+    "updated_at",
+    "name",
+    "description",
+    "diagnostic_order",
+    "total_items",
+    "item_counts",
+    "layers",
+    "causal_hypotheses",
+    "composite_tags",
+    "uncertainty_markers"
+  ],
   "additionalProperties": false,
   "properties": {
-    "name": {
-      "type": "string",
-      "description": "分类体系名称"
+    "schema_version": { "const": "2.0.0" },
+    "taxonomy_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$" },
+    "status": { "type": "string", "enum": ["experimental", "stable", "deprecated"] },
+    "updated_at": { "type": "string", "format": "date" },
+    "name": { "$ref": "#/$defs/non_empty_string" },
+    "description": { "$ref": "#/$defs/non_empty_string" },
+    "diagnostic_order": {
+      "type": "array",
+      "prefixItems": [
+        { "const": "I" },
+        { "const": "II" },
+        { "const": "III" },
+        { "const": "IV" },
+        { "const": "V" }
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 5
     },
-    "total_labels": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "所有标签的总数（含层级标签、底层倾向、跨层标签）"
+    "total_items": { "type": "integer", "minimum": 1 },
+    "item_counts": {
+      "type": "object",
+      "required": ["symptoms", "causal_hypotheses", "composites", "uncertainty_markers"],
+      "additionalProperties": false,
+      "properties": {
+        "symptoms": { "type": "integer", "minimum": 1 },
+        "causal_hypotheses": { "type": "integer", "minimum": 0 },
+        "composites": { "type": "integer", "minimum": 0 },
+        "uncertainty_markers": { "type": "integer", "minimum": 0 }
+      }
     },
     "layers": {
       "type": "array",
-      "description": "失败层级列表",
-      "items": { "$ref": "#/$defs/layer" }
+      "items": { "$ref": "#/$defs/layer" },
+      "minItems": 5,
+      "maxItems": 5
     },
-    "underlying_tendencies": {
-      "type": "array",
-      "description": "底层驱动偏向列表",
-      "items": { "$ref": "#/$defs/tendency" }
-    },
-    "cross_layer_tags": {
-      "type": "array",
-      "description": "跨层诊断标签列表",
-      "items": { "$ref": "#/$defs/cross_layer_tag" }
-    }
+    "causal_hypotheses": { "type": "array", "items": { "$ref": "#/$defs/causal_hypothesis" } },
+    "composite_tags": { "type": "array", "items": { "$ref": "#/$defs/auxiliary_item" } },
+    "uncertainty_markers": { "type": "array", "items": { "$ref": "#/$defs/auxiliary_item" } }
   },
   "$defs": {
+    "non_empty_string": { "type": "string", "minLength": 1 },
+    "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
     "layer": {
       "type": "object",
       "required": ["id", "name", "description", "subcategories"],
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[IV]+$",
-          "description": "层级编号（罗马数字）"
-        },
-        "name": {
-          "type": "string",
-          "description": "层级名称"
-        },
-        "description": {
-          "type": "string",
-          "description": "层级描述"
-        },
-        "note": {
-          "type": "string",
-          "description": "层级备注"
-        },
+        "id": { "type": "string", "enum": ["I", "II", "III", "IV", "V"] },
+        "name": { "$ref": "#/$defs/non_empty_string" },
+        "description": { "$ref": "#/$defs/non_empty_string" },
+        "note": { "$ref": "#/$defs/non_empty_string" },
         "subcategories": {
           "type": "array",
-          "items": { "$ref": "#/$defs/subcategory" }
+          "items": { "$ref": "#/$defs/subcategory" },
+          "minItems": 1
         }
       }
     },
@@ -65,103 +86,68 @@
       "required": ["id", "name", "labels"],
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "子类编号（如 III-A）"
-        },
-        "name": {
-          "type": "string",
-          "description": "子类名称"
-        },
+        "id": { "type": "string", "pattern": "^(?:I|II|III|IV|V)-[A-Z]$" },
+        "name": { "$ref": "#/$defs/non_empty_string" },
         "labels": {
           "type": "array",
-          "items": { "$ref": "#/$defs/label" },
+          "items": { "$ref": "#/$defs/symptom" },
           "minItems": 1
         }
       }
     },
-    "label": {
+    "symptom": {
       "type": "object",
-      "required": ["id", "name", "definition", "derived_from", "criteria", "confidence_level"],
+      "required": ["id", "name", "definition", "derived_from", "criteria", "observability"],
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_]*$",
-          "description": "标签唯一标识符（snake_case）"
-        },
-        "name": {
-          "type": "string",
-          "description": "中文标签名"
-        },
-        "definition": {
-          "type": "string",
-          "description": "一句话定义"
-        },
+        "id": { "$ref": "#/$defs/identifier" },
+        "name": { "$ref": "#/$defs/non_empty_string" },
+        "definition": { "$ref": "#/$defs/non_empty_string" },
         "derived_from": {
           "oneOf": [
-            { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }, "minItems": 1 },
+            {
+              "type": "array",
+              "items": { "$ref": "#/$defs/identifier" },
+              "minItems": 1,
+              "uniqueItems": true
+            },
             { "type": "null" }
-          ],
-          "description": "衍生自哪些父标签（数组），null 表示独立标签"
+          ]
         },
         "criteria": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": { "$ref": "#/$defs/non_empty_string" },
           "minItems": 1,
-          "description": "可观察判断标准列表"
+          "uniqueItems": true
         },
-        "confidence_level": {
+        "observability": {
           "type": "string",
           "enum": ["high", "medium", "low"],
-          "description": "标注者间一致性预期：high=客观可观察, medium=需上下文判断, low=高度主观或需跨场景比较"
+          "description": "定义给出的证据在输出中被直接观察到的预期难易，不是一次诊断的置信度。"
         },
-        "example": {
-          "type": "string",
-          "description": "一句话示例概要，描述具体场景中的失败表现"
-        }
+        "example": { "$ref": "#/$defs/non_empty_string" }
       }
     },
-    "tendency": {
+    "causal_hypothesis": {
       "type": "object",
       "required": ["id", "name", "primary_layer", "definition"],
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_]*$"
-        },
-        "name": {
-          "type": "string"
-        },
-        "primary_layer": {
-          "type": "string",
-          "description": "主要关联层级"
-        },
-        "definition": {
-          "type": "string"
-        }
+        "id": { "$ref": "#/$defs/identifier" },
+        "name": { "$ref": "#/$defs/non_empty_string" },
+        "primary_layer": { "type": "string", "pattern": "^(?:I|II|III|IV|V)(?:-(?:I|II|III|IV|V))?$" },
+        "definition": { "$ref": "#/$defs/non_empty_string" }
       }
     },
-    "cross_layer_tag": {
+    "auxiliary_item": {
       "type": "object",
-      "required": ["id", "name", "definition"],
+      "required": ["id", "name", "definition", "example"],
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_]*$"
-        },
-        "name": {
-          "type": "string"
-        },
-        "definition": {
-          "type": "string"
-        },
-        "example": {
-          "type": "string",
-          "description": "一句话示例概要"
-        }
+        "id": { "$ref": "#/$defs/identifier" },
+        "name": { "$ref": "#/$defs/non_empty_string" },
+        "definition": { "$ref": "#/$defs/non_empty_string" },
+        "example": { "$ref": "#/$defs/non_empty_string" }
       }
     }
   }

@@ -1,0 +1,390 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/verification-run.schema.json",
+  "title": "Verification run",
+  "description": "Canonical blind machine-verification contract for a baseline/candidate repair pair.",
+  "type": "object",
+  "required": [
+    "record_type",
+    "schema_version",
+    "verification_id",
+    "mode",
+    "provenance",
+    "policy_ref",
+    "promotion_target",
+    "diagnostic_trace_ref",
+    "repair_attempt_ref",
+    "generator",
+    "judges",
+    "actor_profiles",
+    "identity_isolation",
+    "candidates",
+    "blinding",
+    "order_trials",
+    "evidence_checks",
+    "target_failure_checks",
+    "counterfactual_checks",
+    "regression_checks",
+    "challenge_round_completed",
+    "challenges",
+    "repeat_manifest",
+    "repeat_runs",
+    "aggregation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "record_type": { "const": "verification_run" },
+    "schema_version": { "const": "1.0.0" },
+    "verification_id": { "$ref": "common.schema.json#/$defs/id" },
+    "mode": { "$ref": "common.schema.json#/$defs/mode" },
+    "provenance": { "$ref": "common.schema.json#/$defs/versionProvenance" },
+    "policy_ref": { "$ref": "#/$defs/policyRef" },
+    "supersedes_ref": {
+      "$ref": "common.schema.json#/$defs/recordRef",
+      "description": "Optional prior verification record superseded by this append-only rerun."
+    },
+    "promotion_target": {
+      "type": "string",
+      "enum": ["repair_strategy", "critic_rule", "prompt_bundle", "regression_case", "taxonomy_proposal"],
+      "description": "Artifact class whose promotion is requested by this verification run."
+    },
+    "diagnostic_trace_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "repair_attempt_ref": { "$ref": "common.schema.json#/$defs/recordRef" },
+    "generator": {
+      "$ref": "common.schema.json#/$defs/canonicalActor",
+      "description": "Canonical gate field: the actor that generated the candidate repair."
+    },
+    "judges": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/canonicalActor" },
+      "description": "Canonical gate field: independent machine judges."
+    },
+    "actor_profiles": {
+      "type": "object",
+      "required": ["generator", "judges", "aggregator"],
+      "additionalProperties": false,
+      "properties": {
+        "generator": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "repairer" } } }
+          ]
+        },
+        "judges": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "allOf": [
+              { "$ref": "common.schema.json#/$defs/machineActor" },
+              { "type": "object", "properties": { "role": { "const": "judge" } } }
+            ]
+          }
+        },
+        "critics": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              { "$ref": "common.schema.json#/$defs/machineActor" },
+              { "type": "object", "properties": { "role": { "const": "critic" } } }
+            ]
+          }
+        },
+        "aggregator": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/machineActor" },
+            { "type": "object", "properties": { "role": { "const": "aggregator" } } }
+          ]
+        }
+      }
+    },
+    "identity_isolation": { "$ref": "common.schema.json#/$defs/identityIsolation" },
+    "candidates": {
+      "type": "object",
+      "required": ["baseline", "candidate"],
+      "additionalProperties": false,
+      "properties": {
+        "baseline": {
+          "allOf": [
+            { "$ref": "#/$defs/blindCandidate" },
+            { "type": "object", "properties": { "candidate_id": { "const": "baseline" } } }
+          ]
+        },
+        "candidate": {
+          "allOf": [
+            { "$ref": "#/$defs/blindCandidate" },
+            { "type": "object", "properties": { "candidate_id": { "const": "candidate" } } }
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "baseline": { "type": "object", "properties": { "blind_alias": { "const": "A" } } },
+            "candidate": { "type": "object", "properties": { "blind_alias": { "const": "B" } } }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "baseline": { "type": "object", "properties": { "blind_alias": { "const": "B" } } },
+            "candidate": { "type": "object", "properties": { "blind_alias": { "const": "A" } } }
+          }
+        }
+      ]
+    },
+    "blinding": {
+      "type": "object",
+      "required": ["mapping_digest", "mapping_visible_to", "candidate_origin_hidden", "model_identity_hidden", "judge_contexts_reset_between_orders"],
+      "additionalProperties": false,
+      "properties": {
+        "mapping_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "mapping_visible_to": { "const": "aggregator_only" },
+        "candidate_origin_hidden": { "const": true },
+        "model_identity_hidden": { "const": true },
+        "judge_contexts_reset_between_orders": { "const": true }
+      }
+    },
+    "order_trials": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/orderTrial" },
+      "allOf": [
+        { "contains": { "type": "object", "properties": { "order": { "const": "AB" } }, "required": ["order"] }, "minContains": 1 },
+        { "contains": { "type": "object", "properties": { "order": { "const": "BA" } }, "required": ["order"] }, "minContains": 1 }
+      ],
+      "description": "Canonical gate field. Every judge/repeat pair should have both AB and BA trials; cross-item pairing is checked by the validator."
+    },
+    "evidence_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["check_id", "finding_id", "evidence_ids", "judge_id", "covered", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "check_id": { "$ref": "common.schema.json#/$defs/id" },
+          "finding_id": { "$ref": "common.schema.json#/$defs/id" },
+          "evidence_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "$ref": "common.schema.json#/$defs/id" }
+          },
+          "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "covered": { "type": "boolean" },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "target_failure_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["check_id", "finding_id", "judge_id", "baseline_present", "candidate_present", "evidence_reduced", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "check_id": { "$ref": "common.schema.json#/$defs/id" },
+          "finding_id": { "$ref": "common.schema.json#/$defs/id" },
+          "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "baseline_present": { "type": "boolean" },
+          "candidate_present": { "type": "boolean" },
+          "evidence_reduced": { "type": "boolean" },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "counterfactual_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["check_id", "judge_id", "transformation", "expected_invariant", "observation", "passed"],
+        "additionalProperties": false,
+        "properties": {
+          "check_id": { "$ref": "common.schema.json#/$defs/id" },
+          "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "transformation": { "type": "string", "minLength": 1 },
+          "expected_invariant": { "type": "string", "minLength": 1 },
+          "observation": { "type": "string", "minLength": 1 },
+          "passed": { "type": "boolean" }
+        }
+      }
+    },
+    "regression_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["check_id", "suite_id", "suite_version", "suite_digest", "case_id", "case_digest", "judge_id", "protected_behavior", "observation", "passed", "hard_veto", "contamination_status"],
+        "additionalProperties": false,
+        "properties": {
+          "check_id": { "$ref": "common.schema.json#/$defs/id" },
+          "suite_id": { "$ref": "common.schema.json#/$defs/id" },
+          "suite_version": { "type": "string", "minLength": 1 },
+          "suite_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "case_id": { "$ref": "common.schema.json#/$defs/id" },
+          "case_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "protected_behavior": { "type": "string", "minLength": 1 },
+          "observation": { "type": "string", "minLength": 1 },
+          "passed": { "type": "boolean" },
+          "hard_veto": {
+            "type": "boolean",
+            "description": "When true, a failed check rejects the candidate regardless of the aggregate failure-rate threshold."
+          },
+          "contamination_status": {
+            "type": "string",
+            "enum": ["clean", "contaminated"]
+          }
+        }
+      }
+    },
+    "challenge_round_completed": {
+      "type": "boolean",
+      "description": "Machine-verifiable orchestration attestation that the required challenge round ran. An empty challenges array is valid only when this is true."
+    },
+    "challenges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["challenge_id", "raised_by", "severity", "claim", "response", "resolved"],
+        "additionalProperties": false,
+        "properties": {
+          "challenge_id": { "$ref": "common.schema.json#/$defs/id" },
+          "raised_by": { "$ref": "common.schema.json#/$defs/id" },
+          "severity": { "type": "string", "enum": ["blocking", "major", "minor", "informational"] },
+          "claim": { "type": "string", "minLength": 1 },
+          "response": { "type": "string", "minLength": 1 },
+          "resolved": { "type": "boolean" }
+        }
+      }
+    },
+    "repeat_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["repeat_id", "seed", "run_digest", "input_digest", "executed_at"],
+        "additionalProperties": false,
+        "properties": {
+          "repeat_id": { "$ref": "common.schema.json#/$defs/id" },
+          "seed": { "type": "integer", "minimum": 0 },
+          "run_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "input_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+          "executed_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "repeat_runs": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Canonical gate field: number of independently seeded repeat groups represented by order_trials."
+    },
+    "aggregation": {
+      "type": "object",
+      "required": ["aggregator_id", "candidate_wins", "baseline_wins", "ties", "order_consistent_pairs", "evidence_coverage", "counterfactual_pass_rate", "regression_failure_rate", "winner"],
+      "additionalProperties": false,
+      "properties": {
+        "aggregator_id": { "$ref": "common.schema.json#/$defs/id" },
+        "candidate_wins": { "type": "integer", "minimum": 0 },
+        "baseline_wins": { "type": "integer", "minimum": 0 },
+        "ties": { "type": "integer", "minimum": 0 },
+        "order_consistent_pairs": { "type": "integer", "minimum": 0 },
+        "evidence_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "counterfactual_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "regression_failure_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "winner": { "type": "string", "enum": ["candidate", "baseline", "tie", "inconclusive"] }
+      }
+    },
+    "promotion_gate": {
+      "type": "object",
+      "description": "Persisted output of lib/evolution-gate.js plus its deterministic lifecycle mapping.",
+      "required": ["decision_version", "run_id", "policy_id", "status", "reason_codes", "metrics", "lifecycle_state", "lifecycle_reason"],
+      "additionalProperties": false,
+      "properties": {
+        "decision_version": { "const": "1.0.0" },
+        "run_id": { "$ref": "common.schema.json#/$defs/id" },
+        "policy_id": { "$ref": "common.schema.json#/$defs/id" },
+        "status": { "type": "string", "enum": ["adopted", "candidate", "rejected", "inconclusive"] },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" }
+        },
+        "metrics": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Versioned deterministic-gate metrics. Their exact shape is governed by decision_version."
+        },
+        "lifecycle_state": { "type": "string", "enum": ["promoted", "probation", "rejected", "quarantined"] },
+        "lifecycle_reason": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "status": { "const": "adopted" } }, "required": ["status"] },
+          "then": { "type": "object", "properties": { "lifecycle_state": { "const": "promoted" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "status": { "const": "candidate" } }, "required": ["status"] },
+          "then": { "type": "object", "properties": { "lifecycle_state": { "const": "probation" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "status": { "const": "rejected" } }, "required": ["status"] },
+          "then": { "type": "object", "properties": { "lifecycle_state": { "const": "rejected" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "status": { "const": "inconclusive" } }, "required": ["status"] },
+          "then": { "type": "object", "properties": { "lifecycle_state": { "const": "quarantined" } } }
+        }
+      ]
+    },
+    "human_review": { "$ref": "common.schema.json#/$defs/humanReview" }
+  },
+  "$defs": {
+    "policyRef": {
+      "type": "object",
+      "required": ["record_id", "policy_version", "schema_id", "schema_version", "uri"],
+      "additionalProperties": false,
+      "properties": {
+        "record_id": { "$ref": "common.schema.json#/$defs/id" },
+        "policy_version": { "type": "string", "minLength": 1 },
+        "schema_id": { "const": "https://yuqing-cai.github.io/cn-failure-atlas/schemas/evolution-policy.schema.json" },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "uri": { "$ref": "common.schema.json#/$defs/uriReference" },
+        "digest": { "$ref": "common.schema.json#/$defs/sha256" }
+      }
+    },
+    "blindCandidate": {
+      "type": "object",
+      "required": ["candidate_id", "blind_alias", "digest"],
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": { "type": "string", "enum": ["baseline", "candidate"] },
+        "blind_alias": { "type": "string", "enum": ["A", "B"] },
+        "digest": { "$ref": "common.schema.json#/$defs/sha256" }
+      }
+    },
+    "orderTrial": {
+      "type": "object",
+      "required": ["trial_id", "repeat_id", "judge_id", "order", "winner", "raw_choice", "rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "trial_id": { "$ref": "common.schema.json#/$defs/id" },
+        "repeat_id": { "$ref": "common.schema.json#/$defs/id" },
+        "judge_id": { "$ref": "common.schema.json#/$defs/id" },
+        "order": { "type": "string", "enum": ["AB", "BA"] },
+        "winner": { "type": "string", "enum": ["candidate", "baseline", "tie"] },
+        "raw_choice": { "type": "string", "enum": ["A", "B", "tie"] },
+        "rationale": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
